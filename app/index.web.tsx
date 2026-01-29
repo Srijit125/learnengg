@@ -12,6 +12,7 @@ import { getUserLogs, getUserLogsData } from "@/services/analyticsService";
 import MetricCard from "@/components/Dashboard/Cards/MetricCard";
 import { BarChart, barDataItem, LineChart } from "react-native-gifted-charts";
 import { analyticsInfo, logDataInfo } from "@/types/analyticsType";
+import Sidebar from "@/components/Sidebar";
 
 export default function Index() {
   const [userId, setUserId] = useState("cbae9003-9c6c-4cb9-a658-7ebf7cc7cb23");
@@ -73,6 +74,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
+      <Sidebar className={""}/>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Analytics</Text>
       </View>
