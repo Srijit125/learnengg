@@ -1,22 +1,23 @@
-import { Tabs } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import React from 'react'
 
 export default function RootLayout() {
   return (
-    <Tabs>
-      <Tabs.Screen
+    <Drawer>
+      <Drawer.Screen
         name="index" 
         options={{
-          title: 'Home',
+          drawerLabel: 'Home',
+          title: 'Dashboard',
         }}
       />
-      <Tabs.Screen
+      <Drawer.Screen
         name="quiz" 
         options={{
+          drawerLabel: 'Quiz',
           title: 'Quiz',
         }}
       />
-    </Tabs>
+    </Drawer>
   )
 }
