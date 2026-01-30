@@ -2,7 +2,7 @@ import { Drawer } from "expo-router/drawer";
 import React from 'react';
 import CustomDrawerContent from '@/components/Dashboard/CustomDrawerContent';
 
-export default function RootLayout() {
+export default function AdminLayout() {
   return (
     <Drawer
       drawerContent={(props) => <CustomDrawerContent {...props} />}

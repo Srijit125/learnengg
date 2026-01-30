@@ -1,5 +1,5 @@
 import React from 'react';
-import Index from '../app/index.web';
+import Index from '../app/(admin)/index.web';
 
 // This is a wrapper component for the Dashboard screen
 // It uses the existing index.web.tsx component

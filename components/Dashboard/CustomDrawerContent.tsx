@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -7,6 +7,8 @@ import {
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
 import { CommonActions } from '@react-navigation/native';
+import { useAuthStore } from '@/store/auth.store';
+import { useRouter } from 'expo-router';
 
 type MenuItem = {
   id: string;
@@ -18,6 +20,9 @@ type MenuItem = {
 
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const { navigation, state } = props;
+  const { logout, user } = useAuthStore();
+  const router = useRouter();
+  const [showLogoutMenu, setShowLogoutMenu] = useState(false);
 
   const mainMenuItems: MenuItem[] = [
     { id: 'overview', label: 'Dashboard', icon: 'view-dashboard-outline', route: 'Dashboard' },
@@ -41,6 +46,12 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
   const handleMenuItemPress = (routeName: string) => {
     navigation.navigate(routeName);
+  };
+
+  const handleLogout = () => {
+    setShowLogoutMenu(false);
+    logout();
+    router.replace('/login');
   };
 
   const isActive = (routeName: string) => {
@@ -132,13 +143,18 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
           <View style={styles.divider} />
           <View style={styles.userProfile}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>SW</Text>
+              <Text style={styles.avatarText}>
+                {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'SW'}
+              </Text>
             </View>
             <View style={styles.userInfo}>
-              <Text style={styles.userName}>Sam Wheeler</Text>
-              <Text style={styles.userEmail}>Student</Text>
+              <Text style={styles.userName}>{user?.name || 'Sam Wheeler'}</Text>
+              <Text style={styles.userEmail}>{user?.role === 'admin' ? 'Administrator' : 'Student'}</Text>
             </View>
-            <TouchableOpacity style={styles.moreButton}>
+            <TouchableOpacity 
+              style={styles.moreButton}
+              onPress={() => setShowLogoutMenu(!showLogoutMenu)}
+            >
               <MaterialCommunityIcons
                 name="dots-vertical"
                 size={20}
@@ -147,6 +163,26 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Logout Menu */}
+        {showLogoutMenu && (
+          <>
+            <TouchableOpacity 
+              style={styles.menuOverlay} 
+              activeOpacity={1} 
+              onPress={() => setShowLogoutMenu(false)}
+            />
+            <View style={styles.logoutMenu}>
+              <TouchableOpacity 
+                style={styles.logoutMenuItem}
+                onPress={handleLogout}
+              >
+                <MaterialCommunityIcons name="logout" size={18} color="#ef4444" />
+                <Text style={styles.logoutMenuText}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
       </LinearGradient>
     </View>
   );
@@ -308,5 +344,40 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  menuOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'transparent',
+    zIndex: 10,
+  },
+  logoutMenu: {
+    position: 'absolute',
+    bottom: 80,
+    right: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 8,
+    width: 140,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+    zIndex: 11,
+  },
+  logoutMenuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  logoutMenuText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ef4444',
   },
 });

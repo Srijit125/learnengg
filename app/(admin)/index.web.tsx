@@ -15,8 +15,13 @@ import StatCard from "@/components/Dashboard/Cards/StatCard";
 import ChartCard from "@/components/Dashboard/Cards/ChartCard";
 import ActivityFeed from "@/components/Dashboard/ActivityFeed";
 import ProgressRing from "@/components/Dashboard/ProgressRing";
-import { BarChart, barDataItem, LineChart } from "react-native-gifted-charts";
+import DonutChart from "@/components/Dashboard/Charts/DonutChart";
+import EnhancedBarChart from "@/components/Dashboard/Charts/EnhancedBarChart";
+import TrendLineChart from "@/components/Dashboard/Charts/TrendLineChart";
+import HorizontalProgressBar from "@/components/Dashboard/Charts/HorizontalProgressBar";
+import { barDataItem, lineDataItem } from "react-native-gifted-charts";
 import { analyticsInfo, logDataInfo } from "@/types/analyticsType";
+import { getDifficultyColor } from "@/utils/chartColors";
 
 export default function Index() {
   const [userId, setUserId] = useState("cbae9003-9c6c-4cb9-a658-7ebf7cc7cb23");
@@ -174,17 +179,15 @@ export default function Index() {
                 subtitle="Questions attempted by difficulty level"
                 loading={loading}
               >
-                <BarChart
-                  data={diffDistribution}
-                  frontColor="#667eea"
+                <EnhancedBarChart
+                  data={diffDistribution.map((item) => ({
+                    ...item,
+                    frontColor: getDifficultyColor(item.label || ''),
+                  }))}
                   barWidth={50}
-                  width={280}
-                  height={200}
-                  isAnimated
-                  barBorderRadius={6}
-                  yAxisThickness={0}
-                  xAxisThickness={0}
-                  hideRules
+                  height={220}
+                  showValues={true}
+                  showLegend={true}
                 />
               </ChartCard>
 
@@ -193,17 +196,15 @@ export default function Index() {
                 subtitle="Performance across difficulty levels"
                 loading={loading}
               >
-                <BarChart
-                  data={diffAccuracy}
-                  frontColor="#10b981"
+                <EnhancedBarChart
+                  data={diffAccuracy.map((item) => ({
+                    ...item,
+                    frontColor: getDifficultyColor(item.label || ''),
+                  }))}
                   barWidth={50}
-                  width={280}
-                  height={200}
-                  isAnimated
-                  barBorderRadius={6}
-                  yAxisThickness={0}
-                  xAxisThickness={0}
-                  hideRules
+                  height={220}
+                  showValues={true}
+                  showLegend={true}
                 />
               </ChartCard>
 
@@ -212,12 +213,31 @@ export default function Index() {
                 subtitle="Your overall accuracy"
                 height={280}
               >
-                <ProgressRing
+                <DonutChart
                   percentage={analyticsData?.accuracy || 0}
-                  size={160}
-                  strokeWidth={16}
+                  size={180}
+                  strokeWidth={24}
                   color="#667eea"
-                  label="Overall Accuracy"
+                  backgroundColor="#e5e7eb"
+                  centerLabel="Accuracy"
+                />
+              </ChartCard>
+
+              <ChartCard
+                title="Progress Trend"
+                subtitle="Your performance over time"
+                loading={loading}
+              >
+                <TrendLineChart
+                  data={progression.map((item, index) => ({
+                    value: item.value || 0,
+                    label: item.label,
+                    dataPointText: (item.value || 0).toString(),
+                  }))}
+                  height={200}
+                  color="#667eea"
+                  areaChart={true}
+                  curved={true}
                 />
               </ChartCard>
             </View>
