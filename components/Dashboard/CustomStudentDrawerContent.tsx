@@ -6,6 +6,7 @@ import {
   DrawerContentScrollView,
   DrawerContentComponentProps,
 } from '@react-navigation/drawer';
+import { CommonActions } from '@react-navigation/native';
 import { useAuthStore } from '@/store/auth.store';
 import { useRouter } from 'expo-router';
 
@@ -17,19 +18,18 @@ type MenuItem = {
   badge?: number;
 };
 
-const CustomDrawerContent = (props: DrawerContentComponentProps) => {
+const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
   const { navigation, state } = props;
   const { logout, user } = useAuthStore();
   const router = useRouter();
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
 
   const mainMenuItems: MenuItem[] = [
-    { id: 'overview', label: 'Dashboard', icon: 'view-dashboard-outline', route: 'index' },
-    { id: 'review', label: 'MCQ Review', icon: 'clipboard-check-outline', route: 'review' },
-    { id: 'quiz', label: 'Quiz', icon: 'clipboard-text-outline', route: 'quiz' },
-    { id: 'performance', label: 'Performance', icon: 'chart-line', route: 'performance' },
-    { id: 'progress', label: 'Progress', icon: 'trending-up', route: 'progress' },
-    { id: 'activity', label: 'Activity', icon: 'history', route: 'activity' },
+    { id: 'overview', label: 'Dashboard', icon: 'view-dashboard-outline', route: 'Dashboard' },
+    { id: 'quiz', label: 'Quiz', icon: 'clipboard-text-outline', route: 'Quiz' },
+    { id: 'performance', label: 'Performance', icon: 'chart-line', route: 'Performance' },
+    { id: 'progress', label: 'Progress', icon: 'trending-up', route: 'Progress' },
+    { id: 'activity', label: 'Activity', icon: 'history', route: 'Activity' },
   ];
 
   const insightsMenuItems: MenuItem[] = [
@@ -188,7 +188,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   );
 };
 
-export default CustomDrawerContent;
+export default CustomStudentDrawerContent;
 
 const styles = StyleSheet.create({
   container: {

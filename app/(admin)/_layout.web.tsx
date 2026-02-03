@@ -35,6 +35,13 @@ export default function AdminLayout() {
           title: 'Quiz',
         }}
       />
+      <Drawer.Screen
+        name="review" 
+        options={{
+          drawerLabel: 'MCQ Review',
+          title: 'MCQ Review',
+        }}
+      />
     </Drawer>
   )
 }

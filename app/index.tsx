@@ -2,7 +2,7 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
+  Pressable, // Changed from TouchableOpacity
   Dimensions,
   Image,
 } from 'react-native';
@@ -12,19 +12,22 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore, UserRole } from '@/store/auth.store';
 import { useRouter } from 'expo-router';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const LoginScreen = () => {
   const loginAsAdmin = useAuthStore((s) => s.loginAsAdmin);
   const loginAsStudent = useAuthStore((s) => s.loginAsStudent);
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [selectedRole, setSelectedRole] = useState<UserRole | null>("admin");
 
   const handleLogin = () => {
+    console.log('Logging in as:', selectedRole);
     if (selectedRole === 'admin') {
       loginAsAdmin();
+      router.replace('/(admin)');
     } else if (selectedRole === 'student') {
       loginAsStudent();
+      router.replace('/(student)');
     }
   };
 
@@ -34,16 +37,18 @@ const LoginScreen = () => {
       title: 'Admin',
       subtitle: 'Manage courses and students',
       icon: 'shield-crown',
-      gradient: ['#667eea', '#764ba2'],
+      gradient: ['#667eea', '#764ba2'] as const,
       iconColor: '#667eea',
+      fallbackBg: '#667eea',
     },
     {
       role: 'student' as UserRole,
       title: 'Student',
       subtitle: 'Access courses and quizzes',
       icon: 'school',
-      gradient: ['#10b981', '#059669'],
+      gradient: ['#10b981', '#059669'] as const,
       iconColor: '#10b981',
+      fallbackBg: '#10b981',
     },
   ];
 
@@ -76,18 +81,26 @@ const LoginScreen = () => {
           {roleCards.map((card) => {
             const isSelected = selectedRole === card.role;
             return (
-              <TouchableOpacity
+              <Pressable
                 key={card.role}
-                style={[
+                style={({ pressed }) => [
                   styles.roleCard,
                   isSelected && styles.roleCardSelected,
+                  pressed && { opacity: 0.7 },
+                  !isSelected && { backgroundColor: '#ffffff' } // Visible background
                 ]}
-                onPress={() => setSelectedRole(card.role)}
-                activeOpacity={0.8}
+                onPress={() => {
+                  console.log('Selected role:', card.role);
+                  setSelectedRole(card.role);
+                }}
               >
                 <LinearGradient
-                  colors={isSelected ? card.gradient : ['#ffffff', '#ffffff']}
-                  style={styles.roleCardGradient}
+                  pointerEvents="none"
+                  colors={isSelected ? (card.gradient as [string, string]) : (['#ffffff', '#ffffff'] as const)}
+                  style={[
+                    styles.roleCardGradient,
+                    isSelected && { backgroundColor: card.fallbackBg } // Fallback for gradient
+                  ]}
                 >
                   <View
                     style={[
@@ -129,28 +142,34 @@ const LoginScreen = () => {
                     </View>
                   )}
                 </LinearGradient>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
 
         {/* Login Button */}
-        <TouchableOpacity
-          style={[
+        <Pressable
+          style={({ pressed }) => [
             styles.loginButton,
             !selectedRole && styles.loginButtonDisabled,
+            pressed && selectedRole && { opacity: 0.9 },
           ]}
           onPress={handleLogin}
           disabled={!selectedRole}
-          activeOpacity={0.8}
         >
           <LinearGradient
+            pointerEvents="none"
             colors={
               selectedRole
                 ? ['#667eea', '#764ba2'] as const
                 : ['#cbd5e1', '#94a3b8'] as const
             }
-            style={styles.loginButtonGradient}
+            style={[
+              styles.loginButtonGradient,
+              selectedRole 
+                ? { backgroundColor: '#667eea' } 
+                : { backgroundColor: '#cbd5e1' }
+            ]}
           >
             <Text style={styles.loginButtonText}>Continue</Text>
             <MaterialCommunityIcons
@@ -159,7 +178,7 @@ const LoginScreen = () => {
               color="#ffffff"
             />
           </LinearGradient>
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Footer */}
         <View style={styles.footer}>
@@ -221,6 +240,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 16,
     marginBottom: 32,
+    width: '100%',
+    alignItems: 'stretch',
   },
   roleCard: {
     flex: 1,
@@ -231,6 +252,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 4,
+    cursor: 'pointer',
   },
   roleCardSelected: {
     shadowColor: '#667eea',
@@ -285,6 +307,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 6,
+    cursor: 'pointer',
   },
   loginButtonDisabled: {
     shadowOpacity: 0.1,

@@ -23,12 +23,20 @@ const _layout = () => {
         },
       }}
     >
-      <Drawer.Screen 
-        name="index" 
-        options={{
-          headerShown: false,
-        }}
-      />
+       <Drawer.Screen
+              name="index" 
+              options={{
+                drawerLabel: 'Dashboard',
+                title: 'Analytics Dashboard',
+              }}
+            />
+            <Drawer.Screen
+              name="quiz" 
+              options={{
+                drawerLabel: 'Quiz',
+                title: 'Quiz',
+              }}
+            />
     </Drawer>
   )
 }

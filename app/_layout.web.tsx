@@ -13,14 +13,9 @@ const RootLayout = () => {
   const [isReady, setIsReady] = React.useState(false);
 
   useEffect(() => {
-    // Wait for hydration if using persist
-    const checkHydration = async () => {
-      // Zustand persist hydration is usually fast but we want to be sure
-      setIsReady(true);
-    };
-    checkHydration();
+    setIsReady(true);
   }, []);
-
+  
   const [loaded, error] = useFonts({
     ...MaterialCommunityIcons.font,
   });
