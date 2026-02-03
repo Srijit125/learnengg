@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { Stack } from 'expo-router'
-import Drawer from 'expo-router/drawer'
-import CustomStudentDrawerContent from '@/components/Dashboard/CustomStudentDrawerContent'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Stack } from "expo-router";
+import Drawer from "expo-router/drawer";
+import CustomStudentDrawerContent from "@/components/Dashboard/CustomStudentDrawerContent";
 
 const _layout = () => {
   return (
@@ -14,33 +14,40 @@ const _layout = () => {
         },
         headerShown: true,
         headerStyle: {
-          backgroundColor: '#ffffff',
+          backgroundColor: "#ffffff",
         },
-        headerTintColor: '#1e293b',
+        headerTintColor: "#1e293b",
         headerTitleStyle: {
-          fontWeight: '700',
+          fontWeight: "700",
           fontSize: 18,
         },
       }}
     >
-       <Drawer.Screen
-              name="index" 
-              options={{
-                drawerLabel: 'Dashboard',
-                title: 'Analytics Dashboard',
-              }}
-            />
-            <Drawer.Screen
-              name="quiz" 
-              options={{
-                drawerLabel: 'Quiz',
-                title: 'Quiz',
-              }}
-            />
+      <Drawer.Screen
+        name="index"
+        options={{
+          drawerLabel: "Dashboard",
+          title: "Analytics Dashboard",
+        }}
+      />
+      <Drawer.Screen
+        name="courses"
+        options={{
+          drawerLabel: "Courses",
+          title: "Available Courses",
+        }}
+      />
+      <Drawer.Screen
+        name="quiz"
+        options={{
+          drawerLabel: "Quiz",
+          title: "Quiz",
+        }}
+      />
     </Drawer>
-  )
-}
+  );
+};
 
-export default _layout
+export default _layout;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

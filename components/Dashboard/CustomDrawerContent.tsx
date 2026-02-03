@@ -26,6 +26,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const mainMenuItems: MenuItem[] = [
     { id: 'overview', label: 'Dashboard', icon: 'view-dashboard-outline', route: 'index' },
     { id: 'review', label: 'MCQ Review', icon: 'clipboard-check-outline', route: 'review' },
+    { id: 'courses', label: 'Courses', icon: 'book-open-variant', route: 'courses' },
     { id: 'quiz', label: 'Quiz', icon: 'clipboard-text-outline', route: 'quiz' },
     { id: 'performance', label: 'Performance', icon: 'chart-line', route: 'performance' },
     { id: 'progress', label: 'Progress', icon: 'trending-up', route: 'progress' },

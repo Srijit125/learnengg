@@ -32,7 +32,7 @@ const RootLayout = () => {
 
   if (!isAuthenticated) {
     return (
-      <Stack>
+      <Stack screenOptions={{headerShown: false}}>
         <Stack.Screen
           name="index"
           options={{
@@ -45,7 +45,7 @@ const RootLayout = () => {
 
   if (user?.role === 'admin') {
     return (
-      <Stack>
+      <Stack screenOptions={{headerShown: false}}>
         <Stack.Screen
           name="(admin)"
           options={{
@@ -57,7 +57,7 @@ const RootLayout = () => {
   }
 
   return (
-    <Stack>
+    <Stack screenOptions={{headerShown: false}}>
       <Stack.Screen
         name="(student)"
         options={{

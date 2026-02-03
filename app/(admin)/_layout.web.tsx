@@ -42,6 +42,13 @@ export default function AdminLayout() {
           title: 'MCQ Review',
         }}
       />
+      <Drawer.Screen
+        name="courses" 
+        options={{
+          drawerLabel: 'Course Management',
+          title: 'Course Management',
+        }}
+      />
     </Drawer>
   )
 }
