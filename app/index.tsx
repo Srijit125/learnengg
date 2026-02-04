@@ -2,191 +2,240 @@ import {
   StyleSheet,
   Text,
   View,
-  Pressable, // Changed from TouchableOpacity
+  Pressable,
   Dimensions,
-  Image,
-} from 'react-native';
-import React, { useState } from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useAuthStore, UserRole } from '@/store/auth.store';
-import { useRouter } from 'expo-router';
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Alert,
+} from "react-native";
+import React, { useState } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useAuthStore, UserRole } from "@/store/auth.store";
+import { supabase } from "@/utils/supabase";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const LoginScreen = () => {
-  const loginAsAdmin = useAuthStore((s) => s.loginAsAdmin);
-  const loginAsStudent = useAuthStore((s) => s.loginAsStudent);
-  const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>("admin");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole>("student");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log('Logging in as:', selectedRole);
-    if (selectedRole === 'admin') {
-      loginAsAdmin();
-      router.replace('/(admin)');
-    } else if (selectedRole === 'student') {
-      loginAsStudent();
-      router.replace('/(student)');
+  const handleAuth = async () => {
+    if (!email || !password || (isSignUp && !fullName)) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              role: selectedRole,
+            },
+          },
+        });
+        if (error) throw error;
+        Alert.alert("Success", "Check your email for confirmation!");
+        setIsSignUp(false);
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const roleCards = [
     {
-      role: 'admin' as UserRole,
-      title: 'Admin',
-      subtitle: 'Manage courses and students',
-      icon: 'shield-crown',
-      gradient: ['#667eea', '#764ba2'] as const,
-      iconColor: '#667eea',
-      fallbackBg: '#667eea',
+      role: "admin" as UserRole,
+      title: "Admin",
+      icon: "shield-crown",
+      gradient: ["#667eea", "#764ba2"] as const,
+      iconColor: "#667eea",
     },
     {
-      role: 'student' as UserRole,
-      title: 'Student',
-      subtitle: 'Access courses and quizzes',
-      icon: 'school',
-      gradient: ['#10b981', '#059669'] as const,
-      iconColor: '#10b981',
-      fallbackBg: '#10b981',
+      role: "student" as UserRole,
+      title: "Student",
+      icon: "school",
+      gradient: ["#10b981", "#059669"] as const,
+      iconColor: "#10b981",
     },
   ];
 
   return (
     <LinearGradient
-      colors={['#f8fafc', '#e2e8f0', '#cbd5e1']}
+      colors={["#f8fafc", "#e2e8f0", "#cbd5e1"]}
       style={styles.container}
     >
-      <View style={styles.content}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <LinearGradient
-              colors={['#667eea', '#764ba2']}
-              style={styles.logoGradient}
-            >
-              <MaterialCommunityIcons
-                name="school-outline"
-                size={48}
-                color="#ffffff"
-              />
-            </LinearGradient>
-          </View>
-          <Text style={styles.title}>E-Learning Platform</Text>
-          <Text style={styles.subtitle}>Choose your role to continue</Text>
-        </View>
-
-        {/* Role Selection Cards */}
-        <View style={styles.roleContainer}>
-          {roleCards.map((card) => {
-            const isSelected = selectedRole === card.role;
-            return (
-              <Pressable
-                key={card.role}
-                style={({ pressed }) => [
-                  styles.roleCard,
-                  isSelected && styles.roleCardSelected,
-                  pressed && { opacity: 0.7 },
-                  !isSelected && { backgroundColor: '#ffffff' } // Visible background
-                ]}
-                onPress={() => {
-                  console.log('Selected role:', card.role);
-                  setSelectedRole(card.role);
-                }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <LinearGradient
+                colors={["#667eea", "#764ba2"]}
+                style={styles.logoGradient}
               >
-                <LinearGradient
-                  pointerEvents="none"
-                  colors={isSelected ? (card.gradient as [string, string]) : (['#ffffff', '#ffffff'] as const)}
-                  style={[
-                    styles.roleCardGradient,
-                    isSelected && { backgroundColor: card.fallbackBg } // Fallback for gradient
-                  ]}
-                >
-                  <View
-                    style={[
-                      styles.iconContainer,
-                      !isSelected && { backgroundColor: '#f1f5f9' },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name={card.icon as any}
-                      size={40}
-                      color={isSelected ? '#ffffff' : card.iconColor}
-                    />
-                  </View>
-                  <Text
-                    style={[
-                      styles.roleTitle,
-                      isSelected && styles.roleTitleSelected,
-                    ]}
-                  >
-                    {card.title}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.roleSubtitle,
-                      isSelected && styles.roleSubtitleSelected,
-                    ]}
-                  >
-                    {card.subtitle}
-                  </Text>
+                <MaterialCommunityIcons
+                  name="school-outline"
+                  size={48}
+                  color="#ffffff"
+                />
+              </LinearGradient>
+            </View>
+            <Text style={styles.title}>E-Learning Platform</Text>
+            <Text style={styles.subtitle}>
+              {isSignUp ? "Create an account" : "Welcome back!"}
+            </Text>
+          </View>
 
-                  {/* Selection Indicator */}
-                  {isSelected && (
-                    <View style={styles.checkmarkContainer}>
-                      <MaterialCommunityIcons
-                        name="check-circle"
-                        size={24}
-                        color="#ffffff"
-                      />
-                    </View>
-                  )}
-                </LinearGradient>
-              </Pressable>
-            );
-          })}
-        </View>
+          {/* Tab Switcher */}
+          <View style={styles.tabContainer}>
+            <Pressable
+              style={[styles.tab, !isSignUp && styles.activeTab]}
+              onPress={() => setIsSignUp(false)}
+            >
+              <Text style={[styles.tabText, !isSignUp && styles.activeTabText]}>
+                Login
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[styles.tab, isSignUp && styles.activeTab]}
+              onPress={() => setIsSignUp(true)}
+            >
+              <Text style={[styles.tabText, isSignUp && styles.activeTabText]}>
+                Sign Up
+              </Text>
+            </Pressable>
+          </View>
 
-        {/* Login Button */}
-        <Pressable
-          style={({ pressed }) => [
-            styles.loginButton,
-            !selectedRole && styles.loginButtonDisabled,
-            pressed && selectedRole && { opacity: 0.9 },
-          ]}
-          onPress={handleLogin}
-          disabled={!selectedRole}
-        >
-          <LinearGradient
-            pointerEvents="none"
-            colors={
-              selectedRole
-                ? ['#667eea', '#764ba2'] as const
-                : ['#cbd5e1', '#94a3b8'] as const
-            }
-            style={[
-              styles.loginButtonGradient,
-              selectedRole 
-                ? { backgroundColor: '#667eea' } 
-                : { backgroundColor: '#cbd5e1' }
-            ]}
-          >
-            <Text style={styles.loginButtonText}>Continue</Text>
-            <MaterialCommunityIcons
-              name="arrow-right"
-              size={20}
-              color="#ffffff"
+          <View style={styles.formCard}>
+            {isSignUp && (
+              <>
+                <Text style={styles.label}>Full Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="John Doe"
+                  value={fullName}
+                  onChangeText={setFullName}
+                />
+              </>
+            )}
+
+            <Text style={styles.label}>Email Address</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="email@example.com"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
             />
-          </LinearGradient>
-        </Pressable>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            By continuing, you agree to our Terms & Privacy Policy
-          </Text>
-        </View>
-      </View>
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+
+            {isSignUp && (
+              <>
+                <Text style={styles.label}>I am a:</Text>
+                <View style={styles.roleContainer}>
+                  {roleCards.map((card) => {
+                    const isSelected = selectedRole === card.role;
+                    return (
+                      <Pressable
+                        key={card.role}
+                        style={[
+                          styles.roleCard,
+                          isSelected && {
+                            borderColor: card.iconColor,
+                            borderWidth: 2,
+                          },
+                        ]}
+                        onPress={() => setSelectedRole(card.role)}
+                      >
+                        <MaterialCommunityIcons
+                          name={card.icon as any}
+                          size={24}
+                          color={isSelected ? card.iconColor : "#94a3b8"}
+                        />
+                        <Text
+                          style={[
+                            styles.roleCardText,
+                            isSelected && { color: card.iconColor },
+                          ]}
+                        >
+                          {card.title}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </>
+            )}
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.authButton,
+                loading && styles.authButtonDisabled,
+                pressed && !loading && { opacity: 0.9 },
+              ]}
+              onPress={handleAuth}
+              disabled={loading}
+            >
+              <LinearGradient
+                colors={["#667eea", "#764ba2"]}
+                style={styles.authButtonGradient}
+              >
+                <Text style={styles.authButtonText}>
+                  {loading
+                    ? "Processing..."
+                    : isSignUp
+                      ? "Sign Up"
+                      : "Continue"}
+                </Text>
+                {!loading && (
+                  <MaterialCommunityIcons
+                    name="arrow-right"
+                    size={20}
+                    color="#ffffff"
+                  />
+                )}
+              </LinearGradient>
+            </Pressable>
+          </View>
+
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              By continuing, you agree to our Terms & Privacy Policy
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };
@@ -197,143 +246,155 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  content: {
-    flex: 1,
+  scrollContent: {
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 40,
-    justifyContent: 'space-between',
+    alignItems: "center",
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 40,
+    alignItems: "center",
+    marginBottom: 32,
   },
   logoContainer: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   logoGradient: {
-    width: 96,
-    height: 96,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#667eea',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#64748b',
-    textAlign: 'center',
-  },
-  roleContainer: {
-    flexDirection: 'row',
-    gap: 16,
-    marginBottom: 32,
-    width: '100%',
-    alignItems: 'stretch',
-  },
-  roleCard: {
-    flex: 1,
-    borderRadius: 20,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
-    cursor: 'pointer',
-  },
-  roleCardSelected: {
-    shadowColor: '#667eea',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  roleCardGradient: {
-    padding: 24,
-    alignItems: 'center',
-    minHeight: 220,
-    justifyContent: 'center',
-  },
-  iconContainer: {
     width: 80,
     height: 80,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 8,
+    shadowColor: "#667eea",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
-  roleTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 8,
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 4,
   },
-  roleTitleSelected: {
-    color: '#ffffff',
+  subtitle: {
+    fontSize: 16,
+    color: "#64748b",
+    fontWeight: "500",
   },
-  roleSubtitle: {
+  tabContainer: {
+    flexDirection: "row",
+    backgroundColor: "#e2e8f0",
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 24,
+    width: "100%",
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: "center",
+    borderRadius: 8,
+  },
+  activeTab: {
+    backgroundColor: "#ffffff",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  tabText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#64748b',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "#64748b",
   },
-  roleSubtitleSelected: {
-    color: 'rgba(255, 255, 255, 0.9)',
+  activeTabText: {
+    color: "#1e293b",
   },
-  checkmarkContainer: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
+  formCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 24,
+    padding: 24,
+    width: "100%",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
   },
-  loginButton: {
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#475569",
+    marginBottom: 8,
+    marginTop: 16,
+  },
+  input: {
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: "#1e293b",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  roleContainer: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 8,
+    width: "100%",
+  },
+  roleCard: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f8fafc",
+    padding: 12,
+    borderRadius: 12,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+  },
+  roleCardText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748b",
+  },
+  authButton: {
+    marginTop: 32,
     borderRadius: 16,
-    overflow: 'hidden',
-    shadowColor: '#667eea',
+    overflow: "hidden",
+    elevation: 6,
+    shadowColor: "#667eea",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
-    elevation: 6,
-    cursor: 'pointer',
   },
-  loginButtonDisabled: {
-    shadowOpacity: 0.1,
-    elevation: 2,
+  authButtonDisabled: {
+    opacity: 0.7,
   },
-  loginButtonGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 18,
-    paddingHorizontal: 32,
+  authButtonGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 16,
     gap: 8,
   },
-  loginButtonText: {
+  authButtonText: {
+    color: "#ffffff",
     fontSize: 18,
-    fontWeight: '700',
-    color: '#ffffff',
+    fontWeight: "700",
   },
   footer: {
-    alignItems: 'center',
-    marginTop: 24,
+    marginTop: 32,
+    alignItems: "center",
   },
   footerText: {
     fontSize: 12,
-    fontWeight: '400',
-    color: '#94a3b8',
-    textAlign: 'center',
+    color: "#94a3b8",
+    textAlign: "center",
   },
 });

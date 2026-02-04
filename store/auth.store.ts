@@ -1,50 +1,66 @@
-import { create } from 'zustand';
+import { create } from "zustand";
+import { supabase } from "@/utils/supabase";
+import { Session, User as SupabaseUser } from "@supabase/supabase-js";
 
+export type UserRole = "admin" | "student" | "staff";
 
-export type UserRole = 'admin' | 'student';
-
-type User = {
-    id: string;
-    name: string;
-    role: UserRole;
-}
+type UserProfile = {
+  id: string;
+  email: string;
+  full_name: string;
+  role: UserRole;
+  avatar_url?: string;
+};
 
 type AuthState = {
-    user: User | null;
-    isAuthenticated: boolean;
+  user: UserProfile | null;
+  session: Session | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 
-    loginAsAdmin: () => void;
-    loginAsStudent: () => void;
-    logout: () => void;
-}
+  setSession: (session: Session | null) => Promise<void>;
+  fetchProfile: (uid: string) => Promise<void>;
+  signOut: () => Promise<void>;
+};
 
-export const useAuthStore = create<AuthState>()(
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  user: null,
+  session: null,
+  isAuthenticated: false,
+  isLoading: false,
 
-        (set) => ({
-            user: null,
-            isAuthenticated: false,
+  setSession: async (session) => {
+    set({ session, isAuthenticated: !!session, isLoading: true });
+    if (session?.user) {
+      await get().fetchProfile(session.user.id);
+    } else {
+      set({ user: null, isLoading: false });
+    }
+  },
 
-            loginAsAdmin: () => set({
-                user: {
-                    id: "ADMIN_001",
-                    name: "Admin User",
-                    role: "admin"
-                },
-                isAuthenticated: true
-            }),
+  fetchProfile: async (uid) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", uid)
+        .single();
 
-            loginAsStudent: () => set({
-                user: {
-                    id: "cbae9003-9c6c-4cb9-a658-7ebf7cc7cb23",
-                    name: "Student User",
-                    role: "student"
-                },
-                isAuthenticated: true
-            }),
+      if (error) {
+        // Even if fetch fails, we must stop loading
+        set({ user: null });
+      } else if (data) {
+        set({ user: data as UserProfile });
+      }
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
-            logout: () => set({
-                user: null,
-                isAuthenticated: false
-            })
-        })
-);
+  signOut: async () => {
+    await supabase.auth.signOut();
+    set({ user: null, session: null, isAuthenticated: false });
+  },
+}));

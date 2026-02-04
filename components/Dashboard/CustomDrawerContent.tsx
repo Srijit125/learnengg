@@ -1,13 +1,19 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useState } from 'react';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
+import React, { useState } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   DrawerContentScrollView,
   DrawerContentComponentProps,
-} from '@react-navigation/drawer';
-import { useAuthStore } from '@/store/auth.store';
-import { useRouter } from 'expo-router';
+} from "@react-navigation/drawer";
+import { useAuthStore } from "@/store/auth.store";
+import { useRouter } from "expo-router";
 
 type MenuItem = {
   id: string;
@@ -19,40 +25,96 @@ type MenuItem = {
 
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const { navigation, state } = props;
-  const { logout, user } = useAuthStore();
+  const { signOut, user } = useAuthStore();
   const router = useRouter();
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
 
+  // ... (mainMenuItems, insightsMenuItems, settingsMenuItems)
   const mainMenuItems: MenuItem[] = [
-    { id: 'overview', label: 'Dashboard', icon: 'view-dashboard-outline', route: 'index' },
-    { id: 'review', label: 'MCQ Review', icon: 'clipboard-check-outline', route: 'review' },
-    { id: 'courses', label: 'Courses', icon: 'book-open-variant', route: 'courses' },
-    { id: 'quiz', label: 'Quiz', icon: 'clipboard-text-outline', route: 'quiz' },
-    { id: 'performance', label: 'Performance', icon: 'chart-line', route: 'performance' },
-    { id: 'progress', label: 'Progress', icon: 'trending-up', route: 'progress' },
-    { id: 'activity', label: 'Activity', icon: 'history', route: 'activity' },
+    {
+      id: "overview",
+      label: "Dashboard",
+      icon: "view-dashboard-outline",
+      route: "index",
+    },
+    {
+      id: "review",
+      label: "MCQ Review",
+      icon: "clipboard-check-outline",
+      route: "review",
+    },
+    {
+      id: "courses",
+      label: "Courses",
+      icon: "book-open-variant",
+      route: "courses",
+    },
+    {
+      id: "quiz",
+      label: "Quiz",
+      icon: "clipboard-text-outline",
+      route: "quiz",
+    },
+    {
+      id: "performance",
+      label: "Performance",
+      icon: "chart-line",
+      route: "performance",
+    },
+    {
+      id: "progress",
+      label: "Progress",
+      icon: "trending-up",
+      route: "progress",
+    },
+    { id: "activity", label: "Activity", icon: "history", route: "activity" },
   ];
 
   const insightsMenuItems: MenuItem[] = [
-    { id: 'reports', label: 'Reports', icon: 'file-chart-outline', route: 'Reports' },
-    { id: 'strengths', label: 'Strengths', icon: 'shield-check-outline', route: 'Strengths' },
-    { id: 'weaknesses', label: 'Weaknesses', icon: 'alert-circle-outline', route: 'Weaknesses' },
+    {
+      id: "reports",
+      label: "Reports",
+      icon: "file-chart-outline",
+      route: "Reports",
+    },
+    {
+      id: "strengths",
+      label: "Strengths",
+      icon: "shield-check-outline",
+      route: "Strengths",
+    },
+    {
+      id: "weaknesses",
+      label: "Weaknesses",
+      icon: "alert-circle-outline",
+      route: "Weaknesses",
+    },
   ];
 
   const settingsMenuItems: MenuItem[] = [
-    { id: 'preferences', label: 'Preferences', icon: 'cog-outline', route: 'Preferences' },
-    { id: 'export', label: 'Export Data', icon: 'download-outline', route: 'Export' },
-    { id: 'help', label: 'Help', icon: 'help-circle-outline', route: 'Help' },
+    {
+      id: "preferences",
+      label: "Preferences",
+      icon: "cog-outline",
+      route: "Preferences",
+    },
+    {
+      id: "export",
+      label: "Export Data",
+      icon: "download-outline",
+      route: "Export",
+    },
+    { id: "help", label: "Help", icon: "help-circle-outline", route: "Help" },
   ];
 
   const handleMenuItemPress = (routeName: string) => {
     navigation.navigate(routeName);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowLogoutMenu(false);
-    logout();
-    router.replace('/');
+    await signOut();
+    router.replace("/");
   };
 
   const isActive = (routeName: string) => {
@@ -62,7 +124,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
   const renderMenuItem = (item: MenuItem) => {
     const active = isActive(item.route);
-    
+
     return (
       <TouchableOpacity
         key={item.id}
@@ -70,14 +132,18 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         onPress={() => handleMenuItemPress(item.route)}
         activeOpacity={0.7}
       >
-        <View style={[styles.iconContainer, active && styles.iconContainerActive]}>
+        <View
+          style={[styles.iconContainer, active && styles.iconContainerActive]}
+        >
           <MaterialCommunityIcons
             name={item.icon}
             size={20}
-            color={active ? '#667eea' : '#64748b'}
+            color={active ? "#667eea" : "#64748b"}
           />
         </View>
-        <Text style={[styles.menuItemText, active && styles.menuItemTextActive]}>
+        <Text
+          style={[styles.menuItemText, active && styles.menuItemTextActive]}
+        >
           {item.label}
         </Text>
         {item.badge !== undefined && (
@@ -91,18 +157,19 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#ffffff', '#f8fafc']}
-        style={styles.gradient}
-      >
+      <LinearGradient colors={["#ffffff", "#f8fafc"]} style={styles.gradient}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.logoContainer}>
             <LinearGradient
-              colors={['#667eea', '#764ba2']}
+              colors={["#667eea", "#764ba2"]}
               style={styles.logoGradient}
             >
-              <MaterialCommunityIcons name="chart-box" size={24} color="#ffffff" />
+              <MaterialCommunityIcons
+                name="chart-box"
+                size={24}
+                color="#ffffff"
+              />
             </LinearGradient>
           </View>
           <Text style={styles.headerTitle}>Analytics</Text>
@@ -145,14 +212,20 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
           <View style={styles.userProfile}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>
-                {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'SW'}
+                {user?.full_name
+                  ?.split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase() || "U"}
               </Text>
             </View>
             <View style={styles.userInfo}>
-              <Text style={styles.userName}>{user?.name || 'Sam Wheeler'}</Text>
-              <Text style={styles.userEmail}>{user?.role === 'admin' ? 'Administrator' : 'Student'}</Text>
+              <Text style={styles.userName}>{user?.full_name || "User"}</Text>
+              <Text style={styles.userEmail}>
+                {user?.role === "admin" ? "Administrator" : "Student"}
+              </Text>
             </View>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.moreButton}
               onPress={() => setShowLogoutMenu(!showLogoutMenu)}
             >
@@ -168,17 +241,21 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         {/* Logout Menu */}
         {showLogoutMenu && (
           <>
-            <TouchableOpacity 
-              style={styles.menuOverlay} 
-              activeOpacity={1} 
+            <TouchableOpacity
+              style={styles.menuOverlay}
+              activeOpacity={1}
               onPress={() => setShowLogoutMenu(false)}
             />
             <View style={styles.logoutMenu}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.logoutMenuItem}
                 onPress={handleLogout}
               >
-                <MaterialCommunityIcons name="logout" size={18} color="#ef4444" />
+                <MaterialCommunityIcons
+                  name="logout"
+                  size={18}
+                  color="#ef4444"
+                />
                 <Text style={styles.logoutMenuText}>Logout</Text>
               </TouchableOpacity>
             </View>
@@ -202,9 +279,9 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     paddingBottom: 24,
     paddingHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    borderBottomColor: "#f1f5f9",
   },
   logoContainer: {
     marginBottom: 16,
@@ -213,9 +290,9 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#667eea',
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#667eea",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -223,14 +300,14 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    color: '#1e293b',
+    fontWeight: "700",
+    color: "#1e293b",
     marginBottom: 2,
   },
   headerSubtitle: {
     fontSize: 13,
-    fontWeight: '500',
-    color: '#64748b',
+    fontWeight: "500",
+    color: "#64748b",
   },
   scrollContent: {
     paddingBottom: 20,
@@ -241,8 +318,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#94a3b8',
+    fontWeight: "700",
+    color: "#94a3b8",
     letterSpacing: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
@@ -251,50 +328,50 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 12,
     borderRadius: 10,
     gap: 12,
   },
   menuItemActive: {
-    backgroundColor: '#f0f4ff',
+    backgroundColor: "#f0f4ff",
   },
   iconContainer: {
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: '#f8fafc',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#f8fafc",
+    justifyContent: "center",
+    alignItems: "center",
   },
   iconContainerActive: {
-    backgroundColor: '#e0e7ff',
+    backgroundColor: "#e0e7ff",
   },
   menuItemText: {
     flex: 1,
     fontSize: 14,
-    fontWeight: '500',
-    color: '#64748b',
+    fontWeight: "500",
+    color: "#64748b",
   },
   menuItemTextActive: {
-    fontWeight: '600',
-    color: '#667eea',
+    fontWeight: "600",
+    color: "#667eea",
   },
   badge: {
-    backgroundColor: '#ef4444',
+    backgroundColor: "#ef4444",
     borderRadius: 10,
     paddingHorizontal: 8,
     paddingVertical: 2,
     minWidth: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   badgeText: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#ffffff',
+    fontWeight: "700",
+    color: "#ffffff",
   },
   footer: {
     paddingTop: 16,
@@ -303,12 +380,12 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#e2e8f0',
+    backgroundColor: "#e2e8f0",
     marginBottom: 16,
   },
   userProfile: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
     paddingHorizontal: 8,
   },
@@ -316,61 +393,61 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#667eea',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#667eea",
+    justifyContent: "center",
+    alignItems: "center",
   },
   avatarText: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#ffffff',
+    fontWeight: "700",
+    color: "#ffffff",
   },
   userInfo: {
     flex: 1,
   },
   userName: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#1e293b',
+    fontWeight: "600",
+    color: "#1e293b",
     marginBottom: 2,
   },
   userEmail: {
     fontSize: 12,
-    fontWeight: '400',
-    color: '#64748b',
+    fontWeight: "400",
+    color: "#64748b",
   },
   moreButton: {
     width: 32,
     height: 32,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   menuOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     zIndex: 10,
   },
   logoutMenu: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 80,
     right: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderRadius: 12,
     padding: 8,
     width: 140,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 8,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
+    borderColor: "#f1f5f9",
     zIndex: 11,
   },
   logoutMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -378,7 +455,7 @@ const styles = StyleSheet.create({
   },
   logoutMenuText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#ef4444',
+    fontWeight: "600",
+    color: "#ef4444",
   },
 });

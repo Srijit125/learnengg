@@ -26,7 +26,7 @@ type MenuItem = {
 
 const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
   const { navigation, state } = props;
-  const { logout, user } = useAuthStore();
+  const { signOut, user } = useAuthStore();
   const router = useRouter();
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
 
@@ -107,7 +107,7 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
 
   const handleLogout = () => {
     setShowLogoutMenu(false);
-    logout();
+    signOut();
     router.replace("/");
   };
 
@@ -206,7 +206,7 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
           <View style={styles.userProfile}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>
-                {user?.name
+                {user?.full_name
                   ?.split(" ")
                   .map((n) => n[0])
                   .join("")
@@ -214,7 +214,7 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
               </Text>
             </View>
             <View style={styles.userInfo}>
-              <Text style={styles.userName}>{user?.name || "Sam Wheeler"}</Text>
+              <Text style={styles.userName}>{user?.full_name}</Text>
               <Text style={styles.userEmail}>
                 {user?.role === "admin" ? "Administrator" : "Student"}
               </Text>

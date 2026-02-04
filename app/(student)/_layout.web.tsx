@@ -3,6 +3,7 @@ import React from "react";
 import { Stack } from "expo-router";
 import Drawer from "expo-router/drawer";
 import CustomStudentDrawerContent from "@/components/Dashboard/CustomStudentDrawerContent";
+import { useAuthStore } from "@/store/auth.store";
 
 const _layout = () => {
   return (
