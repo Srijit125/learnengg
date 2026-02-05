@@ -1,11 +1,11 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import CustomDrawerContent from '@/components/Dashboard/CustomDrawerContent';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import CustomDrawerContent from "@/components/Dashboard/CustomDrawerContent";
 
 // Import your screen components
-import DashboardScreen from './screens/DashboardScreen';
-import QuizScreen from './screens/QuizScreen';
+import DashboardScreen from "./screens/DashboardScreen";
+import QuizScreen from "./screens/QuizScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -20,74 +20,74 @@ export default function App() {
           },
           headerShown: true,
           headerStyle: {
-            backgroundColor: '#ffffff',
+            backgroundColor: "#ffffff",
           },
-          headerTintColor: '#1e293b',
+          headerTintColor: "#1e293b",
           headerTitleStyle: {
-            fontWeight: '700',
+            fontWeight: "700",
             fontSize: 18,
           },
         }}
       >
         <Drawer.Screen
-          name="Dashboard"
+          name="index"
           component={DashboardScreen}
           options={{
-            title: 'Analytics Dashboard',
+            title: "Analytics Dashboard",
           }}
         />
         <Drawer.Screen
-          name="Quiz"
+          name="quiz/index"
           component={QuizScreen}
           options={{
-            title: 'Quiz',
+            title: "Quiz",
           }}
         />
         {/* Add more screens as needed */}
         <Drawer.Screen
-          name="Performance"
+          name="performance"
           component={DashboardScreen} // Replace with actual component
-          options={{ title: 'Performance' }}
+          options={{ title: "Performance" }}
         />
         <Drawer.Screen
           name="Progress"
           component={DashboardScreen} // Replace with actual component
-          options={{ title: 'Progress' }}
+          options={{ title: "Progress" }}
         />
         <Drawer.Screen
           name="Activity"
           component={DashboardScreen} // Replace with actual component
-          options={{ title: 'Activity' }}
+          options={{ title: "Activity" }}
         />
         <Drawer.Screen
           name="Reports"
           component={DashboardScreen} // Replace with actual component
-          options={{ title: 'Reports' }}
+          options={{ title: "Reports" }}
         />
         <Drawer.Screen
           name="Strengths"
           component={DashboardScreen} // Replace with actual component
-          options={{ title: 'Strengths' }}
+          options={{ title: "Strengths" }}
         />
         <Drawer.Screen
           name="Weaknesses"
           component={DashboardScreen} // Replace with actual component
-          options={{ title: 'Weaknesses' }}
+          options={{ title: "Weaknesses" }}
         />
         <Drawer.Screen
           name="Preferences"
           component={DashboardScreen} // Replace with actual component
-          options={{ title: 'Preferences' }}
+          options={{ title: "Preferences" }}
         />
         <Drawer.Screen
           name="Export"
           component={DashboardScreen} // Replace with actual component
-          options={{ title: 'Export Data' }}
+          options={{ title: "Export Data" }}
         />
         <Drawer.Screen
           name="Help"
           component={DashboardScreen} // Replace with actual component
-          options={{ title: 'Help' }}
+          options={{ title: "Help" }}
         />
       </Drawer.Navigator>
     </NavigationContainer>

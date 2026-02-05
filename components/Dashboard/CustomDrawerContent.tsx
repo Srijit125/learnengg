@@ -53,7 +53,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       id: "quiz",
       label: "Quiz",
       icon: "clipboard-text-outline",
-      route: "quiz",
+      route: "quiz/index",
     },
     {
       id: "performance",
@@ -66,6 +66,12 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       label: "Progress",
       icon: "trending-up",
       route: "progress",
+    },
+    {
+      id: "notes-builder",
+      label: "Notes Builder",
+      icon: "file-document-edit-outline",
+      route: "notes/builder",
     },
     { id: "activity", label: "Activity", icon: "history", route: "activity" },
   ];

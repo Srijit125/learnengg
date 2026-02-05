@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { Stack } from 'expo-router'
-import Drawer from 'expo-router/drawer'
-import CustomStudentDrawerContent from '@/components/Dashboard/CustomStudentDrawerContent'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Stack } from "expo-router";
+import Drawer from "expo-router/drawer";
+import CustomStudentDrawerContent from "@/components/Dashboard/CustomStudentDrawerContent";
 
 const _layout = () => {
   return (
@@ -14,25 +14,32 @@ const _layout = () => {
         },
         headerShown: true,
         headerStyle: {
-          backgroundColor: '#ffffff',
+          backgroundColor: "#ffffff",
         },
-        headerTintColor: '#1e293b',
+        headerTintColor: "#1e293b",
         headerTitleStyle: {
-          fontWeight: '700',
+          fontWeight: "700",
           fontSize: 18,
         },
       }}
     >
-      <Drawer.Screen 
-        name="index" 
+      <Drawer.Screen
+        name="index"
         options={{
           headerShown: false,
         }}
       />
+      <Drawer.Screen
+        name="quiz/index"
+        options={{
+          drawerLabel: "Quiz",
+          title: "Adaptive Quiz",
+        }}
+      />
     </Drawer>
-  )
-}
+  );
+};
 
-export default _layout
+export default _layout;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

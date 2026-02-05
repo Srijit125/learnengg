@@ -1,33 +1,22 @@
-import axiosInstance from "@/helpers/axiosInstance";
+import { api } from "./api";
 import { logDataInfo } from "@/types/analyticsType";
 
-
-export async function getUserLogs(userId:string) {
-   const logAnalytics = await axiosInstance.get(`/analytics/${userId}`)
-    .then(function (response){
-        return response.data
-    })
-    .catch(function (error){
-        console.error(error)
-        return null
-    })
-    .finally(function (){
-        console.log("Finished API Call")
-    })
-    return logAnalytics
+export async function getUserLogs(userId: string) {
+  try {
+    const response = await api.get(`/analytics/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user logs:", error);
+    return null;
+  }
 }
 
-export async function getUserLogsData(userId: string){
-    const logData = await axiosInstance.get(`/analytics/${userId}/logs`)
-    .then(function (response){
-        return response.data
-    })
-    .catch(function (error){
-        console.error(error)
-        return null
-    })
-    .finally(function (){
-        console.log("Finished API Call for Logs Data")
-    })
-    return logData as logDataInfo[]
+export async function getUserLogsData(userId: string) {
+  try {
+    const response = await api.get(`/analytics/${userId}/logs`);
+    return response.data as logDataInfo[];
+  } catch (error) {
+    console.error("Error fetching user log data:", error);
+    return [];
+  }
 }

@@ -1,6 +1,6 @@
 import { Drawer } from "expo-router/drawer";
-import React from 'react';
-import CustomDrawerContent from '@/components/Dashboard/CustomDrawerContent';
+import React from "react";
+import CustomDrawerContent from "@/components/Dashboard/CustomDrawerContent";
 
 export default function AdminLayout() {
   return (
@@ -12,29 +12,36 @@ export default function AdminLayout() {
         },
         headerShown: true,
         headerStyle: {
-          backgroundColor: '#ffffff',
+          backgroundColor: "#ffffff",
         },
-        headerTintColor: '#1e293b',
+        headerTintColor: "#1e293b",
         headerTitleStyle: {
-          fontWeight: '700',
+          fontWeight: "700",
           fontSize: 18,
         },
       }}
     >
       <Drawer.Screen
-        name="index" 
+        name="index"
         options={{
-          drawerLabel: 'Dashboard',
-          title: 'Analytics Dashboard',
+          drawerLabel: "Dashboard",
+          title: "Analytics Dashboard",
         }}
       />
       <Drawer.Screen
-        name="quiz" 
+        name="quiz"
         options={{
-          drawerLabel: 'Quiz',
-          title: 'Quiz',
+          drawerLabel: "Quiz",
+          title: "Quiz",
+        }}
+      />
+      <Drawer.Screen
+        name="notes/builder"
+        options={{
+          drawerLabel: "Notes Builder",
+          title: "Notes Builder",
         }}
       />
     </Drawer>
-  )
+  );
 }
