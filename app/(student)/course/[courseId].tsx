@@ -17,7 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import HtmlRenderer from "@/components/HtmlRenderer";
 
 export default function CourseNotesPage() {
-  const { courseId } = useLocalSearchParams();
+  const { courseId, chapterId } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
   const [loadingNotes, setLoadingNotes] = useState(false);
   const [structure, setStructure] = useState<any>(null);
@@ -42,7 +42,29 @@ export default function CourseNotesPage() {
       setLoading(true);
       const data = await fetchCourseStructure(courseId as string);
       setStructure(data);
-      // Auto-select first chapter if available
+
+      if (chapterId) {
+        // Find chapter and its unit
+        let foundChapter = null;
+        let unitToExpand = null;
+
+        for (const unit of data.units || []) {
+          const ch = unit.chapters?.find((c: any) => c.chapterId === chapterId);
+          if (ch) {
+            foundChapter = ch;
+            unitToExpand = unit.unitId;
+            break;
+          }
+        }
+
+        if (foundChapter) {
+          setSelectedChapter(foundChapter);
+          setExpandedUnits(new Set([unitToExpand]));
+          return;
+        }
+      }
+
+      // Default: Auto-select first chapter if available
       if (data.units?.length > 0 && data.units[0].chapters?.length > 0) {
         setSelectedChapter(data.units[0].chapters[0]);
         setExpandedUnits(new Set([data.units[0].unitId]));

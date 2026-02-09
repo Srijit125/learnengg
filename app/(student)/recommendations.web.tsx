@@ -1,0 +1,772 @@
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Course } from "@/models/Course";
+import {
+  Recommendation,
+  RecommendationPayload,
+} from "@/models/Recommendations";
+import { listCourses, fetchCourseStructure } from "@/services/course.service";
+import {
+  getAIRecommendations,
+  recommendWeakTopics,
+  getPersonalizedPlan,
+} from "@/services/recommendation.service";
+import { useRouter } from "expo-router";
+import { useAuthStore } from "@/store/auth.store";
+import { LinearGradient } from "expo-linear-gradient";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
+type TabType = "overview" | "weak_topics" | "personalized_plan";
+
+const StudentRecommendationsPage = () => {
+  const router = useRouter();
+  const { user } = useAuthStore();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [recommendationData, setRecommendationData] =
+    useState<Recommendation | null>(null);
+
+  const [activeTab, setActiveTab] = useState<TabType>("overview");
+  const [weakTopicsExtra, setWeakTopicsExtra] = useState<any>(null);
+  const [personalizedPlan, setPersonalizedPlan] = useState<any>(null);
+  const [courseStructure, setCourseStructure] = useState<any>(null);
+
+  const [loadingCourses, setLoadingCourses] = useState(true);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
+  const [loadingTabData, setLoadingTabData] = useState(false);
+
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    try {
+      setLoadingCourses(true);
+      const data = await listCourses();
+      setCourses(data);
+    } catch (error) {
+      console.error("Error loading courses:", error);
+    } finally {
+      setLoadingCourses(false);
+    }
+  };
+
+  const handleCourseSelect = async (courseId: string) => {
+    if (selectedCourseId === courseId) return;
+    setSelectedCourseId(courseId);
+    setActiveTab("overview");
+    setRecommendationData(null);
+    setWeakTopicsExtra(null);
+    setPersonalizedPlan(null);
+    setCourseStructure(null);
+
+    if (!user?.id) return;
+
+    try {
+      setLoadingRecommendations(true);
+      const data = await getAIRecommendations(user.id, courseId);
+      setRecommendationData(data);
+    } catch (error) {
+      console.error("Error loading recommendations:", error);
+      setRecommendationData(null);
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  };
+
+  const fetchTabData = async (tab: TabType) => {
+    if (!user?.id || !selectedCourseId || !recommendationData) return;
+
+    // Create payload from overview data
+    const payload: RecommendationPayload = {
+      course_id: selectedCourseId,
+      user_id: user.id,
+      weak_topics: recommendationData.weak_topics || [],
+    };
+    console.log(payload);
+    setLoadingTabData(true);
+    try {
+      // Fetch course structure if not available (needed for mapping titles to IDs)
+      let currentStructure = courseStructure;
+      if (!currentStructure) {
+        currentStructure = await fetchCourseStructure(selectedCourseId);
+        setCourseStructure(currentStructure);
+      }
+
+      if (tab === "weak_topics" && !weakTopicsExtra) {
+        const data = await recommendWeakTopics(user.id, payload);
+        console.log(data);
+        setWeakTopicsExtra(data);
+      } else if (tab === "personalized_plan" && !personalizedPlan) {
+        const data = await getPersonalizedPlan(user.id, payload);
+        console.log(data);
+        setPersonalizedPlan(data);
+      }
+    } catch (error) {
+      console.error(`Error fetching ${tab} data:`, error);
+    } finally {
+      setLoadingTabData(false);
+    }
+  };
+
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    if (tab !== "overview") {
+      fetchTabData(tab);
+    }
+  };
+
+  const renderStrongTopics = (topics: string[] | Record<string, string>) => {
+    if (!topics) return null;
+    if (Array.isArray(topics)) {
+      return topics.map((topic, index) => (
+        <View key={index} style={styles.topicBadge}>
+          <MaterialCommunityIcons
+            name="check-circle-outline"
+            size={14}
+            color="#15803d"
+          />
+          <Text style={styles.topicText}>{topic}</Text>
+        </View>
+      ));
+    }
+    return Object.entries(topics).map(([key, value]) => (
+      <View key={key} style={styles.topicBadge}>
+        <MaterialCommunityIcons
+          name="check-circle-outline"
+          size={14}
+          color="#15803d"
+        />
+        <Text style={styles.topicText}>{value}</Text>
+      </View>
+    ));
+  };
+
+  const renderOverview = () => {
+    if (!recommendationData) return null;
+    return (
+      <ScrollView contentContainerStyle={styles.tabContent}>
+        {/* AI Summary Section */}
+        <View style={styles.summaryCard}>
+          <View style={styles.cardHeader}>
+            <MaterialCommunityIcons
+              name="robot-happy-outline"
+              size={24}
+              color="#667eea"
+            />
+            <Text style={styles.cardTitle}>AI Insight</Text>
+          </View>
+          <Text style={styles.summaryText}>
+            {recommendationData.recommendation_text}
+          </Text>
+        </View>
+
+        {/* Weak Topics Section */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionHeader}>Topics to Improve</Text>
+          <View style={styles.topicsGrid}>
+            {recommendationData.weak_topics?.map((topic, index) => (
+              <View
+                key={index}
+                style={[styles.topicBadge, styles.topicBadgeWarning]}
+              >
+                <MaterialCommunityIcons
+                  name="alert-circle-outline"
+                  size={14}
+                  color="#b45309"
+                />
+                <Text style={[styles.topicText, styles.topicTextWarning]}>
+                  {topic}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Strong Topics Section */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionHeader}>Strong Topics</Text>
+          <View style={styles.topicsGrid}>
+            {renderStrongTopics(recommendationData.strong_topics)}
+          </View>
+        </View>
+
+        {/* Study Order Section */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionHeader}>Suggested Study Path</Text>
+          <View style={styles.studyPathContainer}>
+            {recommendationData.study_order?.map((topic, index) => (
+              <View key={index} style={styles.stepContainer}>
+                <View style={styles.stepIndicator}>
+                  <View style={styles.stepNumberContainer}>
+                    <Text style={styles.stepNumber}>{index + 1}</Text>
+                  </View>
+                  {index <
+                    (recommendationData.study_order?.length || 0) - 1 && (
+                    <View style={styles.stepLine} />
+                  )}
+                </View>
+                <View style={styles.stepContent}>
+                  <Text style={styles.stepText}>{topic}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    );
+  };
+
+  const findChapterId = (chapterTitle: string) => {
+    if (!courseStructure?.units) return null;
+    for (const unit of courseStructure.units) {
+      const chapter = unit.chapters?.find(
+        (c: any) =>
+          c.chapterTitle.toLowerCase().trim() ===
+          chapterTitle.toLowerCase().trim(),
+      );
+      if (chapter) return chapter.chapterId;
+    }
+    return null;
+  };
+
+  const renderWeakTopicsDeepDive = () => {
+    if (loadingTabData)
+      return <ActivityIndicator style={{ marginTop: 40 }} color="#667eea" />;
+    if (!weakTopicsExtra)
+      return (
+        <View style={styles.emptyState}>
+          <Text>No extra data available.</Text>
+        </View>
+      );
+
+    return (
+      <ScrollView contentContainerStyle={styles.tabContent}>
+        {Object.entries(weakTopicsExtra).map(([topicName, snippets]: any) => (
+          <View key={topicName} style={styles.topicDeepDiveCard}>
+            <Text style={styles.topicDeepDiveTitle}>{topicName}</Text>
+            {snippets.map((snippet: any, index: number) => {
+              const chId = findChapterId(snippet.chapter);
+              return (
+                <View key={index} style={styles.snippetContainer}>
+                  <View style={styles.snippetHeader}>
+                    <View style={styles.snippetMeta}>
+                      <MaterialCommunityIcons
+                        name="book-open-page-variant"
+                        size={16}
+                        color="#6366f1"
+                      />
+                      <Text style={styles.snippetChapter}>
+                        {snippet.chapter}
+                      </Text>
+                    </View>
+                    {chId && (
+                      <TouchableOpacity
+                        style={styles.readNotesButton}
+                        onPress={() =>
+                          router.push(
+                            `/(student)/course/${selectedCourseId}?chapterId=${chId}`,
+                          )
+                        }
+                      >
+                        <Text style={styles.readNotesButtonText}>
+                          Read Notes
+                        </Text>
+                        <MaterialCommunityIcons
+                          name="chevron-right"
+                          size={14}
+                          color="#6366f1"
+                        />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                  <Text style={styles.snippetSection}>{snippet.section}</Text>
+                  <Text style={styles.snippetText}>{snippet.text}</Text>
+                </View>
+              );
+            })}
+          </View>
+        ))}
+      </ScrollView>
+    );
+  };
+
+  const renderPersonalizedPlan = () => {
+    if (loadingTabData)
+      return <ActivityIndicator style={{ marginTop: 40 }} color="#667eea" />;
+    if (!personalizedPlan)
+      return (
+        <View style={styles.emptyState}>
+          <Text>Plan not generated yet.</Text>
+        </View>
+      );
+
+    return (
+      <ScrollView contentContainerStyle={styles.tabContent}>
+        <View style={[styles.detailCard, { borderLeftColor: "#10b981" }]}>
+          <Text style={styles.detailTitle}>Your Personalized Roadmap</Text>
+          {typeof personalizedPlan === "string" ? (
+            <Text style={styles.detailText}>{personalizedPlan}</Text>
+          ) : (
+            <Text style={styles.detailText}>
+              {JSON.stringify(personalizedPlan, null, 2)}
+            </Text>
+          )}
+        </View>
+      </ScrollView>
+    );
+  };
+
+  if (loadingCourses) {
+    return (
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#667eea" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} style={styles.background}>
+        <View style={styles.header}>
+          <Text style={styles.title}>AI Recommendations</Text>
+          <Text style={styles.subtitle}>
+            Personalized learning paths and suggestions
+          </Text>
+        </View>
+
+        <View style={styles.content}>
+          <Text style={styles.sectionTitle}>Select a Course</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.coursesList}
+          >
+            {courses.map((course) => (
+              <TouchableOpacity
+                key={course.course_id}
+                style={[
+                  styles.courseChip,
+                  selectedCourseId === course.course_id &&
+                    styles.courseChipSelected,
+                ]}
+                onPress={() => handleCourseSelect(course.course_id)}
+              >
+                <Text
+                  style={[
+                    styles.courseChipText,
+                    selectedCourseId === course.course_id &&
+                      styles.courseChipTextSelected,
+                  ]}
+                >
+                  {course.course_name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          <View style={styles.divider} />
+
+          {selectedCourseId && recommendationData && (
+            <View style={styles.tabBar}>
+              <TouchableOpacity
+                style={[
+                  styles.tab,
+                  activeTab === "overview" && styles.activeTab,
+                ]}
+                onPress={() => handleTabChange("overview")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "overview" && styles.activeTabText,
+                  ]}
+                >
+                  Overview
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.tab,
+                  activeTab === "weak_topics" && styles.activeTab,
+                ]}
+                onPress={() => handleTabChange("weak_topics")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "weak_topics" && styles.activeTabText,
+                  ]}
+                >
+                  Weak Topics
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.tab,
+                  activeTab === "personalized_plan" && styles.activeTab,
+                ]}
+                onPress={() => handleTabChange("personalized_plan")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "personalized_plan" && styles.activeTabText,
+                  ]}
+                >
+                  My Plan
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {loadingRecommendations ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#667eea" />
+              <Text style={styles.loadingText}>Analyzing your progress...</Text>
+            </View>
+          ) : !selectedCourseId ? (
+            <View style={styles.emptyState}>
+              <MaterialCommunityIcons
+                name="school-outline"
+                size={48}
+                color="#cbd5e1"
+              />
+              <Text style={styles.emptyStateText}>
+                Select a course to see AI recommendations
+              </Text>
+            </View>
+          ) : !recommendationData ? (
+            <View style={styles.emptyState}>
+              <MaterialCommunityIcons
+                name="alert-circle-outline"
+                size={48}
+                color="#cbd5e1"
+              />
+              <Text style={styles.emptyStateText}>
+                No recommendations found for this course yet.
+              </Text>
+            </View>
+          ) : (
+            <View style={{ flex: 1 }}>
+              {activeTab === "overview" && renderOverview()}
+              {activeTab === "weak_topics" && renderWeakTopicsDeepDive()}
+              {activeTab === "personalized_plan" && renderPersonalizedPlan()}
+            </View>
+          )}
+        </View>
+      </LinearGradient>
+    </View>
+  );
+};
+
+export default StudentRecommendationsPage;
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  background: { flex: 1 },
+  centerContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 12,
+    backgroundColor: "#ffffff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#f1f5f9",
+  },
+  title: { fontSize: 24, fontWeight: "700", color: "#1e293b", marginBottom: 4 },
+  subtitle: { fontSize: 14, color: "#64748b", fontWeight: "500" },
+  content: { flex: 1, padding: 24, paddingTop: 16, paddingBottom: 0 },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#334155",
+    marginBottom: 12,
+  },
+  coursesList: { gap: 12, paddingBottom: 8 },
+  courseChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: "#ffffff",
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    marginRight: 10,
+    height: 40,
+    justifyContent: "center",
+  },
+  courseChipSelected: {
+    backgroundColor: "#667eea",
+    borderColor: "#667eea",
+  },
+  courseChipText: {
+    fontSize: 14,
+    color: "#64748b",
+    fontWeight: "600",
+  },
+  courseChipTextSelected: {
+    color: "#ffffff",
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#e2e8f0",
+    marginVertical: 16,
+  },
+  tabBar: {
+    flexDirection: "row",
+    backgroundColor: "#f1f5f9",
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 16,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: "center",
+    borderRadius: 8,
+  },
+  activeTab: {
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748b",
+  },
+  activeTabText: {
+    color: "#667eea",
+  },
+  tabContent: {
+    paddingBottom: 40,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+  loadingText: {
+    marginTop: 12,
+    color: "#64748b",
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 40,
+    gap: 12,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: "#64748b",
+    fontWeight: "500",
+  },
+  summaryCard: {
+    backgroundColor: "#f0f9ff",
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#bae6fd",
+    marginBottom: 24,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 12,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#0369a1",
+  },
+  summaryText: {
+    fontSize: 14,
+    color: "#334155",
+    lineHeight: 22,
+  },
+  sectionContainer: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 12,
+  },
+  topicsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  topicBadge: {
+    backgroundColor: "#f0fdf4",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#bbf7d0",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  topicBadgeWarning: {
+    backgroundColor: "#fffbeb",
+    borderColor: "#fde68a",
+  },
+  topicText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#15803d",
+  },
+  topicTextWarning: {
+    color: "#b45309",
+  },
+  studyPathContainer: {
+    gap: 0,
+  },
+  stepContainer: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  stepIndicator: {
+    alignItems: "center",
+    width: 32,
+  },
+  stepNumberContainer: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#667eea",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  stepNumber: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  stepLine: {
+    width: 2,
+    flex: 1,
+    backgroundColor: "#e2e8f0",
+    marginVertical: 4,
+  },
+  stepContent: {
+    flex: 1,
+    paddingBottom: 24,
+    justifyContent: "flex-start",
+  },
+  stepText: {
+    fontSize: 14,
+    color: "#334155",
+    fontWeight: "500",
+  },
+  detailCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    borderLeftWidth: 6,
+    borderLeftColor: "#667eea",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  detailTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 16,
+  },
+  detailText: {
+    fontSize: 15,
+    color: "#475569",
+    lineHeight: 24,
+  },
+  topicDeepDiveCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  topicDeepDiveTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 20,
+    borderBottomWidth: 2,
+    borderBottomColor: "#667eea",
+    paddingBottom: 8,
+    alignSelf: "flex-start",
+  },
+  snippetContainer: {
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#f1f5f9",
+  },
+  snippetHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  snippetMeta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  snippetChapter: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#6366f1",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  readNotesButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#eff6ff",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    gap: 4,
+  },
+  readNotesButtonText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#6366f1",
+  },
+  snippetSection: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#334155",
+    marginBottom: 8,
+  },
+  snippetText: {
+    fontSize: 14,
+    color: "#475569",
+    lineHeight: 22,
+  },
+});

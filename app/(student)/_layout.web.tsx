@@ -39,6 +39,13 @@ const _layout = () => {
         }}
       />
       <Drawer.Screen
+        name="recommendations"
+        options={{
+          drawerLabel: "Recommendations",
+          title: "AI Recommendations",
+        }}
+      />
+      <Drawer.Screen
         name="quiz"
         options={{
           drawerLabel: "Quiz",

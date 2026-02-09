@@ -8,9 +8,25 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (res) => res,
+  (config) => config,
   (err) => {
-    console.error("API Request Error:", err.response.data || err.message);
+    console.error("API Request Error:", err.message);
+    return Promise.reject(err);
+  },
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (err) => {
+    if (err.response) {
+      console.error(
+        "API Response Error:",
+        err.response.status,
+        err.response.data,
+      );
+    } else {
+      console.error("API Error:", err.message);
+    }
     return Promise.reject(err);
   },
 );

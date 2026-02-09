@@ -44,6 +44,12 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
       route: "courses",
     },
     {
+      id: "recommendations",
+      label: "Recommendations",
+      icon: "lightbulb-on-outline",
+      route: "recommendations",
+    },
+    {
       id: "quiz",
       label: "Quiz",
       icon: "clipboard-text-outline",
