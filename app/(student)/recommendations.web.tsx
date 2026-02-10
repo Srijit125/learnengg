@@ -198,26 +198,63 @@ const StudentRecommendationsPage = () => {
           </View>
         </View>
 
-        {/* Study Order Section */}
+        {/* Suggested Study Path Section */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader}>Suggested Study Path</Text>
-          <View style={styles.studyPathContainer}>
-            {recommendationData.study_order?.map((topic, index) => (
-              <View key={index} style={styles.stepContainer}>
-                <View style={styles.stepIndicator}>
-                  <View style={styles.stepNumberContainer}>
-                    <Text style={styles.stepNumber}>{index + 1}</Text>
+          <View style={styles.roadmapContainer}>
+            {recommendationData.study_order?.map((topic, index) => {
+              const chId = findChapterId(topic);
+              const isLast =
+                index === (recommendationData.study_order?.length || 0) - 1;
+
+              return (
+                <View key={index} style={styles.roadmapStep}>
+                  <View style={styles.roadmapIndicator}>
+                    <View style={styles.roadmapCircle}>
+                      <Text style={styles.roadmapNumber}>{index + 1}</Text>
+                    </View>
+                    {!isLast && <View style={styles.roadmapLine} />}
                   </View>
-                  {index <
-                    (recommendationData.study_order?.length || 0) - 1 && (
-                    <View style={styles.stepLine} />
-                  )}
+                  <TouchableOpacity
+                    style={[
+                      styles.roadmapCard,
+                      chId && styles.roadmapCardInteractive,
+                    ]}
+                    onPress={() => {
+                      if (chId) {
+                        router.push(
+                          `/(student)/course/${selectedCourseId}?chapterId=${chId}`,
+                        );
+                      }
+                    }}
+                    disabled={!chId}
+                  >
+                    <View style={styles.roadmapCardContent}>
+                      <Text style={styles.roadmapTopic}>{topic}</Text>
+                      {chId && (
+                        <View style={styles.roadmapBadge}>
+                          <MaterialCommunityIcons
+                            name="book-open-variant"
+                            size={12}
+                            color="#6366f1"
+                          />
+                          <Text style={styles.roadmapBadgeText}>
+                            Course Note
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                    {chId && (
+                      <MaterialCommunityIcons
+                        name="chevron-right"
+                        size={20}
+                        color="#cbd5e1"
+                      />
+                    )}
+                  </TouchableOpacity>
                 </View>
-                <View style={styles.stepContent}>
-                  <Text style={styles.stepText}>{topic}</Text>
-                </View>
-              </View>
-            ))}
+              );
+            })}
           </View>
         </View>
       </ScrollView>
@@ -226,11 +263,16 @@ const StudentRecommendationsPage = () => {
 
   const findChapterId = (chapterTitle: string) => {
     if (!courseStructure?.units) return null;
+    // Handle "Chapter Title -> Section Title" format
+    const cleanTitle = chapterTitle.split("->")[0].trim().toLowerCase();
+
     for (const unit of courseStructure.units) {
       const chapter = unit.chapters?.find(
         (c: any) =>
+          c.chapterTitle.toLowerCase().trim() === cleanTitle ||
+          // Fallback check if the input already contains only the title
           c.chapterTitle.toLowerCase().trim() ===
-          chapterTitle.toLowerCase().trim(),
+            chapterTitle.toLowerCase().trim(),
       );
       if (chapter) return chapter.chapterId;
     }
@@ -308,17 +350,122 @@ const StudentRecommendationsPage = () => {
         </View>
       );
 
+    const planItems = Array.isArray(personalizedPlan.plan)
+      ? personalizedPlan.plan
+      : null;
+
+    if (!planItems) {
+      return (
+        <ScrollView contentContainerStyle={styles.tabContent}>
+          <View style={[styles.detailCard, { borderLeftColor: "#10b981" }]}>
+            <Text style={styles.detailTitle}>Your Personalized Roadmap</Text>
+            {typeof personalizedPlan === "string" ? (
+              <Text style={styles.detailText}>{personalizedPlan}</Text>
+            ) : (
+              <Text style={styles.detailText}>
+                {personalizedPlan.text ||
+                  JSON.stringify(personalizedPlan, null, 2)}
+              </Text>
+            )}
+          </View>
+        </ScrollView>
+      );
+    }
+
     return (
       <ScrollView contentContainerStyle={styles.tabContent}>
-        <View style={[styles.detailCard, { borderLeftColor: "#10b981" }]}>
-          <Text style={styles.detailTitle}>Your Personalized Roadmap</Text>
-          {typeof personalizedPlan === "string" ? (
-            <Text style={styles.detailText}>{personalizedPlan}</Text>
-          ) : (
-            <Text style={styles.detailText}>
-              {JSON.stringify(personalizedPlan, null, 2)}
-            </Text>
-          )}
+        <View style={styles.planHeader}>
+          <MaterialCommunityIcons
+            name="calendar-check"
+            size={24}
+            color="#10b981"
+          />
+          <Text style={styles.planHeaderTitle}>Targeted Study Plan</Text>
+        </View>
+
+        {planItems.map((item: any, idx: number) => (
+          <View key={idx} style={styles.planCard}>
+            <View style={styles.planDayBadge}>
+              <Text style={styles.planDayText}>Day {item.day}</Text>
+            </View>
+
+            <View style={styles.planContent}>
+              <Text style={styles.planFocusLabel}>Main Focus:</Text>
+              <Text style={styles.planFocusTopic}>{item.focus_topic}</Text>
+
+              {item.faiss_results && item.faiss_results.length > 0 && (
+                <View style={styles.planResources}>
+                  <Text style={styles.planResourcesLabel}>
+                    Recommended Reading:
+                  </Text>
+                  {item.faiss_results.map((res: string, resIdx: number) => {
+                    const chId = findChapterId(res);
+                    return (
+                      <TouchableOpacity
+                        key={resIdx}
+                        style={styles.planResourceLink}
+                        onPress={() => {
+                          if (chId) {
+                            router.push(
+                              `/(student)/course/${selectedCourseId}?chapterId=${chId}`,
+                            );
+                          }
+                        }}
+                      >
+                        <MaterialCommunityIcons
+                          name="book-open-variant"
+                          size={16}
+                          color="#6366f1"
+                        />
+                        <Text style={styles.planResourceText} numberOfLines={1}>
+                          {res}
+                        </Text>
+                        {chId && (
+                          <MaterialCommunityIcons
+                            name="chevron-right"
+                            size={14}
+                            color="#cbd5e1"
+                          />
+                        )}
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              )}
+
+              <View style={styles.planTasks}>
+                <View style={styles.planTaskItem}>
+                  <MaterialCommunityIcons
+                    name="checkbox-blank-circle-outline"
+                    size={14}
+                    color="#94a3b8"
+                  />
+                  <Text style={styles.planTaskText}>Solve 5 practice MCQs</Text>
+                </View>
+                <View style={styles.planTaskItem}>
+                  <MaterialCommunityIcons
+                    name="checkbox-blank-circle-outline"
+                    size={14}
+                    color="#94a3b8"
+                  />
+                  <Text style={styles.planTaskText}>
+                    Review previous errors
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        ))}
+
+        <View style={styles.planFooter}>
+          <MaterialCommunityIcons
+            name="lightbulb-on"
+            size={20}
+            color="#f59e0b"
+          />
+          <Text style={styles.planFooterText}>
+            Tip: Attempt an adaptive quiz after completing this 3-day plan!
+          </Text>
         </View>
       </ScrollView>
     );
@@ -347,6 +494,7 @@ const StudentRecommendationsPage = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
+            style={styles.coursesScrollView}
             contentContainerStyle={styles.coursesList}
           >
             {courses.map((course) => (
@@ -421,7 +569,7 @@ const StudentRecommendationsPage = () => {
                     activeTab === "personalized_plan" && styles.activeTabText,
                   ]}
                 >
-                  My Plan
+                  Suggested Plan
                 </Text>
               </TouchableOpacity>
             </View>
@@ -483,14 +631,22 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 24, fontWeight: "700", color: "#1e293b", marginBottom: 4 },
   subtitle: { fontSize: 14, color: "#64748b", fontWeight: "500" },
-  content: { flex: 1, padding: 24, paddingTop: 16, paddingBottom: 0 },
+  content: { flex: 1, padding: 24, paddingTop: 12, paddingBottom: 0 },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
     color: "#334155",
-    marginBottom: 12,
+    marginBottom: 0,
   },
-  coursesList: { gap: 12, paddingBottom: 8 },
+  coursesScrollView: {
+    flexGrow: 0,
+    height: 48,
+    marginBottom: 8,
+  },
+  coursesList: {
+    gap: 12,
+    paddingBottom: 0,
+  },
   courseChip: {
     paddingHorizontal: 16,
     paddingVertical: 10,
@@ -517,7 +673,8 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: "#e2e8f0",
-    marginVertical: 16,
+    marginTop: 0,
+    marginBottom: 8,
   },
   tabBar: {
     flexDirection: "row",
@@ -527,7 +684,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   tab: {
-    flex: 1,
+    flex: 2,
     paddingVertical: 10,
     alignItems: "center",
     borderRadius: 8,
@@ -630,45 +787,86 @@ const styles = StyleSheet.create({
   topicTextWarning: {
     color: "#b45309",
   },
-  studyPathContainer: {
-    gap: 0,
+  roadmapContainer: {
+    paddingLeft: 4,
   },
-  stepContainer: {
+  roadmapStep: {
     flexDirection: "row",
     gap: 16,
   },
-  stepIndicator: {
+  roadmapIndicator: {
     alignItems: "center",
     width: 32,
   },
-  stepNumberContainer: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+  roadmapCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: "#667eea",
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 1,
+    shadowColor: "#667eea",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  stepNumber: {
+  roadmapNumber: {
     color: "#ffffff",
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "700",
   },
-  stepLine: {
-    width: 2,
+  roadmapLine: {
+    width: 3,
     flex: 1,
     backgroundColor: "#e2e8f0",
     marginVertical: 4,
   },
-  stepContent: {
+  roadmapCard: {
     flex: 1,
-    paddingBottom: 24,
-    justifyContent: "flex-start",
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  stepText: {
-    fontSize: 14,
-    color: "#334155",
-    fontWeight: "500",
+  roadmapCardInteractive: {
+    borderColor: "#e0e7ff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  roadmapCardContent: {
+    flex: 1,
+  },
+  roadmapTopic: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#1e293b",
+    marginBottom: 4,
+  },
+  roadmapBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e0e7ff",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    alignSelf: "flex-start",
+    gap: 4,
+  },
+  roadmapBadgeText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#6366f1",
+    textTransform: "uppercase",
   },
   detailCard: {
     backgroundColor: "#ffffff",
@@ -768,5 +966,119 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#475569",
     lineHeight: 22,
+  },
+  planHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 20,
+    paddingHorizontal: 4,
+  },
+  planHeaderTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1e293b",
+  },
+  planCard: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    position: "relative",
+    overflow: "hidden",
+  },
+  planDayBadge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    backgroundColor: "#10b981",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderBottomLeftRadius: 12,
+  },
+  planDayText: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "700",
+    textTransform: "uppercase",
+  },
+  planContent: {
+    marginTop: 8,
+  },
+  planFocusLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#64748b",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  planFocusTopic: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1e293b",
+    marginBottom: 16,
+  },
+  planResources: {
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+  },
+  planResourcesLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#475569",
+    marginBottom: 8,
+  },
+  planResourceLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "#f1f5f9",
+    gap: 10,
+  },
+  planResourceText: {
+    flex: 1,
+    fontSize: 13,
+    color: "#6366f1",
+    fontWeight: "500",
+  },
+  planTasks: {
+    gap: 10,
+  },
+  planTaskItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  planTaskText: {
+    fontSize: 14,
+    color: "#475569",
+  },
+  planFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fffbeb",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#fef3c7",
+    gap: 12,
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  planFooterText: {
+    flex: 1,
+    fontSize: 13,
+    color: "#92400e",
+    lineHeight: 18,
+    fontWeight: "500",
   },
 });
