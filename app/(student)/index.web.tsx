@@ -9,7 +9,9 @@ import {
 import { useAuthStore } from "../../store/auth.store";
 import { getUserLogs, getUserLogsData } from "../../services/analyticsService";
 import { analyticsInfo, logDataInfo } from "../../types/analyticsType";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { TouchableOpacity } from "react-native";
 
 interface WeakConcept {
   chapter: string;
@@ -35,6 +37,7 @@ const defaultAnalytics: analyticsInfo = {
 };
 
 const AnalyticsDashboard = () => {
+  const router = useRouter();
   const { user } = useAuthStore();
   const [analytics, setAnalytics] = useState<analyticsInfo | null>(null);
   const [logs, setLogs] = useState<logDataInfo[]>([]);
@@ -103,8 +106,25 @@ const AnalyticsDashboard = () => {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>Performance Overview</Text>
-        <Text style={styles.subtitle}>Track your progress and mastery</Text>
+        <View style={styles.headerRow}>
+          <View>
+            <Text style={styles.title}>Performance Overview</Text>
+            <Text style={styles.subtitle}>Track your progress and mastery</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.performanceButton}
+            onPress={() => router.push("/(student)/performance")}
+          >
+            <Text style={styles.performanceButtonText}>
+              View Detailed Insights
+            </Text>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={20}
+              color="#ffffff"
+            />
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.statsGrid}>
           <StatCard
@@ -314,6 +334,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#64748B",
     marginBottom: 40,
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 40,
+  },
+  performanceButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#6366F1",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    gap: 8,
+    shadowColor: "#6366F1",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  performanceButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "700",
   },
   centered: {
     flex: 1,

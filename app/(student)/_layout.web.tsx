@@ -52,6 +52,13 @@ const _layout = () => {
           title: "Quiz",
         }}
       />
+      <Drawer.Screen
+        name="performance"
+        options={{
+          drawerLabel: "Performance",
+          title: "Performance",
+        }}
+      />
     </Drawer>
   );
 };

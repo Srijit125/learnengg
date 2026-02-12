@@ -20,3 +20,40 @@ export async function getUserLogsData(userId: string) {
     return [];
   }
 }
+
+export async function getTopicStats(userId: string) {
+  try {
+    const response = await api.get(`/mastery/${userId}/topicstats`);
+    // The backend returns a JSON string of the dataframe, so we might need to parse it if not already object
+    return typeof response.data === "string"
+      ? JSON.parse(response.data)
+      : response.data;
+  } catch (error) {
+    console.error("Error fetching topic stats:", error);
+    return [];
+  }
+}
+
+export async function getHierarchicalStats(userId: string) {
+  try {
+    const response = await api.get(`/mastery/${userId}/hierarchicalstats`);
+    return typeof response.data === "string"
+      ? JSON.parse(response.data)
+      : response.data;
+  } catch (error) {
+    console.error("Error fetching hierarchical stats:", error);
+    return [];
+  }
+}
+
+export async function getTopicMastery(userId: string) {
+  try {
+    const response = await api.get(`/mastery/${userId}/topicmastery`);
+    return typeof response.data === "string"
+      ? JSON.parse(response.data)
+      : response.data;
+  } catch (error) {
+    console.error("Error fetching topic mastery:", error);
+    return [];
+  }
+}

@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
-import { PieChart } from 'react-native-gifted-charts';
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { PieChart } from "react-native-gifted-charts";
 
 type DonutChartProps = {
   percentage: number;
@@ -16,9 +16,9 @@ const DonutChart = ({
   percentage,
   size = 160,
   strokeWidth = 20,
-  color = '#667eea',
-  backgroundColor = '#e5e7eb',
-  centerLabel = 'Accuracy',
+  color = "#667eea",
+  backgroundColor = "#e5e7eb",
+  centerLabel = "Accuracy",
   centerValue,
 }: DonutChartProps) => {
   const value = Math.min(Math.max(percentage, 0), 100);
@@ -41,7 +41,7 @@ const DonutChart = ({
         data={data}
         donut
         radius={size / 2}
-        innerRadius={(size / 2) - strokeWidth}
+        innerRadius={size / 2 - strokeWidth}
         centerLabelComponent={() => (
           <View style={styles.centerLabel}>
             <Text style={styles.centerValue}>{displayValue}</Text>
@@ -57,22 +57,22 @@ export default DonutChart;
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   centerLabel: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   centerValue: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#1e293b',
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#1e293b",
   },
   centerText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#64748b',
-    marginTop: 4,
+    fontSize: 10,
+    fontWeight: "500",
+    color: "#64748b",
+    marginTop: 2,
   },
 });
