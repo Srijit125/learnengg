@@ -65,7 +65,7 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
       id: "progress",
       label: "Progress",
       icon: "trending-up",
-      route: "Progress",
+      route: "progress",
     },
     { id: "activity", label: "Activity", icon: "history", route: "Activity" },
   ];

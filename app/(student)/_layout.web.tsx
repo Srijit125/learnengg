@@ -59,6 +59,13 @@ const _layout = () => {
           title: "Performance",
         }}
       />
+      <Drawer.Screen
+        name="progress"
+        options={{
+          drawerLabel: "Progress",
+          title: "Learning Progress",
+        }}
+      />
     </Drawer>
   );
 };

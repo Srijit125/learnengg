@@ -38,3 +38,18 @@ export async function fetchCourseChapterNotes(
   const res = await api.get(`/courses/${courseId}/chapters/${chapterId}/notes`);
   return res.data;
 }
+
+export async function updateNoteProgress(
+  userId: string,
+  courseId: string,
+  chapterId: string,
+  progress: number,
+) {
+  const res = await api.post("/notes/progress", {
+    user_id: userId,
+    course_id: courseId,
+    chapter_id: chapterId,
+    progress: progress,
+  });
+  return res.data;
+}

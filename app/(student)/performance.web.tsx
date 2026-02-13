@@ -131,7 +131,7 @@ const PerformancePage = () => {
         <View style={styles.statsOverview}>
           <View style={styles.statCard}>
             <Text style={styles.statValue}>{logs.length}</Text>
-            <Text style={styles.statLabel}>Total Attempts</Text>
+            <Text style={styles.statLabel}>Total Question Attempts</Text>
           </View>
           <View style={styles.donutCard}>
             <DonutChart
@@ -148,7 +148,7 @@ const PerformancePage = () => {
       <View style={styles.mainGrid}>
         {/* Left Column */}
         <View style={styles.leftCol}>
-          <CPIGauge value={82} />
+          <CPIGauge value={45} />
           <View style={styles.spacer} />
           <AccuracyTrendChart data={trendData} />
           <View style={styles.spacer} />

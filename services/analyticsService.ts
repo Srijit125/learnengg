@@ -57,3 +57,13 @@ export async function getTopicMastery(userId: string) {
     return [];
   }
 }
+
+export async function getNoteStudyAnalysis(userId: string) {
+  try {
+    const response = await api.get(`/notes/${userId}/analysis`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching note study analysis:", error);
+    return null;
+  }
+}

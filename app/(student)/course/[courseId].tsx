@@ -11,7 +11,9 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import {
   fetchCourseStructure,
   fetchCourseChapterNotes,
+  updateNoteProgress,
 } from "@/services/course.service";
+import { useAuthStore } from "@/store/auth.store";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import HtmlRenderer from "@/components/HtmlRenderer";
@@ -24,6 +26,13 @@ export default function CourseNotesPage() {
   const [selectedChapter, setSelectedChapter] = useState<any>(null);
   const [chapterHtml, setChapterHtml] = useState<string>("");
   const [expandedUnits, setExpandedUnits] = useState<Set<string>>(new Set());
+  const { user } = useAuthStore();
+  const [lastProgress, setLastProgress] = useState(0);
+
+  useEffect(() => {
+    // Reset progress tracking when chapter changes
+    setLastProgress(0);
+  }, [selectedChapter]);
 
   useEffect(() => {
     if (courseId) {
@@ -99,6 +108,35 @@ export default function CourseNotesPage() {
       newExpanded.add(unitId);
     }
     setExpandedUnits(newExpanded);
+  };
+
+  const handleProgress = (progress: number) => {
+    let finalProgress = Math.min(Math.max(progress, 0), 1);
+
+    // precision buffer: if we are at 97% or more, consider it done
+    if (finalProgress >= 0.97) {
+      finalProgress = 1;
+    }
+
+    // Only update if:
+    // 1. It's the first time reaching 100%
+    // 2. Progress increased significantly (0.1 = 10%)
+    // 3. It crossed the "nearly finished" 95% threshold
+    if (
+      (finalProgress === 1 && lastProgress < 1) ||
+      finalProgress > lastProgress + 0.1 ||
+      (finalProgress >= 0.95 && lastProgress < 0.95)
+    ) {
+      setLastProgress(finalProgress);
+      if (user?.id && courseId && selectedChapter?.chapterId) {
+        updateNoteProgress(
+          user.id,
+          courseId as string,
+          selectedChapter.chapterId,
+          finalProgress,
+        );
+      }
+    }
   };
 
   if (loading) {
@@ -214,7 +252,10 @@ export default function CourseNotesPage() {
                         </View>
                       ) : (
                         <View style={styles.webviewContainer}>
-                          <HtmlRenderer html={chapterHtml} />
+                          <HtmlRenderer
+                            html={chapterHtml}
+                            onProgress={handleProgress}
+                          />
                         </View>
                       )}
                     </View>
