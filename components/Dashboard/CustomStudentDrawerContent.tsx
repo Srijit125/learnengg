@@ -67,7 +67,7 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
       icon: "trending-up",
       route: "progress",
     },
-    { id: "activity", label: "Activity", icon: "history", route: "Activity" },
+    { id: "search", label: "Search", icon: "magnify", route: "search" },
   ];
 
   const insightsMenuItems: MenuItem[] = [

@@ -58,6 +58,16 @@ export async function getTopicMastery(userId: string) {
   }
 }
 
+export async function getUserCPI(userId: string) {
+  try {
+    const response = await api.get(`/mastery/${userId}/cpi`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user cpi:", error);
+    return null;
+  }
+}
+
 export async function getNoteStudyAnalysis(userId: string) {
   try {
     const response = await api.get(`/notes/${userId}/analysis`);

@@ -53,3 +53,13 @@ export async function updateNoteProgress(
   });
   return res.data;
 }
+
+export async function searchFAISS(query: string, courseId: string | null) {
+  const payload = {
+    query: query,
+    course_id: courseId,
+    top_k: 5,
+  };
+  const res = await api.post("/search/", payload);
+  return res.data;
+}

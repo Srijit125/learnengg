@@ -66,6 +66,13 @@ const _layout = () => {
           title: "Learning Progress",
         }}
       />
+      <Drawer.Screen
+        name="search"
+        options={{
+          drawerLabel: "Search",
+          title: "Search",
+        }}
+      />
     </Drawer>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   StyleSheet,
   Text,
@@ -14,6 +14,7 @@ import {
   getTopicMastery,
   getUserLogsData,
   getHierarchicalStats,
+  getUserCPI,
 } from "@/services/analyticsService";
 import TopicMasteryChart from "@/components/Dashboard/Charts/TopicMasteryChart";
 import RadarChart from "@/components/Dashboard/Charts/RadarChart";
@@ -23,14 +24,16 @@ import DonutChart from "@/components/Dashboard/Charts/DonutChart";
 import AccuracyTrendChart from "@/components/Dashboard/Charts/AccuracyTrendChart";
 import UnitProgressChart from "@/components/Dashboard/Charts/UnitProgressChart";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { logDataInfo } from "@/types/analyticsType";
 
 const PerformancePage = () => {
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(true);
   const [topicStats, setTopicStats] = useState<any[]>([]);
   const [masteryData, setMasteryData] = useState<any[]>([]);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<logDataInfo[]>([]);
   const [hierarchicalStats, setHierarchicalStats] = useState<any[]>([]);
+  const [cpi, setCpi] = useState<number | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -41,22 +44,61 @@ const PerformancePage = () => {
   const loadAllData = async () => {
     try {
       setLoading(true);
-      const [stats, mastery, userLogs, hStats] = await Promise.all([
+      const [stats, mastery, userLogs, hStats, cpi] = await Promise.all([
         getTopicStats(user!.id),
         getTopicMastery(user!.id),
         getUserLogsData(user!.id),
         getHierarchicalStats(user!.id),
+        getUserCPI(user!.id),
       ]);
       setTopicStats(stats);
       setMasteryData(mastery);
       setLogs(userLogs);
       setHierarchicalStats(hStats);
+      setCpi(cpi);
     } catch (error) {
       console.error("Error loading performance data:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const weeklyActivityData = useMemo(() => {
+    const dayLabels = ["M", "T", "W", "T", "F", "S", "S"];
+    const counts = new Array(7).fill(0);
+
+    // Current date: 2026-02-16 (Monday)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Get current day (0=Sunday, 1=Monday, ..., 6=Saturday)
+    const currentDay = today.getDay();
+    // Adjust to Monday-start (0=Monday, ..., 6=Sunday)
+    const mondayIndex = currentDay === 0 ? 6 : currentDay - 1;
+
+    // Find the Monday of the current week
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - mondayIndex);
+
+    logs.forEach((log) => {
+      const logDate = new Date(log.timestamp);
+      if (logDate >= startOfWeek) {
+        // Calculate days since Monday
+        const diffTime = logDate.getTime() - startOfWeek.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays >= 0 && diffDays < 7) {
+          counts[diffDays]++;
+        }
+      }
+    });
+
+    return dayLabels.map((label, index) => ({
+      value: counts[index],
+      label: label,
+      frontColor: index === mondayIndex ? "#667eea" : "#e2e8f0", // Highlight today
+      gradientColor: index === mondayIndex ? "#764ba2" : "#f1f5f9",
+    }));
+  }, [logs]);
 
   if (loading) {
     return (
@@ -81,16 +123,6 @@ const PerformancePage = () => {
         today: Math.random() * 20 + 70, // Mocking today's data for visualization if not present
       }))
     : [];
-
-  const weeklyActivityData = [
-    { value: 12, label: "M" },
-    { value: 18, label: "T" },
-    { value: 15, label: "W" },
-    { value: 25, label: "T" },
-    { value: 20, label: "F" },
-    { value: 8, label: "S" },
-    { value: 5, label: "S" },
-  ];
 
   // Process data for Accuracy Trend
   const trendData = logs
@@ -148,7 +180,7 @@ const PerformancePage = () => {
       <View style={styles.mainGrid}>
         {/* Left Column */}
         <View style={styles.leftCol}>
-          <CPIGauge value={45} />
+          <CPIGauge value={cpi!} />
           <View style={styles.spacer} />
           <AccuracyTrendChart data={trendData} />
           <View style={styles.spacer} />
