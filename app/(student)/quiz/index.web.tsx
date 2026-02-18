@@ -13,6 +13,7 @@ import { useAuthStore } from "../../../store/auth.store";
 import { listCourses } from "../../../services/course.service";
 import { Course } from "../../../models/Course";
 import { Ionicons } from "@expo/vector-icons";
+import { logStudyActivity } from "../../../services/analyticsService";
 
 const Quiz = () => {
   const {
@@ -68,9 +69,36 @@ const Quiz = () => {
     }
   }, [currentMCQ]);
 
+  useEffect(() => {
+    if (isFinished && user?.id && selectedCourseId) {
+      logStudyActivity({
+        user_id: user.id,
+        course_id: selectedCourseId,
+        event_type: "quiz_finished",
+        metadata: {
+          score: score,
+          max_questions: maxQuestions,
+          accuracy: Math.round((score / maxQuestions) * 100),
+        },
+      });
+    }
+  }, [isFinished]);
+
   const handleCourseSelect = (courseId: string) => {
     selectCourse(courseId, quizLength);
     fetchNextQuestion();
+
+    // Log quiz session start
+    if (user?.id) {
+      logStudyActivity({
+        user_id: user.id,
+        course_id: courseId,
+        event_type: "quiz_started",
+        metadata: {
+          quiz_length: quizLength,
+        },
+      });
+    }
   };
 
   const handleAnswer = (index: number) => {
@@ -153,6 +181,10 @@ const Quiz = () => {
 
   if (isFinished) {
     const percentage = Math.round((score / maxQuestions) * 100);
+
+    // Log quiz session end (we do this once when isFinished becomes true)
+    // Using a useEffect below to ensure it only logs once
+
     return (
       <View style={styles.webWrapper}>
         <View style={styles.centered}>

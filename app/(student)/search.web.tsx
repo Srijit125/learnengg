@@ -12,6 +12,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Course } from "@/models/Course";
+import { logStudyActivity } from "@/services/analyticsService";
+import { useAuthStore } from "@/store/auth.store";
 import {
   listCourses,
   fetchCourseStructure,
@@ -22,6 +24,7 @@ type SearchMode = "current" | "all";
 
 const StudentSearch = () => {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [searchMode, setSearchMode] = useState<SearchMode>("current");
@@ -75,6 +78,20 @@ const StudentSearch = () => {
         } catch (err) {
           console.error(`Failed to fetch structure for ${id}:`, err);
         }
+      }
+
+      // Log search activity
+      if (user?.id) {
+        logStudyActivity({
+          user_id: user.id,
+          event_type: "search_performed",
+          metadata: {
+            query: query,
+            mode: searchMode,
+            course_id: searchMode === "current" ? selectedCourseId : "all",
+            results_count: data.length,
+          },
+        });
       }
     } catch (error) {
       console.error("Search error:", error);

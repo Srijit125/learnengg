@@ -13,7 +13,10 @@ import { getNoteStudyAnalysis, getUserLogs } from "@/services/analyticsService";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ProgressRing from "@/components/Dashboard/ProgressRing";
 import UnitProgressChart from "@/components/Dashboard/Charts/UnitProgressChart";
-import { getHierarchicalStats } from "@/services/analyticsService";
+import {
+  getHierarchicalStats,
+  getUserActivityLogs,
+} from "@/services/analyticsService";
 
 const ProgressPage = () => {
   const { user } = useAuthStore();
@@ -21,6 +24,7 @@ const ProgressPage = () => {
   const [noteAnalysis, setNoteAnalysis] = useState<any>(null);
   const [quizAnalytics, setQuizAnalytics] = useState<any>(null);
   const [hierarchicalStats, setHierarchicalStats] = useState<any[]>([]);
+  const [studyActivity, setStudyActivity] = useState<any[]>([]);
   const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
   const [expandedUnits, setExpandedUnits] = useState<string[]>([]);
 
@@ -33,14 +37,16 @@ const ProgressPage = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [notes, quiz, hStats] = await Promise.all([
+      const [notes, quiz, hStats, activity] = await Promise.all([
         getNoteStudyAnalysis(user!.id),
         getUserLogs(user!.id),
         getHierarchicalStats(user!.id),
+        getUserActivityLogs(user!.id),
       ]);
       setNoteAnalysis(notes);
       setQuizAnalytics(quiz);
       setHierarchicalStats(hStats);
+      setStudyActivity(activity);
     } catch (error) {
       console.error("Error loading progress data:", error);
     } finally {
@@ -240,30 +246,92 @@ const ProgressPage = () => {
 
           <View style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>Recent Activity</Text>
-            {noteAnalysis?.recent_activity?.length > 0 ? (
-              noteAnalysis.recent_activity.map(
-                (activity: any, index: number) => (
-                  <View key={index} style={styles.activityItem}>
-                    <View style={styles.activityIcon}>
-                      <MaterialCommunityIcons
-                        name="book-open-outline"
-                        size={20}
-                        color="#6366f1"
-                      />
+            {studyActivity?.length > 0 ? (
+              [...studyActivity]
+                .reverse()
+                .slice(0, 5)
+                .map((activity: any, index: number) => {
+                  const getEventLabel = (type: string) => {
+                    switch (type) {
+                      case "chapter_opened":
+                        return "Started reading";
+                      case "chapter_closed":
+                        return "Finished reading";
+                      case "search_performed":
+                        return "Searched for context";
+                      case "quiz_started":
+                        return "Started a quiz";
+                      case "quiz_finished":
+                        return "Completed a quiz";
+                      case "course_completed":
+                        return "Course Completed!";
+                      default:
+                        return type.replace("_", " ");
+                    }
+                  };
+
+                  const getEventIcon = (type: string) => {
+                    switch (type) {
+                      case "search_performed":
+                        return "magnify";
+                      case "quiz_started":
+                      case "quiz_finished":
+                        return "help-circle-outline";
+                      case "course_completed":
+                        return "trophy-outline";
+                      default:
+                        return "book-open-outline";
+                    }
+                  };
+
+                  return (
+                    <View key={index} style={styles.activityItem}>
+                      <View
+                        style={[
+                          styles.activityIcon,
+                          {
+                            backgroundColor:
+                              activity.event_type === "course_completed"
+                                ? "#fef3c7"
+                                : "#f0f4ff",
+                          },
+                        ]}
+                      >
+                        <MaterialCommunityIcons
+                          name={getEventIcon(activity.event_type)}
+                          size={20}
+                          color={
+                            activity.event_type === "course_completed"
+                              ? "#f59e0b"
+                              : "#6366f1"
+                          }
+                        />
+                      </View>
+                      <View style={styles.activityContent}>
+                        <Text style={styles.activityTitle}>
+                          {getEventLabel(activity.event_type)}:{" "}
+                          {activity.metadata?.query ||
+                            activity.chapter_id ||
+                            activity.course_id ||
+                            "Study Session"}
+                        </Text>
+                        <Text style={styles.activityMeta}>
+                          {activity.metadata?.results_count !== undefined
+                            ? `${activity.metadata.results_count} results found • `
+                            : ""}
+                          {activity.metadata?.score !== undefined
+                            ? `Score: ${activity.metadata.score}/${activity.metadata.max_questions} • `
+                            : ""}
+                          {new Date(activity.timestamp).toLocaleDateString()} at{" "}
+                          {new Date(activity.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </Text>
+                      </View>
                     </View>
-                    <View style={styles.activityContent}>
-                      <Text style={styles.activityTitle}>
-                        {activity.chapter_title || activity.chapter_id}
-                      </Text>
-                      <Text style={styles.activityMeta}>
-                        {activity.course_name} •{" "}
-                        {new Date(activity.timestamp).toLocaleDateString()} •{" "}
-                        {Math.round(activity.progress * 100)}% studied
-                      </Text>
-                    </View>
-                  </View>
-                ),
-              )
+                  );
+                })
             ) : (
               <Text style={styles.emptyText}>No recent activity.</Text>
             )}

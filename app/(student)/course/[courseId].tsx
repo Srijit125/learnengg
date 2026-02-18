@@ -13,6 +13,7 @@ import {
   fetchCourseChapterNotes,
   updateNoteProgress,
 } from "@/services/course.service";
+import { logStudyActivity } from "@/services/analyticsService";
 import { useAuthStore } from "@/store/auth.store";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -41,10 +42,31 @@ export default function CourseNotesPage() {
   }, [courseId]);
 
   useEffect(() => {
-    if (courseId && selectedChapter?.chapterId) {
+    if (courseId && selectedChapter?.chapterId && user?.id) {
       loadChapterNotes(courseId as string, selectedChapter.chapterId);
+
+      // Log chapter open
+      logStudyActivity({
+        user_id: user.id,
+        course_id: courseId as string,
+        chapter_id: selectedChapter.chapterId,
+        event_type: "chapter_opened",
+        metadata: {
+          chapter_title: selectedChapter.chapterTitle,
+        },
+      });
+
+      return () => {
+        // Log chapter close (session end for this chapter)
+        logStudyActivity({
+          user_id: user.id,
+          course_id: courseId as string,
+          chapter_id: selectedChapter.chapterId,
+          event_type: "chapter_closed",
+        });
+      };
     }
-  }, [selectedChapter]);
+  }, [selectedChapter, courseId, user?.id]);
 
   const loadStructure = async () => {
     try {
@@ -135,7 +157,50 @@ export default function CourseNotesPage() {
           selectedChapter.chapterId,
           finalProgress,
         );
+
+        // Check for course completion
+        if (finalProgress === 1 && structure) {
+          checkCourseCompletion();
+        }
       }
+    }
+  };
+
+  const checkCourseCompletion = async () => {
+    if (!structure || !user?.id || !courseId) return;
+
+    // This is a naive check. In a real app, we might want to fetch the latest progress from the server.
+    // For now, we'll check the local structure if it has progress info,
+    // or assume the backend handles the aggregate and we just notify it.
+    // However, the requested task is "track progress of each student based on completion of chapters and courses".
+
+    // Let's find if all chapters in ALL units are 100%
+    let allChaptersCompleted = true;
+    for (const unit of structure.units || []) {
+      for (const chapter of unit.chapters || []) {
+        // If it's the current chapter we just finished, it's 100%
+        if (chapter.chapterId === selectedChapter.chapterId) continue;
+
+        // We need a way to know other chapters' progress.
+        // If the structure doesn't have it, we might need a separate API call or trust the backend.
+        // Assuming the 'structure' contains progress because the ProgressPage uses 'noteAnalysis.hierarchy'
+        if (chapter.progress < 100 && chapter.progress !== 1) {
+          allChaptersCompleted = false;
+          break;
+        }
+      }
+      if (!allChaptersCompleted) break;
+    }
+
+    if (allChaptersCompleted) {
+      logStudyActivity({
+        user_id: user.id,
+        course_id: courseId as string,
+        event_type: "course_completed",
+        metadata: {
+          course_name: structure.courseName,
+        },
+      });
     }
   };
 

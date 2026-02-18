@@ -77,3 +77,29 @@ export async function getNoteStudyAnalysis(userId: string) {
     return null;
   }
 }
+
+export async function logStudyActivity(activity: {
+  user_id: string;
+  course_id?: string;
+  chapter_id?: string;
+  event_type: string;
+  metadata?: any;
+}) {
+  try {
+    const response = await api.post("/notes/log", activity);
+    return response.data;
+  } catch (error) {
+    console.error("Error logging study activity:", error);
+    return null;
+  }
+}
+
+export async function getUserActivityLogs(userId: string) {
+  try {
+    const response = await api.get(`/notes/${userId}/activity`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user activity logs:", error);
+    return [];
+  }
+}
