@@ -1,18 +1,16 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Pressable,
-  Dimensions,
-  TextInput,
-  Platform,
-  ScrollView,
-} from "react-native";
-import React, { useState } from "react";
-import { LinearGradient } from "expo-linear-gradient";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuthStore, UserRole } from "@/store/auth.store";
 import { supabase } from "@/utils/supabase";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from "react-native";
 
 import { useRouter } from "expo-router";
 
@@ -50,6 +48,22 @@ const LoginScreen = () => {
         console.log("Signup error", error);
         if (error) throw error;
         alert("Check your email for confirmation!");
+        if (data) {
+          // Insert user to profiles table in DB
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .insert([
+              { id: data.user?.id, email: data.user?.email, full_name: data.user?.user_metadata.full_name, role: data.user?.user_metadata.role },
+            ])
+            .select().single()
+          console.log("Profile data", profile);
+          console.log("Profile error", error);
+          if (profile.role) {
+            router.replace("/(admin)");
+          } else {
+            router.replace("/(student)");
+          }
+        }
         setIsSignUp(false);
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({
