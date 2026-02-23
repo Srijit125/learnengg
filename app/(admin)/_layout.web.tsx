@@ -1,6 +1,6 @@
+import CustomDrawerContent from "@/components/Dashboard/CustomDrawerContent";
 import { Drawer } from "expo-router/drawer";
 import React from "react";
-import CustomDrawerContent from "@/components/Dashboard/CustomDrawerContent";
 
 export default function AdminLayout() {
   return (
@@ -39,7 +39,7 @@ export default function AdminLayout() {
         name="review"
         options={{
           drawerLabel: "MCQ Review",
-          title: "MCQ Review",
+          title: "AI MCQ Review",
         }}
       />
       <Drawer.Screen
@@ -54,6 +54,13 @@ export default function AdminLayout() {
         options={{
           drawerLabel: "Notes Builder",
           title: "Notes Builder",
+        }}
+      />
+      <Drawer.Screen
+        name="Course MCQs"
+        options={{
+          drawerLabel: "Course MCQs",
+          title: "Course MCQ Management",
         }}
       />
     </Drawer>

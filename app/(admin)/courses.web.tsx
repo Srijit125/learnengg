@@ -1,24 +1,22 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  ActivityIndicator,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { listCourses, getCourseSummary } from "@/services/course.service";
+import XMLEditor from "@/components/XMLEditor";
+import { Course } from "@/models/Course";
+import { getCourseSummary, listCourses } from "@/services/course.service";
 import {
   fetchCourseXML,
   saveCourseXML,
   validateXML,
 } from "@/services/xml.service";
-import { Course } from "@/models/Course";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import XMLEditor from "@/components/XMLEditor";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from "react-native";
 
 type Tab = "summary" | "xml";
 
@@ -68,8 +66,6 @@ export default function CourseManagementPage() {
       ]);
       setSummary(summaryData);
       setXmlContent(xmlData);
-      console.log(summaryData);
-      console.log(xmlData);
     } catch (error) {
       console.error("Error loading course data:", error);
     } finally {
@@ -139,7 +135,7 @@ export default function CourseManagementPage() {
                   style={[
                     styles.courseItem,
                     selectedCourseId === course.course_id &&
-                      styles.courseItemActive,
+                    styles.courseItemActive,
                   ]}
                   onPress={() => setSelectedCourseId(course.course_id)}
                 >
@@ -156,7 +152,7 @@ export default function CourseManagementPage() {
                     style={[
                       styles.courseName,
                       selectedCourseId === course.course_id &&
-                        styles.courseNameActive,
+                      styles.courseNameActive,
                     ]}
                   >
                     {course.course_name || course.course_id}

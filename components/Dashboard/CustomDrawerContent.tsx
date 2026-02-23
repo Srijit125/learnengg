@@ -1,19 +1,18 @@
+import { useAuthStore } from "@/store/auth.store";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  DrawerContentComponentProps,
+  DrawerContentScrollView,
+} from "@react-navigation/drawer";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  ScrollView,
+  View
 } from "react-native";
-import React, { useState } from "react";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import {
-  DrawerContentScrollView,
-  DrawerContentComponentProps,
-} from "@react-navigation/drawer";
-import { useAuthStore } from "@/store/auth.store";
-import { useRouter } from "expo-router";
 
 type MenuItem = {
   id: string;
@@ -39,7 +38,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
     },
     {
       id: "review",
-      label: "MCQ Review",
+      label: "AI MCQ Review",
       icon: "clipboard-check-outline",
       route: "review",
     },
@@ -49,23 +48,23 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       icon: "book-open-variant",
       route: "courses",
     },
+    // {
+    //   id: "quiz",
+    //   label: "Quiz",
+    //   icon: "clipboard-text-outline",
+    //   route: "quiz/index",
+    // },
+    // {
+    //   id: "performance",
+    //   label: "Performance",
+    //   icon: "chart-line",
+    //   route: "performance",
+    // },
     {
-      id: "quiz",
-      label: "Quiz",
-      icon: "clipboard-text-outline",
-      route: "quiz/index",
-    },
-    {
-      id: "performance",
-      label: "Performance",
-      icon: "chart-line",
-      route: "performance",
-    },
-    {
-      id: "progress",
-      label: "Progress",
-      icon: "trending-up",
-      route: "progress",
+      id: "course-mcq",
+      label: "Course MCQ Management",
+      icon: "frequently-asked-questions",
+      route: "course-mcq",
     },
     {
       id: "notes-builder",
