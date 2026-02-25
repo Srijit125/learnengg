@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
-import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 type ActivityItem = {
   id: string;
-  difficulty: string;
-  correct: boolean;
+  difficulty?: string;
+  correct?: boolean;
   timestamp: string;
   topic?: string;
 };
@@ -18,7 +18,8 @@ type ActivityFeedProps = {
 const ActivityFeed = ({ activities, maxItems = 10 }: ActivityFeedProps) => {
   const displayActivities = activities.slice(0, maxItems);
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty?: string) => {
+    if (!difficulty) return '#6b7280';
     switch (difficulty.toLowerCase()) {
       case 'easy':
         return '#10b981';
@@ -39,7 +40,7 @@ const ActivityFeed = ({ activities, maxItems = 10 }: ActivityFeedProps) => {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffMins < 60) return `${diffMins || 0}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     return `${diffDays}d ago`;
   };
@@ -68,12 +69,14 @@ const ActivityFeed = ({ activities, maxItems = 10 }: ActivityFeedProps) => {
                 style={[
                   styles.statusIndicator,
                   {
-                    backgroundColor: activity.correct ? '#10b981' : '#ef4444',
+                    backgroundColor: activity.correct === true ? '#10b981' :
+                      activity.correct === false ? '#ef4444' : '#64748b',
                   },
                 ]}
               >
                 <MaterialCommunityIcons
-                  name={activity.correct ? 'check' : 'close'}
+                  name={activity.correct === true ? 'check' :
+                    activity.correct === false ? 'close' : 'circle-outline'}
                   size={16}
                   color="#ffffff"
                 />
@@ -82,20 +85,22 @@ const ActivityFeed = ({ activities, maxItems = 10 }: ActivityFeedProps) => {
               <View style={styles.activityContent}>
                 <View style={styles.activityHeader}>
                   <Text style={styles.activityTitle}>
-                    {activity.topic || 'Quiz Attempt'}
+                    {activity.topic || 'Activity'}
                   </Text>
-                  <View
-                    style={[
-                      styles.difficultyBadge,
-                      {
-                        backgroundColor: getDifficultyColor(activity.difficulty),
-                      },
-                    ]}
-                  >
-                    <Text style={styles.difficultyText}>
-                      {activity.difficulty}
-                    </Text>
-                  </View>
+                  {activity.difficulty && (
+                    <View
+                      style={[
+                        styles.difficultyBadge,
+                        {
+                          backgroundColor: getDifficultyColor(activity.difficulty),
+                        },
+                      ]}
+                    >
+                      <Text style={styles.difficultyText}>
+                        {activity.difficulty}
+                      </Text>
+                    </View>
+                  )}
                 </View>
                 <Text style={styles.activityTime}>
                   {formatTimestamp(activity.timestamp)}

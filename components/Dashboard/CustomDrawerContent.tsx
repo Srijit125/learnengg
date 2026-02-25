@@ -72,6 +72,12 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       icon: "file-document-edit-outline",
       route: "notes/builder",
     },
+    {
+      id: "notes-editor",
+      label: "Notes Editor",
+      icon: "file-document-edit",
+      route: "notes/editor",
+    },
     { id: "activity", label: "Activity", icon: "history", route: "activity" },
   ];
 

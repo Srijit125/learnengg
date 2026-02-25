@@ -1,5 +1,5 @@
-import { api } from "./api";
 import { Course } from "../models/Course";
+import { api } from "./api";
 
 export async function listCourses(): Promise<Course[]> {
   const res = await api.get("/courses");
@@ -50,6 +50,17 @@ export async function updateNoteProgress(
     course_id: courseId,
     chapter_id: chapterId,
     progress: progress,
+  });
+  return res.data;
+}
+
+export async function saveCourseChapterNotes(
+  courseId: string,
+  chapterId: string,
+  html: string,
+) {
+  const res = await api.post(`/courses/${courseId}/chapters/${chapterId}/notes`, {
+    html: html,
   });
   return res.data;
 }

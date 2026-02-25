@@ -1,5 +1,5 @@
-import { api } from "./api";
 import { logDataInfo } from "@/types/analyticsType";
+import { api } from "./api";
 
 export async function getUserLogs(userId: string) {
   try {
@@ -101,5 +101,61 @@ export async function getUserActivityLogs(userId: string) {
   } catch (error) {
     console.error("Error fetching user activity logs:", error);
     return [];
+  }
+}
+
+// Aggregated Analytics for Admin
+export async function getSystemOverview() {
+  try {
+    const response = await api.get("/analytics/system/overview");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching system overview:", error);
+    return {
+      total_students: 0,
+      active_today: 0,
+      total_study_sessions: 0,
+      avg_accuracy: 0
+    };
+  }
+}
+
+export async function getAllStudentsStats() {
+  try {
+    const response = await api.get("/analytics/system/students");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all students stats:", error);
+    return [];
+  }
+}
+
+export async function getAllCoursesStats() {
+  try {
+    const response = await api.get("/analytics/system/courses");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all courses stats:", error);
+    return [];
+  }
+}
+
+export async function getGlobalStudyLogs() {
+  try {
+    const response = await api.get("/analytics/system/logs");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching global study logs:", error);
+    return [];
+  }
+}
+
+export async function getCourseDetails(courseId: string) {
+  try {
+    const response = await api.get(`/analytics/system/courses/${courseId}/details`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching course details for ${courseId}:`, error);
+    return null;
   }
 }

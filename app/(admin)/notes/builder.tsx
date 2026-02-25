@@ -1,25 +1,25 @@
-import React, { useState, useMemo, useEffect } from "react";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
   ActivityIndicator,
   Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { HTMLGenerator, Section, Block } from "../../../utils/htmlGenerator";
 import HtmlRenderer from "../../../components/HtmlRenderer";
-import CustomButton from "../../../components/Buttons/CustomButton";
-import { Ionicons } from "@expo/vector-icons";
+import { Course } from "../../../models/Course";
 import {
-  listCourses,
   fetchCourseStructure,
+  listCourses,
 } from "../../../services/course.service";
 import { fetchCourseXML, saveCourseXML } from "../../../services/xml.service";
-import { Course } from "../../../models/Course";
+import { Block, HTMLGenerator, Section } from "../../../utils/htmlGenerator";
 
 const NotesBuilder = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -27,10 +27,11 @@ const NotesBuilder = () => {
   const [loading, setLoading] = useState(false);
   const [xmlStructure, setXmlStructure] = useState<any>(null);
   const [selectedChapterId, setSelectedChapterId] = useState<string>("");
+  const [standaloneMode, setStandaloneMode] = useState(false);
 
-  const [chapterTitle, setChapterTitle] = useState("Note Chapter Title");
-  const [courseName, setCourseName] = useState("Course Name");
-  const [unitName, setUnitName] = useState("Unit 1");
+  const [chapterTitle, setChapterTitle] = useState("New Note Chapter");
+  const [courseName, setCourseName] = useState("");
+  const [unitName, setUnitName] = useState("");
   const [sections, setSections] = useState<Section[]>([]);
 
   // Form states for adding section
@@ -64,6 +65,7 @@ const NotesBuilder = () => {
 
   const handleCourseChange = async (courseId: string) => {
     setSelectedCourseId(courseId);
+    setStandaloneMode(false);
     const course = courses.find((c) => c.course_id === courseId);
     if (course) {
       setCourseName(course.course_name);
@@ -268,7 +270,6 @@ const NotesBuilder = () => {
       const currentXml = await fetchCourseXML(selectedCourseId);
 
       // Basic injection logic: Find the SCO tag and add <notes url="..."/>
-      // This is a simplified approach. In a real app, you'd use a DOM parser.
       const filename = `${chapterTitle.replace(/\s+/g, "_")}.html`;
       const notesTag = `<notes url="/notes/${filename}"/>`;
 
@@ -310,136 +311,246 @@ const NotesBuilder = () => {
     <View style={styles.container}>
       {/* Sidebar - Settings */}
       <View style={styles.sidebar}>
-        <Text style={styles.sidebarHeader}>Note Configuration</Text>
+        <LinearGradient
+          colors={["#667eea", "#764ba2"]}
+          style={styles.sidebarHeaderGradient}
+        >
+          <MaterialCommunityIcons
+            name="file-document-edit-outline"
+            size={24}
+            color="white"
+          />
+          <Text style={styles.sidebarHeader}>Note Builder</Text>
+        </LinearGradient>
 
-        <Text style={styles.label}>Select Course</Text>
-        <View style={styles.pickerWrapper}>
-          <ScrollView style={{ maxHeight: 150 }}>
-            {courses.map((c) => (
-              <TouchableOpacity
-                key={c.course_id}
+        <ScrollView style={styles.sidebarScroll}>
+          <View style={styles.card}>
+            <Text style={styles.label}>Mode Selection</Text>
+            <TouchableOpacity
+              style={[
+                styles.standaloneToggle,
+                standaloneMode && styles.activeStandalone,
+              ]}
+              onPress={() => {
+                setStandaloneMode(!standaloneMode);
+                if (!standaloneMode) {
+                  setSelectedCourseId("");
+                  setSelectedChapterId("");
+                }
+              }}
+            >
+              <Ionicons
+                name={standaloneMode ? "checkbox" : "square-outline"}
+                size={20}
+                color={standaloneMode ? "white" : "#64748b"}
+              />
+              <Text
                 style={[
-                  styles.optionItem,
-                  selectedCourseId === c.course_id && styles.activeOption,
+                  styles.standaloneText,
+                  standaloneMode && { color: "white" },
                 ]}
-                onPress={() => handleCourseChange(c.course_id)}
               >
-                <Text
-                  style={{
-                    color: selectedCourseId === c.course_id ? "white" : "black",
-                  }}
-                >
-                  {c.course_name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        <Text style={styles.label}>Link to Chapter/Unit</Text>
-        <View style={styles.pickerWrapper}>
-          <ScrollView style={{ maxHeight: 150 }}>
-            {xmlStructure ? (
-              Object.keys(xmlStructure).flatMap((chapter) =>
-                Object.keys(xmlStructure[chapter]).map((sco) => (
-                  <TouchableOpacity
-                    key={`${chapter}-${sco}`}
-                    style={[
-                      styles.optionItem,
-                      selectedChapterId === sco && styles.activeOption,
-                    ]}
-                    onPress={() => setSelectedChapterId(sco)}
-                  >
-                    <Text
-                      style={{
-                        color: selectedChapterId === sco ? "white" : "black",
-                      }}
-                    >
-                      {chapter} - {sco}
-                    </Text>
-                  </TouchableOpacity>
-                )),
-              )
-            ) : (
-              <Text style={{ padding: 10, color: "#666" }}>
-                Select a course first
+                Standalone Mode
               </Text>
+            </TouchableOpacity>
+
+            {!standaloneMode && (
+              <>
+                <Text style={styles.label}>Select Course</Text>
+                <View style={styles.pickerWrapper}>
+                  <ScrollView style={{ maxHeight: 150 }}>
+                    {courses.map((c) => (
+                      <TouchableOpacity
+                        key={c.course_id}
+                        style={[
+                          styles.optionItem,
+                          selectedCourseId === c.course_id &&
+                          styles.activeOption,
+                        ]}
+                        onPress={() => handleCourseChange(c.course_id)}
+                      >
+                        <Text
+                          style={{
+                            color:
+                              selectedCourseId === c.course_id
+                                ? "white"
+                                : "#1e293b",
+                            fontWeight:
+                              selectedCourseId === c.course_id
+                                ? "600"
+                                : "400",
+                          }}
+                        >
+                          {c.course_name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+
+                <Text style={styles.label}>Link to Chapter/Unit</Text>
+                <View style={styles.pickerWrapper}>
+                  <ScrollView style={{ maxHeight: 350 }}>
+                    {xmlStructure?.units ? (
+                      xmlStructure.units.map((unit: any) => (
+                        <View key={unit.unitId} style={styles.unitSection}>
+                          <View style={styles.unitHeaderRow}>
+                            <MaterialCommunityIcons name="folder-outline" size={16} color="#64748b" />
+                            <Text style={styles.unitLabel}>{unit.unitTitle}</Text>
+                          </View>
+                          {unit.chapters?.map((chapter: any) => (
+                            <TouchableOpacity
+                              key={chapter.chapterId}
+                              style={[
+                                styles.optionItem,
+                                styles.chapterIndent,
+                                selectedChapterId === chapter.chapterId && styles.activeOption,
+                              ]}
+                              onPress={() => {
+                                setSelectedChapterId(chapter.chapterId);
+                                if (!chapterTitle) setChapterTitle(chapter.chapterTitle);
+                                if (!unitName) setUnitName(unit.unitTitle);
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: selectedChapterId === chapter.chapterId ? "white" : "#1e293b",
+                                  fontWeight: selectedChapterId === chapter.chapterId ? "600" : "400",
+                                  fontSize: 13,
+                                }}
+                              >
+                                {chapter.chapterTitle}
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+                        </View>
+                      ))
+                    ) : (
+                      <Text style={{ padding: 12, color: "#94a3b8" }}>
+                        {loading ? "Loading structure..." : "Select a course first"}
+                      </Text>
+                    )}
+                  </ScrollView>
+                </View>
+              </>
             )}
-          </ScrollView>
-        </View>
+          </View>
 
-        <View style={styles.divider} />
+          <View style={styles.card}>
+            <Text style={styles.label}>Metadata</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Note Chapter Title"
+              value={chapterTitle}
+              onChangeText={setChapterTitle}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Unit/Course context"
+              value={unitName}
+              onChangeText={setUnitName}
+            />
+          </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Note Chapter Title"
-          value={chapterTitle}
-          onChangeText={setChapterTitle}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Unit Name"
-          value={unitName}
-          onChangeText={setUnitName}
-        />
+          <View style={styles.actionContainer}>
+            {!standaloneMode && (
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={linkToXml}
+                disabled={loading}
+              >
+                <LinearGradient
+                  colors={["#667eea", "#764ba2"]}
+                  style={styles.btnGradient}
+                >
+                  <Ionicons name="link" size={18} color="white" />
+                  <Text style={styles.btnText}>Link to XML & Save</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            )}
 
-        <View style={{ marginTop: 20 }}>
-          <CustomButton title="Link to XML & Save" onPress={linkToXml} />
-          <TouchableOpacity
-            style={[styles.downloadBtn, { marginTop: 10 }]}
-            onPress={downloadHtml}
-          >
-            <Text style={{ color: "white", textAlign: "center" }}>
-              Download HTML Only
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.clearBtn, { marginTop: 10 }]}
-            onPress={() => setSections([])}
-          >
-            <Text style={{ color: "white", textAlign: "center" }}>
-              Clear All Blocks
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity style={styles.secondaryBtn} onPress={downloadHtml}>
+              <Ionicons name="download-outline" size={18} color="white" />
+              <Text style={styles.btnText}>Download HTML Only</Text>
+            </TouchableOpacity>
 
-        {loading && (
-          <ActivityIndicator style={{ marginTop: 20 }} color="#0a8a83" />
-        )}
+            <TouchableOpacity
+              style={styles.clearBtn}
+              onPress={() => {
+                Alert.alert(
+                  "Clear All",
+                  "Are you sure you want to clear all blocks?",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Clear",
+                      onPress: () => setSections([]),
+                      style: "destructive",
+                    },
+                  ],
+                );
+              }}
+            >
+              <Ionicons name="trash-outline" size={18} color="white" />
+              <Text style={styles.btnText}>Clear All Blocks</Text>
+            </TouchableOpacity>
+          </View>
+
+          {loading && (
+            <ActivityIndicator
+              style={{ marginVertical: 20 }}
+              color="#667eea"
+            />
+          )}
+        </ScrollView>
       </View>
 
       {/* Main Content */}
       <View style={styles.main}>
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
-          <Text style={styles.header}>Add Section</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Section Header (e.g. Introduction)"
-            value={secTitle}
-            onChangeText={setSecTitle}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Sub-Header (Optional)"
-            value={secSubtitle}
-            onChangeText={setSecSubtitle}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Video URL (Optional)"
-            value={secVideo}
-            onChangeText={setSecVideo}
-          />
-          <CustomButton title="Add Section" onPress={addSection} />
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24 }}>
+          <View style={styles.mainCard}>
+            <Text style={styles.sectionHeader}>Add New Section</Text>
+            <View style={styles.row}>
+              <TextInput
+                style={[styles.input, { flex: 1, marginRight: 10 }]}
+                placeholder="Section Header (e.g. Introduction)"
+                value={secTitle}
+                onChangeText={setSecTitle}
+              />
+              <TextInput
+                style={[styles.input, { flex: 1 }]}
+                placeholder="Sub-Header (Optional)"
+                value={secSubtitle}
+                onChangeText={setSecSubtitle}
+              />
+            </View>
+            <TextInput
+              style={styles.input}
+              placeholder="Video URL (Optional)"
+              value={secVideo}
+              onChangeText={setSecVideo}
+            />
+            <TouchableOpacity onPress={addSection} style={styles.addBtn}>
+              <LinearGradient
+                colors={["#10b981", "#059669"]}
+                style={styles.btnGradient}
+              >
+                <Ionicons name="add-circle-outline" size={20} color="white" />
+                <Text style={styles.btnText}>Add Section</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
 
-          <View style={styles.divider} />
-
-          <Text style={styles.header}>Add Content Block</Text>
-          {sections.length > 0 ? (
-            <>
-              <View style={styles.pickerContainer}>
-                <Text>Select Section:</Text>
-                <ScrollView horizontal style={{ marginVertical: 10 }}>
+          <View style={[styles.mainCard, { marginTop: 24 }]}>
+            <Text style={styles.sectionHeader}>Add Content Block</Text>
+            {sections.length > 0 ? (
+              <>
+                <Text style={styles.subLabel}>Target Section:</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.chipScroll}
+                >
                   {sections.map((s) => (
                     <TouchableOpacity
                       key={s.id}
@@ -450,20 +561,23 @@ const NotesBuilder = () => {
                       onPress={() => setSelectedSectionId(s.id)}
                     >
                       <Text
-                        style={{
-                          color: selectedSectionId === s.id ? "white" : "black",
-                        }}
+                        style={[
+                          styles.chipText,
+                          selectedSectionId === s.id && styles.activeChipText,
+                        ]}
                       >
                         {s.title}
                       </Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
-              </View>
 
-              <View style={styles.pickerContainer}>
-                <Text>Content Type:</Text>
-                <ScrollView horizontal style={{ marginVertical: 10 }}>
+                <Text style={styles.subLabel}>Content Type:</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.chipScroll}
+                >
                   {[
                     "paragraph",
                     "bullets",
@@ -482,99 +596,137 @@ const NotesBuilder = () => {
                       onPress={() => setBlockType(t as any)}
                     >
                       <Text
-                        style={{ color: blockType === t ? "white" : "black" }}
+                        style={[
+                          styles.chipText,
+                          blockType === t && styles.activeChipText,
+                        ]}
                       >
                         {t.charAt(0).toUpperCase() + t.slice(1)}
                       </Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
-              </View>
 
-              <TextInput
-                style={[styles.textArea, { height: 100 }]}
-                placeholder={
-                  blockType === "bullets"
-                    ? "Item\n  Sub item\n    Sub sub item"
-                    : blockType === "table"
-                      ? "Header1, Header2\nRow1-Col1, Row1-Col2"
-                      : "Enter content here..."
-                }
-                multiline
-                value={blockContent}
-                onChangeText={setBlockContent}
-              />
-
-              {blockType === "image" && (
                 <TextInput
-                  style={styles.input}
-                  placeholder="Image Caption"
-                  value={imageCaption}
-                  onChangeText={setImageCaption}
+                  style={styles.textArea}
+                  placeholder={
+                    blockType === "bullets"
+                      ? "Item 1\n  Sub item 1.1\n    Sub item 1.1.1"
+                      : blockType === "table"
+                        ? "Header 1, Header 2\nRow 1 Col 1, Row 1 Col 2"
+                        : "Type your content here..."
+                  }
+                  multiline
+                  value={blockContent}
+                  onChangeText={setBlockContent}
                 />
-              )}
 
-              <CustomButton title={`Add ${blockType}`} onPress={addBlock} />
-            </>
-          ) : (
-            <Text style={{ fontStyle: "italic", color: "#666" }}>
-              Add a section first to start adding content.
-            </Text>
-          )}
+                {blockType === "image" && (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Image Caption"
+                    value={imageCaption}
+                    onChangeText={setImageCaption}
+                  />
+                )}
 
-          <View style={styles.divider} />
-
-          <Text style={styles.header}>Manage Sections</Text>
-          {sections.map((sec, index) => (
-            <View key={sec.id} style={styles.sectionItem}>
-              <View style={styles.sectionHeaderLine}>
-                <Text style={styles.sectionTitle}>
-                  #{index + 1} - {sec.title}
+                <TouchableOpacity onPress={addBlock} style={styles.addBtn}>
+                  <LinearGradient
+                    colors={["#6366f1", "#4f46e5"]}
+                    style={styles.btnGradient}
+                  >
+                    <Ionicons name="document-text" size={20} color="white" />
+                    <Text style={styles.btnText}>Add {blockType}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <View style={styles.emptyState}>
+                <Ionicons name="information-circle" size={24} color="#94a3b8" />
+                <Text style={styles.emptyText}>
+                  Add at least one section above to start adding content blocks.
                 </Text>
-                <View style={{ flexDirection: "row" }}>
-                  <TouchableOpacity onPress={() => moveSection(index, -1)}>
-                    <Ionicons name="arrow-up" size={20} color="#0073e6" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => moveSection(index, 1)}
-                    style={{ marginLeft: 10 }}
-                  >
-                    <Ionicons name="arrow-down" size={20} color="#0073e6" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => deleteSection(sec.id)}
-                    style={{ marginLeft: 10 }}
-                  >
-                    <Ionicons name="trash" size={20} color="red" />
-                  </TouchableOpacity>
-                </View>
               </View>
-              {sec.blocks.map((block) => (
-                <View key={block.id} style={styles.blockRow}>
-                  <Text style={styles.blockText}>
-                    [{block.type}]{" "}
-                    {typeof block.content === "string"
-                      ? block.content.substring(0, 30) + "..."
-                      : "Structured content"}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => deleteBlock(sec.id, block.id)}
-                  >
-                    <Ionicons name="close-circle" size={18} color="gray" />
-                  </TouchableOpacity>
+            )}
+          </View>
+
+          <View style={[styles.mainCard, { marginTop: 24, marginBottom: 40 }]}>
+            <Text style={styles.sectionHeader}>Structure & Hierarchy</Text>
+            {sections.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyText}>No sections added yet.</Text>
+              </View>
+            ) : (
+              sections.map((sec, index) => (
+                <View key={sec.id} style={styles.sectionItem}>
+                  <View style={styles.sectionHeaderLine}>
+                    <View style={styles.sectionTitleRow}>
+                      <View style={styles.indexBadge}>
+                        <Text style={styles.indexText}>{index + 1}</Text>
+                      </View>
+                      <Text style={styles.sectionTitle}>{sec.title}</Text>
+                    </View>
+                    <View style={styles.controls}>
+                      <TouchableOpacity onPress={() => moveSection(index, -1)}>
+                        <Ionicons
+                          name="arrow-up-circle"
+                          size={24}
+                          color="#6366f1"
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => moveSection(index, 1)}>
+                        <Ionicons
+                          name="arrow-down-circle"
+                          size={24}
+                          color="#6366f1"
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => deleteSection(sec.id)}>
+                        <Ionicons name="trash" size={22} color="#ef4444" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  {sec.blocks.map((block) => (
+                    <View key={block.id} style={styles.blockRow}>
+                      <View style={styles.blockInfo}>
+                        <View style={styles.blockTypeBadge}>
+                          <Text style={styles.blockTypeText}>
+                            {block.type.toUpperCase()}
+                          </Text>
+                        </View>
+                        <Text style={styles.blockText} numberOfLines={1}>
+                          {typeof block.content === "string"
+                            ? block.content
+                            : "Structured content"}
+                        </Text>
+                      </View>
+                      <TouchableOpacity
+                        onPress={() => deleteBlock(sec.id, block.id)}
+                      >
+                        <Ionicons name="close-circle" size={20} color="#94a3b8" />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
                 </View>
-              ))}
-            </View>
-          ))}
+              ))
+            )}
+          </View>
         </ScrollView>
       </View>
 
       {/* Preview Panel */}
       <View style={styles.preview}>
-        <View style={styles.previewHeader}>
-          <Text style={{ fontWeight: "bold" }}>Live Preview</Text>
+        <LinearGradient
+          colors={["#f8fafc", "#f1f5f9"]}
+          style={styles.previewHeader}
+        >
+          <Ionicons name="eye-outline" size={20} color="#1e293b" />
+          <Text style={styles.previewHeaderText}>Live Preview</Text>
+        </LinearGradient>
+        <View style={styles.previewContent}>
+          <HtmlRenderer html={finalHtml} />
         </View>
-        <HtmlRenderer html={finalHtml} />
       </View>
     </View>
   );
@@ -586,143 +738,346 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: Platform.OS === "web" ? "row" : "column",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#f1f5f9",
   },
   sidebar: {
-    width: Platform.OS === "web" ? 300 : "100%",
+    width: Platform.OS === "web" ? 340 : "100%",
     backgroundColor: "white",
     borderRightWidth: 1,
-    borderRightColor: "#ddd",
-    padding: 20,
+    borderRightColor: "#e2e8f0",
+  },
+  sidebarHeaderGradient: {
+    padding: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
   sidebarHeader: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "white",
+  },
+  sidebarScroll: {
+    padding: 16,
+  },
+  sidebarHeaderText: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#0a8a83",
+    color: "#1e293b",
   },
-  main: {
-    flex: 1,
+  card: {
     backgroundColor: "white",
-  },
-  preview: {
-    flex: 1,
-    backgroundColor: "#eee",
-    borderLeftWidth: 1,
-    borderLeftColor: "#ddd",
-  },
-  previewHeader: {
-    padding: 10,
-    backgroundColor: "#ddd",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 15,
-    marginTop: 10,
-  },
-  input: {
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
+    borderColor: "#e2e8f0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  textArea: {
+  mainCard: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    padding: 24,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
-    textAlignVertical: "top",
+    borderColor: "#e2e8f0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  divider: {
-    height: 1,
-    backgroundColor: "#ddd",
-    marginVertical: 20,
+  standaloneToggle: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#f8fafc",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    marginBottom: 16,
+    gap: 10,
+  },
+  activeStandalone: {
+    backgroundColor: "#667eea",
+    borderColor: "#667eea",
+  },
+  standaloneText: {
+    fontSize: 14,
+    color: "#64748b",
+    fontWeight: "600",
   },
   label: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#94a3b8",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 12,
+  },
+  subLabel: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#64748b",
+    color: "#475569",
     marginBottom: 8,
-    marginTop: 10,
+  },
+  input: {
+    backgroundColor: "#f8fafc",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 15,
+    color: "#1e293b",
+    marginBottom: 16,
+  },
+  textArea: {
+    backgroundColor: "#f8fafc",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 15,
+    color: "#1e293b",
+    minHeight: 120,
+    textAlignVertical: "top",
+    marginBottom: 16,
   },
   pickerWrapper: {
     borderWidth: 1,
     borderColor: "#e2e8f0",
     borderRadius: 8,
     backgroundColor: "#f8fafc",
-    marginBottom: 15,
+    marginBottom: 16,
     overflow: "hidden",
   },
   optionItem: {
-    padding: 10,
+    padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#f1f5f9",
   },
-  activeOption: {
-    backgroundColor: "#0a8a83",
+  unitSection: {
+    backgroundColor: "#ffffff",
   },
-  downloadBtn: {
+  unitHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#f1f5f9",
+    gap: 8,
+  },
+  unitLabel: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#475569",
+    flex: 1,
+  },
+  chapterIndent: {
+    paddingLeft: 24,
+    borderLeftWidth: 2,
+    borderLeftColor: "#e2e8f0",
+  },
+  activeOption: {
+    backgroundColor: "#667eea",
+  },
+  actionContainer: {
+    gap: 12,
+    marginBottom: 40,
+  },
+  primaryBtn: {
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  secondaryBtn: {
     backgroundColor: "#334155",
     padding: 12,
     borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
   },
   clearBtn: {
-    backgroundColor: "#ff4444",
+    backgroundColor: "#ef4444",
     padding: 12,
     borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  addBtn: {
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  btnGradient: {
+    padding: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  btnText: {
+    color: "white",
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  main: {
+    flex: 1,
+    backgroundColor: "#f1f5f9",
+  },
+  sectionHeader: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#1e293b",
+    marginBottom: 20,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  chipScroll: {
+    marginBottom: 16,
   },
   chip: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 16,
     paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#0073e6",
+    backgroundColor: "#f1f5f9",
     borderRadius: 20,
-    marginRight: 10,
-    backgroundColor: "white",
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
   },
   activeChip: {
-    backgroundColor: "#0073e6",
+    backgroundColor: "#6366f1",
+    borderColor: "#6366f1",
   },
-  pickerContainer: {
-    marginBottom: 15,
+  chipText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#64748b",
+  },
+  activeChipText: {
+    color: "white",
+  },
+  emptyState: {
+    padding: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    borderStyle: "dashed",
+    borderWidth: 2,
+    borderColor: "#e2e8f0",
+  },
+  emptyText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: "#94a3b8",
+    textAlign: "center",
   },
   sectionItem: {
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#eee",
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    backgroundColor: "#fafafa",
+    borderColor: "#e2e8f0",
   },
   sectionHeaderLine: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e2e8f0",
+    paddingBottom: 12,
+  },
+  sectionTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  indexBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#6366f1",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  indexText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
   },
   sectionTitle: {
-    fontWeight: "bold",
     fontSize: 16,
+    fontWeight: "700",
+    color: "#1e293b",
+  },
+  controls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   blockRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: "white",
-    padding: 8,
-    borderRadius: 4,
-    marginTop: 5,
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 8,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#e2e8f0",
+  },
+  blockInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: 10,
+  },
+  blockTypeBadge: {
+    backgroundColor: "#f1f5f9",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  blockTypeText: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: "#64748b",
   },
   blockText: {
     fontSize: 14,
-    color: "#555",
+    color: "#475569",
+    flex: 1,
+  },
+  preview: {
+    flex: 1,
+    backgroundColor: "white",
+    borderLeftWidth: 1,
+    borderLeftColor: "#e2e8f0",
+  },
+  previewHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e2e8f0",
+  },
+  previewHeaderText: {
+    fontWeight: "700",
+    color: "#1e293b",
+    fontSize: 15,
+  },
+  previewContent: {
     flex: 1,
   },
 });
