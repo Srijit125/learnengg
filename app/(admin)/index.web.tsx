@@ -199,8 +199,8 @@ export default function Index() {
             activities={(globalLogs || []).slice(0, 8).map(log => ({
               id: log.id,
               topic: `${log.username || 'User'}: ${log.event_type.replace('_', ' ')}`,
-              correct: log.metadata?.correct || false,
-              difficulty: log.metadata?.difficulty || 'medium',
+              correct: log.metadata?.correct,
+              difficulty: log.metadata?.difficulty,
               timestamp: log.timestamp
             }))}
             maxItems={10}

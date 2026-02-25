@@ -1,19 +1,18 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
   ActivityIndicator,
   Animated,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useQuizStore } from "../../../store/quiz.store";
-import { useAuthStore } from "../../../store/auth.store";
-import { listCourses } from "../../../services/course.service";
 import { Course } from "../../../models/Course";
-import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { listCourses } from "../../../services/course.service";
+import { useAuthStore } from "../../../store/auth.store";
+import { useQuizStore } from "../../../store/quiz.store";
 
 const QuizIndex = () => {
   const {
@@ -37,8 +36,8 @@ const QuizIndex = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
-  const [quizLength, setQuizLength] = useState(25);
-  const quizLengthOptions = [15, 20, 25, 30];
+  const [quizLength, setQuizLength] = useState(10);
+  const quizLengthOptions = [10, 15, 20, 25, 30];
 
   useEffect(() => {
     if (!selectedCourseId) {
@@ -275,8 +274,8 @@ const QuizIndex = () => {
                   style={[
                     styles.optionText,
                     showFeedback &&
-                      (isCorrect || isSelected) &&
-                      styles.whiteText,
+                    (isCorrect || isSelected) &&
+                    styles.whiteText,
                   ]}
                 >
                   {option}

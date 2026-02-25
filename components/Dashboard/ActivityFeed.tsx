@@ -87,7 +87,7 @@ const ActivityFeed = ({ activities, maxItems = 10 }: ActivityFeedProps) => {
                   <Text style={styles.activityTitle}>
                     {activity.topic || 'Activity'}
                   </Text>
-                  {activity.difficulty && (
+                  {/* {activity.difficulty && (
                     <View
                       style={[
                         styles.difficultyBadge,
@@ -100,7 +100,7 @@ const ActivityFeed = ({ activities, maxItems = 10 }: ActivityFeedProps) => {
                         {activity.difficulty}
                       </Text>
                     </View>
-                  )}
+                  )} */}
                 </View>
                 <Text style={styles.activityTime}>
                   {formatTimestamp(activity.timestamp)}

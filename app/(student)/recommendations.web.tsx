@@ -1,3 +1,18 @@
+import { Course } from "@/models/Course";
+import {
+  Recommendation,
+  RecommendationPayload,
+} from "@/models/Recommendations";
+import { fetchCourseStructure, listCourses } from "@/services/course.service";
+import {
+  getAIRecommendations,
+  getPersonalizedPlan,
+  recommendWeakTopics,
+} from "@/services/recommendation.service";
+import { useAuthStore } from "@/store/auth.store";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -7,21 +22,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Course } from "@/models/Course";
-import {
-  Recommendation,
-  RecommendationPayload,
-} from "@/models/Recommendations";
-import { listCourses, fetchCourseStructure } from "@/services/course.service";
-import {
-  getAIRecommendations,
-  recommendWeakTopics,
-  getPersonalizedPlan,
-} from "@/services/recommendation.service";
-import { useRouter } from "expo-router";
-import { useAuthStore } from "@/store/auth.store";
-import { LinearGradient } from "expo-linear-gradient";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type TabType = "overview" | "weak_topics" | "personalized_plan";
 
@@ -154,7 +154,7 @@ const StudentRecommendationsPage = () => {
     return (
       <ScrollView contentContainerStyle={styles.tabContent}>
         {/* AI Summary Section */}
-        <View style={styles.summaryCard}>
+        {/* <View style={styles.summaryCard}>
           <View style={styles.cardHeader}>
             <MaterialCommunityIcons
               name="robot-happy-outline"
@@ -166,7 +166,7 @@ const StudentRecommendationsPage = () => {
           <Text style={styles.summaryText}>
             {recommendationData.recommendation_text}
           </Text>
-        </View>
+        </View> */}
 
         {/* Weak Topics Section */}
         <View style={styles.sectionContainer}>
@@ -272,7 +272,7 @@ const StudentRecommendationsPage = () => {
           c.chapterTitle.toLowerCase().trim() === cleanTitle ||
           // Fallback check if the input already contains only the title
           c.chapterTitle.toLowerCase().trim() ===
-            chapterTitle.toLowerCase().trim(),
+          chapterTitle.toLowerCase().trim(),
       );
       if (chapter) return chapter.chapterId;
     }
@@ -503,7 +503,7 @@ const StudentRecommendationsPage = () => {
                 style={[
                   styles.courseChip,
                   selectedCourseId === course.course_id &&
-                    styles.courseChipSelected,
+                  styles.courseChipSelected,
                 ]}
                 onPress={() => handleCourseSelect(course.course_id)}
               >
@@ -511,7 +511,7 @@ const StudentRecommendationsPage = () => {
                   style={[
                     styles.courseChipText,
                     selectedCourseId === course.course_id &&
-                      styles.courseChipTextSelected,
+                    styles.courseChipTextSelected,
                   ]}
                 >
                   {course.course_name}
