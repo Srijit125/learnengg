@@ -33,13 +33,13 @@ CREATE POLICY "Users can update own profile." ON public.profiles FOR UPDATE USIN
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
-  default_role user_role;
+  default_role public.user_role;
 BEGIN
   -- Try to parse role from metadata, default to student
   BEGIN
-    default_role := (NEW.raw_user_meta_data->>'role')::user_role;
+    default_role := (NEW.raw_user_meta_data->>'role')::public.user_role;
   EXCEPTION WHEN OTHERS THEN
-    default_role := 'student'::user_role;
+    default_role := 'student'::public.user_role;
   END;
 
   INSERT INTO public.profiles (id, email, full_name, role)
@@ -47,11 +47,11 @@ BEGIN
     NEW.id, 
     NEW.email, 
     COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
-    COALESCE(default_role, 'student')
+    COALESCE(default_role, 'student'::public.user_role)
   );
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- 6. TRIGGER
 CREATE TRIGGER on_auth_user_created

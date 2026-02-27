@@ -155,6 +155,10 @@ const LoginScreen = () => {
               <Text style={styles.errorText}>{errorMsg}</Text>
             </View>
           )}
+          <View style={styles.errorContainer}>
+            <Text style={styles.infoText}>Admin: admin@learnengg.com Password: fountain</Text>
+            <Text style={styles.infoText}>Student: srijit125@gmail.com Password: fountain</Text>
+          </View>
 
           {isSignUp && (
             <>
@@ -348,6 +352,11 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "#b91c1c",
+    fontSize: 14,
+    textAlign: "center",
+  },
+  infoText: {
+    color: "#1c5bb9ff",
     fontSize: 14,
     textAlign: "center",
   },

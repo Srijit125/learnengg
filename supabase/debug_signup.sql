@@ -33,9 +33,9 @@ BEGIN
             NEW.email, 
             COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
             CASE 
-                WHEN target_role = 'admin' THEN 'admin'::user_role
-                WHEN target_role = 'staff' THEN 'staff'::user_role
-                ELSE 'student'::user_role
+                WHEN target_role = 'admin' THEN 'admin'::public.user_role
+                WHEN target_role = 'staff' THEN 'staff'::public.user_role
+                ELSE 'student'::public.user_role
             END
         );
         
@@ -56,7 +56,7 @@ BEGIN
     -- CRITICAL: Always return NEW so the user creation in auth.users doesn't fail!
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- 4. Re-attach trigger
 CREATE TRIGGER on_auth_user_created
