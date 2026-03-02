@@ -86,19 +86,19 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       id: "reports",
       label: "Reports",
       icon: "file-chart-outline",
-      route: "Reports",
+      route: "reports",
     },
     {
       id: "strengths",
       label: "Strengths",
       icon: "shield-check-outline",
-      route: "Strengths",
+      route: "strengths",
     },
     {
       id: "weaknesses",
       label: "Weaknesses",
       icon: "alert-circle-outline",
-      route: "Weaknesses",
+      route: "weaknesses",
     },
   ];
 

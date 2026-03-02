@@ -49,6 +49,34 @@ export default function AdminLayout() {
           title: "Course MCQ Management",
         }}
       />
+      <Drawer.Screen
+        name="activity"
+        options={{
+          drawerLabel: "Activity Feed",
+          title: "System Activity Audit",
+        }}
+      />
+      <Drawer.Screen
+        name="reports"
+        options={{
+          drawerLabel: "System Reports",
+          title: "Reports & Analytics",
+        }}
+      />
+      <Drawer.Screen
+        name="strengths"
+        options={{
+          drawerLabel: "System Strengths",
+          title: "Platform Strengths",
+        }}
+      />
+      <Drawer.Screen
+        name="weaknesses"
+        options={{
+          drawerLabel: "System Weaknesses",
+          title: "Platform Weaknesses",
+        }}
+      />
     </Drawer>
   );
 }
