@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
-import { useAuthStore } from "../../store/auth.store";
-import { getUserLogs, getUserLogsData } from "../../services/analyticsService";
-import { analyticsInfo, logDataInfo } from "../../types/analyticsType";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { getUserLogs, getUserLogsData } from "../../services/analyticsService";
+import { useAuthStore } from "../../store/auth.store";
+import { analyticsInfo, logDataInfo } from "../../types/analyticsType";
 
 interface WeakConcept {
   chapter: string;
@@ -151,6 +151,38 @@ const AnalyticsDashboard = () => {
             icon="close-circle-outline"
             color="red"
           />
+        </View>
+
+        <View style={styles.insightLinksRow}>
+          <TouchableOpacity
+            style={[styles.insightLinkCard, { backgroundColor: '#f5f3ff' }]}
+            onPress={() => router.push("/(student)/reports")}
+          >
+            <View style={[styles.insightIconCircle, { backgroundColor: '#ddd6fe' }]}>
+              <MaterialCommunityIcons name="file-chart" size={20} color="#6d28d9" />
+            </View>
+            <Text style={styles.insightLinkText}>My Reports</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.insightLinkCard, { backgroundColor: '#fef2f2' }]}
+            onPress={() => router.push("/(student)/weaknesses")}
+          >
+            <View style={[styles.insightIconCircle, { backgroundColor: '#fee2e2' }]}>
+              <MaterialCommunityIcons name="alert-decagram" size={20} color="#dc2626" />
+            </View>
+            <Text style={styles.insightLinkText}>Weaknesses</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.insightLinkCard, { backgroundColor: '#f0fdf4' }]}
+            onPress={() => router.push("/(student)/strengths")}
+          >
+            <View style={[styles.insightIconCircle, { backgroundColor: '#dcfce7' }]}>
+              <MaterialCommunityIcons name="shield-check" size={20} color="#16a34a" />
+            </View>
+            <Text style={styles.insightLinkText}>Strengths</Text>
+          </TouchableOpacity>
         </View>
 
         {!hasActivity ? (
@@ -548,5 +580,38 @@ const styles = StyleSheet.create({
   activityMeta: {
     fontSize: 12,
     color: "#64748B",
+  },
+  insightLinksRow: {
+    flexDirection: "row",
+    gap: 16,
+    marginBottom: 32,
+    flexWrap: "wrap",
+  },
+  insightLinkCard: {
+    flex: 1,
+    minWidth: 160,
+    padding: 20,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "#F1F5F9",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+  },
+  insightIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  insightLinkText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#1E293B",
   },
 });

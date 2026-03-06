@@ -1,20 +1,18 @@
+import { useAuthStore } from "@/store/auth.store";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  DrawerContentComponentProps,
+  DrawerContentScrollView,
+} from "@react-navigation/drawer";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  ScrollView,
+  View
 } from "react-native";
-import React, { useState } from "react";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import {
-  DrawerContentScrollView,
-  DrawerContentComponentProps,
-} from "@react-navigation/drawer";
-import { CommonActions } from "@react-navigation/native";
-import { useAuthStore } from "@/store/auth.store";
-import { useRouter } from "expo-router";
 
 type MenuItem = {
   id: string;
@@ -75,19 +73,19 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
       id: "reports",
       label: "Reports",
       icon: "file-chart-outline",
-      route: "Reports",
+      route: "reports",
     },
     {
       id: "strengths",
       label: "Strengths",
       icon: "shield-check-outline",
-      route: "Strengths",
+      route: "strengths",
     },
     {
       id: "weaknesses",
       label: "Weaknesses",
       icon: "alert-circle-outline",
-      route: "Weaknesses",
+      route: "weaknesses",
     },
   ];
 

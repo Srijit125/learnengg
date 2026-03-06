@@ -76,6 +76,27 @@ const _layout = () => {
             title: "Search",
           }}
         />
+        <Drawer.Screen
+          name="reports"
+          options={{
+            drawerLabel: "Reports",
+            title: "Learning Reports",
+          }}
+        />
+        <Drawer.Screen
+          name="weaknesses"
+          options={{
+            drawerLabel: "Weaknesses",
+            title: "Areas to Improve",
+          }}
+        />
+        <Drawer.Screen
+          name="strengths"
+          options={{
+            drawerLabel: "Strengths",
+            title: "Your Strengths",
+          }}
+        />
       </Drawer>
       <ChatbotFAB
         onPress={() => setIsChatbotVisible(!isChatbotVisible)}
