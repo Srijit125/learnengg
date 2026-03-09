@@ -97,6 +97,27 @@ const _layout = () => {
             title: "Your Strengths",
           }}
         />
+        <Drawer.Screen
+          name="preferences"
+          options={{
+            drawerLabel: "Preferences",
+            title: "Settings & Preferences",
+          }}
+        />
+        <Drawer.Screen
+          name="export"
+          options={{
+            drawerLabel: "Export Data",
+            title: "Data Management",
+          }}
+        />
+        <Drawer.Screen
+          name="help"
+          options={{
+            drawerLabel: "Help",
+            title: "Help & Support",
+          }}
+        />
       </Drawer>
       <ChatbotFAB
         onPress={() => setIsChatbotVisible(!isChatbotVisible)}

@@ -1,8 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { Stack } from "expo-router";
-import Drawer from "expo-router/drawer";
 import CustomStudentDrawerContent from "@/components/Dashboard/CustomStudentDrawerContent";
+import Drawer from "expo-router/drawer";
+import React from "react";
+import { StyleSheet } from "react-native";
 
 const _layout = () => {
   return (

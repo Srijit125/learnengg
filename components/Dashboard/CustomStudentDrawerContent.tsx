@@ -94,15 +94,15 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
       id: "preferences",
       label: "Preferences",
       icon: "cog-outline",
-      route: "Preferences",
+      route: "preferences",
     },
     {
       id: "export",
       label: "Export Data",
       icon: "download-outline",
-      route: "Export",
+      route: "export",
     },
-    { id: "help", label: "Help", icon: "help-circle-outline", route: "Help" },
+    { id: "help", label: "Help", icon: "help-circle-outline", route: "help" },
   ];
 
   const handleMenuItemPress = (routeName: string) => {

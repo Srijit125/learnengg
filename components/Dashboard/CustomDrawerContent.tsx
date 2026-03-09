@@ -88,18 +88,18 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       icon: "file-chart-outline",
       route: "reports",
     },
-    {
-      id: "strengths",
-      label: "Strengths",
-      icon: "shield-check-outline",
-      route: "strengths",
-    },
-    {
-      id: "weaknesses",
-      label: "Weaknesses",
-      icon: "alert-circle-outline",
-      route: "weaknesses",
-    },
+    // {
+    //   id: "strengths",
+    //   label: "Strengths",
+    //   icon: "shield-check-outline",
+    //   route: "strengths",
+    // },
+    // {
+    //   id: "weaknesses",
+    //   label: "Weaknesses",
+    //   icon: "alert-circle-outline",
+    //   route: "weaknesses",
+    // },
   ];
 
   const settingsMenuItems: MenuItem[] = [

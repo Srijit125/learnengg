@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@types/react": "19.1.10",
+    "babel-plugin-transform-import-meta": "^2.3.3",
     "eslint": "^9.39.2",
     "eslint-config-expo": "~10.0.0",
     "supabase": "^2.76.10",

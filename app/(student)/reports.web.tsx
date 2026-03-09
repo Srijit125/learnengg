@@ -1,6 +1,7 @@
 import DonutChart from "@/components/Dashboard/Charts/DonutChart";
 import { getUserCPI, getUserLogsData } from "@/services/analyticsService";
 import { useAuthStore } from "@/store/auth.store";
+import { downloadCSV } from "@/utils/csvExport";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useMemo, useState } from "react";
@@ -74,6 +75,34 @@ export default function StudentReportsPage() {
         };
     }, [logs]);
 
+    const handleDownload = () => {
+        if (!stats || !logs.length) return;
+
+        // Prepare data for CSV
+        const reportData = logs.map(log => ({
+            Date: new Date(log.timestamp).toLocaleString(),
+            Chapter: log.reference?.Chapter || "General Concepts",
+            Section: log.reference?.Section || "N/A",
+            Difficulty: log.difficulty,
+            Question: log.question,
+            Result: log.correct ? "Correct" : "Incorrect"
+        }));
+
+        // Add a summary row at the end (optional, but helpful)
+        const summaryData = [
+            {}, // Empty row
+            { Date: "SUMMARY STATISTICS" },
+            { Date: "Total Questions", Chapter: stats.total },
+            { Date: "Correct Answers", Chapter: stats.correct },
+            { Date: "Overall Accuracy", Chapter: `${stats.accuracy}%` },
+            { Date: "Current CPI", Chapter: cpi?.toFixed(1) || "0.0" },
+            { Date: "Top Strength", Chapter: stats.topStrength },
+            { Date: "Focus Needed", Chapter: stats.primaryWeakness }
+        ];
+
+        downloadCSV([...reportData, ...summaryData], `${user?.full_name || "Student"}_Learning_Report`);
+    };
+
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -85,6 +114,20 @@ export default function StudentReportsPage() {
 
     return (
         <View style={styles.container}>
+            {/* Native Web Print Styles */}
+            {typeof window !== 'undefined' && (
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                    @media print {
+                        .no-print { display: none !important; }
+                        .print-only { display: block !important; }
+                        body { background: white !important; padding: 0 !important; margin: 0 !important; }
+                        .print-card { border: none !important; shadow: none !important; padding: 0 !important; }
+                        .print-grid-card { width: 45% !important; border: 1px solid #eee !important; page-break-inside: avoid; }
+                    }
+                    .print-only { display: none; }
+                `}} />
+            )}
             <LinearGradient colors={["#f8fafc", "#f5f3ff"]} style={styles.gradientBackground}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                     <View style={styles.header}>
@@ -92,7 +135,7 @@ export default function StudentReportsPage() {
                             <Text style={styles.title}>Learning Report</Text>
                             <Text style={styles.subtitle}>Comprehensive overview of your progress</Text>
                         </View>
-                        <TouchableOpacity onPress={fetchData} style={styles.refreshBtn}>
+                        <TouchableOpacity onPress={fetchData} style={[styles.refreshBtn, { className: 'no-print' } as any]}>
                             <Ionicons name="refresh" size={20} color="#6366f1" />
                         </TouchableOpacity>
                     </View>
@@ -172,9 +215,12 @@ export default function StudentReportsPage() {
                                 </View>
                             </View>
 
-                            <TouchableOpacity style={styles.downloadBtn}>
+                            <TouchableOpacity
+                                style={[styles.downloadBtn, { className: 'no-print' } as any]}
+                                onPress={handleDownload}
+                            >
                                 <Ionicons name="download-outline" size={20} color="white" />
-                                <Text style={styles.downloadBtnText}>Export Detailed Report</Text>
+                                <Text style={styles.downloadBtnText}>Download CSV Report</Text>
                             </TouchableOpacity>
                         </>
                     ) : (
