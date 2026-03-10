@@ -1,18 +1,16 @@
+import { Course } from "@/models/Course";
+import { listCourses } from "@/services/course.service";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
-  StyleSheet,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
-  ScrollView,
 } from "react-native";
-import { Course } from "@/models/Course";
-import { listCourses } from "@/services/course.service";
-import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const StudentCoursesPage = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -37,35 +35,35 @@ const StudentCoursesPage = () => {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#667eea" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} style={styles.background}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Explore Courses</Text>
-          <Text style={styles.subtitle}>
+    <View className="flex-1">
+      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+        <View className="px-6 pt-8 pb-5 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark">
+          <Text className="text-2xl font-bold text-text-light dark:text-text-dark mb-1">Explore Courses</Text>
+          <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">
             Select a course to continue learning
           </Text>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.grid}>
+        <ScrollView contentContainerStyle={{ padding: 24 }}>
+          <View className="flex-row flex-wrap gap-5">
             {courses.map((course) => (
               <TouchableOpacity
                 key={course.course_id}
-                style={styles.courseCard}
+                className="w-[30%] bg-card-light dark:bg-card-dark rounded-2xl p-5 shadow-sm shadow-black/5 border border-border-light dark:border-border-dark"
                 onPress={() =>
                   router.push(`/(student)/course/${course.course_id}`)
                 }
                 activeOpacity={0.8}
               >
-                <View style={styles.cardHeader}>
-                  <View style={styles.iconContainer}>
+                <View className="flex-row justify-between items-center mb-4">
+                  <View className="w-12 h-12 rounded-xl bg-[#f0f4ff] justify-center items-center">
                     <MaterialCommunityIcons
                       name="book-open-variant"
                       size={24}
@@ -79,29 +77,29 @@ const StudentCoursesPage = () => {
                   />
                 </View>
 
-                <View style={styles.cardBody}>
-                  <Text style={styles.courseName}>{course.course_name}</Text>
-                  <Text style={styles.courseId}>{course.course_id}</Text>
+                <View className="mb-4">
+                  <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-1">{course.course_name}</Text>
+                  <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold">{course.course_id}</Text>
                 </View>
 
-                <View style={styles.cardFooter}>
-                  <View style={styles.stat}>
+                <View className="flex-row gap-4 pt-4 border-t border-border-light dark:border-border-dark">
+                  <View className="flex-row items-center gap-1.5">
                     <MaterialCommunityIcons
                       name="layers-outline"
                       size={14}
                       color="#64748b"
                     />
-                    <Text style={styles.statText}>
+                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">
                       {course.units || 0} Units
                     </Text>
                   </View>
-                  <View style={styles.stat}>
+                  <View className="flex-row items-center gap-1.5">
                     <MaterialCommunityIcons
                       name="book-outline"
                       size={14}
                       color="#64748b"
                     />
-                    <Text style={styles.statText}>
+                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">
                       {course.chapters || 0} Chapters
                     </Text>
                   </View>
@@ -116,69 +114,3 @@ const StudentCoursesPage = () => {
 };
 
 export default StudentCoursesPage;
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  background: { flex: 1 },
-  centerContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 20,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  title: { fontSize: 24, fontWeight: "700", color: "#1e293b", marginBottom: 4 },
-  subtitle: { fontSize: 14, color: "#64748b", fontWeight: "500" },
-  scrollContent: { padding: 24 },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 20,
-  },
-  courseCard: {
-    width: "30%",
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-  },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: "#f0f4ff",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  cardBody: { marginBottom: 16 },
-  courseName: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 4,
-  },
-  courseId: { fontSize: 12, color: "#94a3b8", fontWeight: "600" },
-  cardFooter: {
-    flexDirection: "row",
-    gap: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#f8fafc",
-  },
-  stat: { flexDirection: "row", alignItems: "center", gap: 6 },
-  statText: { fontSize: 12, color: "#64748b", fontWeight: "500" },
-});

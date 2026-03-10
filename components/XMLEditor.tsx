@@ -1,6 +1,6 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import React from "react";
 import Editor from "@monaco-editor/react";
+import React from "react";
+import { View } from "react-native";
 
 type Props = {
   xmlContent: string;
@@ -9,7 +9,7 @@ type Props = {
 
 const XMLEditor = ({ xmlContent, setXmlContent }: Props) => {
   return (
-    <View style={{ flex: 1 }}>
+    <View className="flex-1">
       <Editor
         language="xml"
         value={xmlContent}
@@ -27,15 +27,3 @@ const XMLEditor = ({ xmlContent, setXmlContent }: Props) => {
 };
 
 export default XMLEditor;
-
-const styles = StyleSheet.create({
-  xmlInput: {
-    flex: 1,
-    padding: 20,
-    fontFamily: "monospace",
-    fontSize: 14,
-    color: "#334155",
-    textAlignVertical: "top",
-    backgroundColor: "#fafafa",
-  },
-});

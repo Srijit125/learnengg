@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View,
@@ -31,7 +30,6 @@ export default function StudentStrengthsPage() {
             const logs = await getUserLogsData(user.id);
             setTotalAttempts(logs.length);
 
-            // Group by Chapter
             const counts: Record<string, { correct: number, total: number }> = {};
             logs.forEach((log: any) => {
                 const chapter = log.reference?.Chapter || "General Concepts";
@@ -40,7 +38,6 @@ export default function StudentStrengthsPage() {
                 if (log.correct) counts[chapter].correct++;
             });
 
-            // Convert to array and sort (highest accuracy first)
             const aggregated = Object.entries(counts)
                 .map(([name, stat]) => ({
                     name,
@@ -48,7 +45,7 @@ export default function StudentStrengthsPage() {
                     attempts: stat.total,
                     correct: stat.correct
                 }))
-                .filter(item => item.accuracy >= 80) // Threshold for strength
+                .filter(item => item.accuracy >= 80)
                 .sort((a, b) => b.accuracy - a.accuracy);
 
             setStrengths(aggregated);
@@ -60,58 +57,58 @@ export default function StudentStrengthsPage() {
     };
 
     return (
-        <View style={styles.container}>
-            <LinearGradient colors={["#f8fafc", "#f0fdf4"]} style={styles.gradientBackground}>
-                <ScrollView style={styles.scrollView}>
-                    <View style={styles.header}>
+        <View className="flex-1">
+            <LinearGradient colors={["#f8fafc", "#f0fdf4"]} className="flex-1">
+                <ScrollView className="flex-1">
+                    <View className="p-6 flex-row justify-between items-center">
                         <View>
-                            <Text style={styles.title}>Your Strengths</Text>
-                            <Text style={styles.subtitle}>Chapters where you are excelling</Text>
+                            <Text className="text-3xl font-extrabold text-[#064e3b] tracking-tight">Your Strengths</Text>
+                            <Text className="text-base text-[#059669] mt-1">Chapters where you are excelling</Text>
                         </View>
-                        <TouchableOpacity onPress={fetchData} style={styles.refreshBtn}>
+                        <TouchableOpacity onPress={fetchData} className="p-2.5 rounded-full bg-card-light dark:bg-card-dark border border-[#dcfce7] shadow-sm">
                             <Ionicons name="refresh" size={20} color="#059669" />
                         </TouchableOpacity>
                     </View>
 
                     {loading ? (
-                        <View style={styles.loadingContainer}>
+                        <View className="p-20 items-center">
                             <ActivityIndicator size="large" color="#10b981" />
-                            <Text style={styles.loadingText}>Analyzing your success...</Text>
+                            <Text className="mt-4 text-[15px] color-[#059669] font-medium">Analyzing your success...</Text>
                         </View>
                     ) : (
-                        <View style={styles.mainContent}>
-                            <View style={styles.summaryRow}>
-                                <View style={styles.summaryCard}>
-                                    <Text style={styles.summaryLabel}>Total Attempts</Text>
-                                    <Text style={styles.summaryValue}>{totalAttempts}</Text>
+                        <View className="px-6 pb-6 gap-6">
+                            <View className="flex-row gap-4 mb-2">
+                                <View className="flex-1 bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-[#dcfce7] shadow-sm">
+                                    <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase">Total Attempts</Text>
+                                    <Text className="text-2xl font-bold color-[#10b981] mt-1">{totalAttempts}</Text>
                                 </View>
-                                <View style={styles.summaryCard}>
-                                    <Text style={styles.summaryLabel}>Mastered Areas</Text>
-                                    <Text style={styles.summaryValue}>{strengths.length}</Text>
+                                <View className="flex-1 bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-[#dcfce7] shadow-sm">
+                                    <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase">Mastered Areas</Text>
+                                    <Text className="text-2xl font-bold color-[#10b981] mt-1">{strengths.length}</Text>
                                 </View>
                             </View>
 
                             {strengths.length > 0 ? (
-                                <View style={styles.section}>
-                                    <Text style={styles.sectionTitle}>Top Performing Chapters</Text>
-                                    <View style={styles.listContainer}>
+                                <View className="gap-4">
+                                    <Text className="text-lg font-bold text-text-light dark:text-text-dark">Top Performing Chapters</Text>
+                                    <View className="gap-3">
                                         {strengths.map((item, index) => (
-                                            <View key={index} style={styles.strengthCard}>
-                                                <View style={styles.rankBadge}>
-                                                    <Text style={styles.rankText}>#{index + 1}</Text>
+                                            <View key={index} className="bg-card-light dark:bg-card-dark p-4 rounded-2xl flex-row items-center border border-border-light dark:border-border-dark shadow-sm shadow-[#10b981]/5">
+                                                <View className="w-10 h-10 rounded-full bg-[#dcfce7] justify-center items-center mr-4">
+                                                    <Text className="color-[#059669] font-extrabold text-sm">#{index + 1}</Text>
                                                 </View>
-                                                <View style={styles.strengthInfo}>
-                                                    <Text style={styles.strengthName}>{item.name}</Text>
-                                                    <Text style={styles.strengthMeta}>{item.attempts} attempts • {item.correct} correct</Text>
+                                                <View className="flex-1">
+                                                    <Text className="text-base font-bold text-text-light dark:text-text-dark">{item.name}</Text>
+                                                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mt-0.5">{item.attempts} attempts • {item.correct} correct</Text>
 
-                                                    <View style={styles.progressRow}>
-                                                        <View style={styles.progressBarBg}>
-                                                            <View style={[styles.progressBarFill, { width: `${item.accuracy}%` }]} />
+                                                    <View className="flex-row items-center mt-2 gap-2.5">
+                                                        <View className="flex-1 h-1.5 bg-background-light dark:bg-background-dark rounded-full overflow-hidden">
+                                                            <View className="h-full bg-[#10b981] rounded-full" style={{ width: `${item.accuracy}%` }} />
                                                         </View>
-                                                        <Text style={styles.accuracyText}>{Math.round(item.accuracy)}%</Text>
+                                                        <Text className="text-sm font-bold color-[#10b981] w-10">{Math.round(item.accuracy)}%</Text>
                                                     </View>
                                                 </View>
-                                                <View style={styles.iconContainer}>
+                                                <View className="ml-4">
                                                     <MaterialCommunityIcons name="shield-check" size={28} color="#10b981" />
                                                 </View>
                                             </View>
@@ -119,10 +116,10 @@ export default function StudentStrengthsPage() {
                                     </View>
                                 </View>
                             ) : (
-                                <View style={styles.emptyState}>
+                                <View className="items-center justify-center p-12 bg-card-light dark:bg-card-dark rounded-3xl border border-border-light dark:border-border-dark">
                                     <MaterialCommunityIcons name="lightning-bolt" size={64} color="#f59e0b" />
-                                    <Text style={styles.emptyTitle}>Keep Pushing!</Text>
-                                    <Text style={styles.emptySubtitle}>Start mastering chapters and they will appear here as your strengths.</Text>
+                                    <Text className="text-xl font-bold text-text-light dark:text-text-dark mt-4">Keep Pushing!</Text>
+                                    <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark text-center mt-2">Start mastering chapters and they will appear here as your strengths.</Text>
                                 </View>
                             )}
                         </View>
@@ -132,88 +129,3 @@ export default function StudentStrengthsPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1 },
-    gradientBackground: { flex: 1 },
-    scrollView: { flex: 1 },
-    header: {
-        padding: 24,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    title: { fontSize: 32, fontWeight: "800", color: "#064e3b", letterSpacing: -0.5 },
-    subtitle: { fontSize: 16, color: "#059669", marginTop: 4 },
-    refreshBtn: {
-        padding: 10,
-        borderRadius: 20,
-        backgroundColor: 'white',
-        borderWidth: 1,
-        borderColor: '#dcfce7',
-        elevation: 2,
-    },
-    mainContent: { padding: 24, paddingTop: 0, gap: 24 },
-    summaryRow: { flexDirection: 'row', gap: 16, marginBottom: 8 },
-    summaryCard: {
-        flex: 1,
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: '#dcfce7',
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-    },
-    summaryLabel: { fontSize: 13, color: '#64748b', fontWeight: '600', textTransform: 'uppercase' },
-    summaryValue: { fontSize: 24, fontWeight: '700', color: '#10b981', marginTop: 4 },
-    section: { gap: 16 },
-    sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1e293b' },
-    listContainer: { gap: 12 },
-    strengthCard: {
-        backgroundColor: 'white',
-        padding: 16,
-        borderRadius: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-        shadowColor: '#10b981',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 12,
-    },
-    rankBadge: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#dcfce7',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 16,
-    },
-    rankText: { color: '#059669', fontWeight: '800', fontSize: 14 },
-    strengthInfo: { flex: 1 },
-    strengthName: { fontSize: 16, fontWeight: '700', color: '#1e293b' },
-    strengthMeta: { fontSize: 12, color: '#64748b', marginTop: 2 },
-    progressRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 10 },
-    progressBarBg: { flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden' },
-    progressBarFill: { height: '100%', backgroundColor: '#10b981', borderRadius: 3 },
-    accuracyText: { fontSize: 14, fontWeight: '700', color: '#10b981', width: 40 },
-    iconContainer: { marginLeft: 16 },
-    loadingContainer: { padding: 80, alignItems: 'center' },
-    loadingText: { marginTop: 16, fontSize: 15, color: "#059669", fontWeight: "500" },
-    emptyState: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 48,
-        backgroundColor: 'white',
-        borderRadius: 24,
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-    },
-    emptyTitle: { fontSize: 20, fontWeight: '700', color: '#1e293b', marginTop: 16 },
-    emptySubtitle: { fontSize: 14, color: '#64748b', textAlign: 'center', marginTop: 8 },
-});

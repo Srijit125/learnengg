@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { Text, View } from 'react-native';
 
 type MetricCardProps = {
   title: string;
@@ -22,68 +22,19 @@ const MetricCard = ({
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
-        <View style={styles.metricContainer}>
-          <Text style={[styles.metric, { color }]}>
+    <View className="flex-1 min-w-[180px] max-w-[220px] h-[140px] bg-card-light dark:bg-card-dark rounded-xl m-2 shadow-sm border border-border-light dark:border-border-dark">
+      <View className="flex-1 p-4 justify-between">
+        <Text className="text-[13px] font-semibold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-wider">{title}</Text>
+        <View className="my-2">
+          <Text className="text-4xl font-bold tracking-tighter" style={{ color }}>
             {formatMetric(metric)}
-            {suffix && <Text style={styles.suffix}>{suffix}</Text>}
+            {suffix && <Text className="text-xl font-semibold opacity-80">{suffix}</Text>}
           </Text>
         </View>
-        <View style={[styles.accentBar, { backgroundColor: color }]} />
+        <View className="h-1 rounded-full w-full" style={{ backgroundColor: color }} />
       </View>
     </View>
   );
 };
 
 export default MetricCard;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minWidth: 180,
-    maxWidth: 220,
-    height: 140,
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    margin: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-    justifyContent: 'space-between',
-  },
-  title: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#64748b',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  metricContainer: {
-    marginVertical: 8,
-  },
-  metric: {
-    fontSize: 32,
-    fontWeight: '700',
-    letterSpacing: -1,
-  },
-  suffix: {
-    fontSize: 20,
-    fontWeight: '600',
-    opacity: 0.8,
-  },
-  accentBar: {
-    height: 4,
-    borderRadius: 2,
-    width: '100%',
-  },
-});

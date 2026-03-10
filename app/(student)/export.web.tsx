@@ -7,7 +7,6 @@ import React, { useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View
@@ -36,7 +35,6 @@ export default function ExportDataPage() {
                 }));
                 downloadCSV(reportData, `${user.full_name}_Detailed_Activity`);
             } else {
-                // Topic summary
                 const counts: Record<string, { correct: number, total: number }> = {};
                 logsData.forEach((log: any) => {
                     const chapter = log.reference?.Chapter || "General Concepts";
@@ -52,7 +50,6 @@ export default function ExportDataPage() {
                     Accuracy: `${((stat.correct / stat.total) * 100).toFixed(1)}%`
                 }));
 
-                // Add overall stats
                 summaryData.push({
                     Chapter: "OVERALL",
                     "Total Questions": logsData.length,
@@ -70,35 +67,35 @@ export default function ExportDataPage() {
     };
 
     const ExportOption = ({ icon, title, description, onPress, color }: any) => (
-        <TouchableOpacity style={styles.optionCard} onPress={onPress}>
-            <View style={[styles.iconContainer, { backgroundColor: `${color}10` }]}>
+        <TouchableOpacity className="bg-card-light dark:bg-card-dark rounded-[20px] p-5 flex-row items-center border border-border-light dark:border-border-dark shadow-sm mb-4" onPress={onPress}>
+            <View className="w-14 h-14 rounded-2xl justify-center items-center mr-5" style={{ backgroundColor: `${color}10` }}>
                 <MaterialCommunityIcons name={icon} size={28} color={color} />
             </View>
-            <View style={styles.textContainer}>
-                <Text style={styles.optionTitle}>{title}</Text>
-                <Text style={styles.optionDescription}>{description}</Text>
+            <View className="flex-1">
+                <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-1">{title}</Text>
+                <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark leading-5">{description}</Text>
             </View>
             <MaterialCommunityIcons name="chevron-right" size={24} color="#cbd5e1" />
         </TouchableOpacity>
     );
 
     return (
-        <View style={styles.container}>
-            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} style={styles.gradientBackground}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>Export My Data</Text>
-                        <Text style={styles.subtitle}>Download your learning history and performance metrics</Text>
+        <View className="flex-1">
+            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+                <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 40 }}>
+                    <View className="mb-8 pt-3">
+                        <Text className="text-3xl font-extrabold text-text-light dark:text-text-dark tracking-tight">Export My Data</Text>
+                        <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark mt-1">Download your learning history and performance metrics</Text>
                     </View>
 
-                    <View style={styles.infoBox}>
+                    <View className="flex-row bg-[#e0f2fe] p-4 rounded-2xl mb-8 items-center gap-3 border border-[#bae6fd]">
                         <MaterialCommunityIcons name="information-outline" size={20} color="#0369a1" />
-                        <Text style={styles.infoText}>
+                        <Text className="flex-1 text-sm text-[#0369a1] leading-5">
                             Your data will be exported in CSV format, which can be opened in Excel, Google Sheets, or any text editor.
                         </Text>
                     </View>
 
-                    <View style={styles.section}>
+                    <View className="gap-4">
                         <ExportOption
                             icon="file-table-outline"
                             title="Detailed Activity Log"
@@ -106,7 +103,6 @@ export default function ExportDataPage() {
                             color="#4f46e5"
                             onPress={() => handleExport("full")}
                         />
-
                         <ExportOption
                             icon="chart-areaspline"
                             title="Performance Summary"
@@ -117,9 +113,9 @@ export default function ExportDataPage() {
                     </View>
 
                     {exporting && (
-                        <View style={styles.loadingOverlay}>
+                        <View className="mt-10 items-center">
                             <ActivityIndicator size="large" color="#6366f1" />
-                            <Text style={styles.loadingText}>Preparing your data...</Text>
+                            <Text className="mt-3 text-sm text-[#6366f1] font-semibold">Preparing your data...</Text>
                         </View>
                     )}
                 </ScrollView>
@@ -127,82 +123,3 @@ export default function ExportDataPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1 },
-    gradientBackground: { flex: 1 },
-    scrollView: { flex: 1 },
-    scrollContent: { padding: 24, paddingBottom: 40 },
-    header: {
-        marginBottom: 32,
-        paddingTop: 12,
-    },
-    title: { fontSize: 32, fontWeight: "800", color: "#1e293b", letterSpacing: -0.5 },
-    subtitle: { fontSize: 16, color: "#64748b", marginTop: 4 },
-    infoBox: {
-        flexDirection: "row",
-        backgroundColor: "#e0f2fe",
-        padding: 16,
-        borderRadius: 16,
-        marginBottom: 32,
-        alignItems: "center",
-        gap: 12,
-        borderWidth: 1,
-        borderColor: "#bae6fd",
-    },
-    infoText: {
-        flex: 1,
-        fontSize: 14,
-        color: "#0369a1",
-        lineHeight: 20,
-    },
-    section: {
-        gap: 16,
-    },
-    optionCard: {
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 20,
-        flexDirection: "row",
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: "#f1f5f9",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 2,
-    },
-    iconContainer: {
-        width: 56,
-        height: 56,
-        borderRadius: 16,
-        justifyContent: "center",
-        alignItems: "center",
-        marginRight: 20,
-    },
-    textContainer: {
-        flex: 1,
-    },
-    optionTitle: {
-        fontSize: 18,
-        fontWeight: "700",
-        color: "#1e293b",
-        marginBottom: 4,
-    },
-    optionDescription: {
-        fontSize: 14,
-        color: "#64748b",
-        lineHeight: 20,
-    },
-    loadingOverlay: {
-        marginTop: 40,
-        alignItems: "center",
-    },
-    loadingText: {
-        marginTop: 12,
-        fontSize: 14,
-        color: "#6366f1",
-        fontWeight: "600",
-    },
-});

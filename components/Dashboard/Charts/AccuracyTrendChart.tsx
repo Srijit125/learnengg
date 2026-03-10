@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { Dimensions, Text, View } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
 
 type DataPoint = {
@@ -19,9 +19,9 @@ const AccuracyTrendChart = ({
   if (!data || data.length === 0) return null;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
-      <View style={styles.chartWrapper}>
+    <View className="bg-card-light dark:bg-card-dark rounded-2xl p-5 shadow-sm shadow-[#000]/5 border border-transparent elevation-3 mb-5">
+      <Text className="text-base font-bold text-text-light dark:text-text-dark mb-6">{title}</Text>
+      <View className="items-center">
         <LineChart
           data={data}
           height={200}
@@ -38,8 +38,8 @@ const AccuracyTrendChart = ({
           yAxisThickness={0}
           xAxisThickness={1}
           xAxisColor="#e2e8f0"
-          yAxisTextStyle={styles.axisText}
-          xAxisLabelTextStyle={styles.axisText}
+          yAxisTextStyle={{ fontSize: 10, color: "#94a3b8", fontWeight: "500" }}
+          xAxisLabelTextStyle={{ fontSize: 10, color: "#94a3b8", fontWeight: "500" }}
           isAnimated
           animationDuration={1200}
           pointerConfig={{
@@ -50,8 +50,8 @@ const AccuracyTrendChart = ({
             radius: 6,
             pointerLabelComponent: (items: any) => {
               return (
-                <View style={styles.pointerLabel}>
-                  <Text style={styles.pointerLabelText}>
+                <View className="h-10 w-[60px] bg-[#1e293b] rounded-lg justify-center items-center">
+                  <Text className="color-white text-xs font-bold">
                     {Math.round(items[0].value)}%
                   </Text>
                 </View>
@@ -65,44 +65,3 @@ const AccuracyTrendChart = ({
 };
 
 export default AccuracyTrendChart;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 24,
-  },
-  chartWrapper: {
-    alignItems: "center",
-  },
-  axisText: {
-    fontSize: 10,
-    color: "#94a3b8",
-    fontWeight: "500",
-  },
-  pointerLabel: {
-    height: 40,
-    width: 60,
-    backgroundColor: "#1e293b",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  pointerLabelText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "700",
-  },
-});

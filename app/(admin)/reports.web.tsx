@@ -8,7 +8,6 @@ import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View
@@ -40,7 +39,6 @@ export default function ReportsPage() {
             setCoursesStats(courses);
             setGlobalLogs(logs);
 
-            // Fetch detailed metadata for each course
             const detailed = await Promise.all(courses.map(async (c: any) => {
                 const summary = await getCourseSummary(c.id);
                 const data = await fetchMCQs(c.id);
@@ -66,48 +64,49 @@ export default function ReportsPage() {
 
 
     const ReportCard = ({ title, description, icon, data, filename, color }: any) => (
-        <View style={styles.reportCard}>
-            <View style={[styles.reportIconContainer, { backgroundColor: `${color}10` }]}>
+        <View className="bg-card-light dark:bg-card-dark p-5 rounded-2xl flex-row items-center border border-border-light dark:border-border-dark shadow-sm shadow-black/5">
+            <View className={`w-12 h-12 rounded-xl justify-center items-center mr-4`} style={{ backgroundColor: `${color}10` }}>
                 <MaterialCommunityIcons name={icon} size={24} color={color} />
             </View>
-            <View style={styles.reportInfo}>
-                <Text style={styles.reportTitle}>{title}</Text>
-                <Text style={styles.reportDescription}>{description}</Text>
+            <View className="flex-1">
+                <Text className="text-lg font-bold text-text-light dark:text-text-dark">{title}</Text>
+                <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark mt-0.5">{description}</Text>
             </View>
             <TouchableOpacity
-                style={[styles.downloadBtn, { backgroundColor: color }]}
+                className="flex-row items-center px-4 py-2.5 rounded-lg gap-2 ml-4"
+                style={{ backgroundColor: color }}
                 onPress={() => downloadCSV(data, filename)}
             >
                 <MaterialCommunityIcons name="download" size={18} color="white" />
-                <Text style={styles.downloadBtnText}>CSV</Text>
+                <Text className="color-white font-bold text-sm">CSV</Text>
             </TouchableOpacity>
         </View>
     );
 
     return (
-        <View style={styles.container}>
-            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} style={styles.gradientBackground}>
-                <ScrollView style={styles.scrollView}>
-                    <View style={styles.header}>
+        <View className="flex-1">
+            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+                <ScrollView className="flex-1">
+                    <View className="p-6 pt-10 flex-row justify-between items-center">
                         <View>
-                            <Text style={styles.title}>System Reports</Text>
-                            <Text style={styles.subtitle}>Generate and download detailed analytics reports for the entire platform</Text>
+                            <Text className="text-[32px] font-bold text-text-light dark:text-text-dark tracking-tight">System Reports</Text>
+                            <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark mt-1">Generate and download detailed analytics reports for the entire platform</Text>
                         </View>
-                        <TouchableOpacity onPress={fetchData} style={styles.refreshBtn}>
+                        <TouchableOpacity onPress={fetchData} className="p-2.5 rounded-[20px] bg-card-light dark:bg-card-dark shadow-sm shadow-black/10">
                             <Ionicons name="refresh" size={20} color="#64748b" />
                         </TouchableOpacity>
                     </View>
 
                     {loading ? (
-                        <View style={styles.loadingContainer}>
+                        <View className="p-15 items-center">
                             <ActivityIndicator size="large" color="#667eea" />
-                            <Text style={styles.loadingText}>Preparing reports...</Text>
+                            <Text className="mt-4 text-[15px] text-textSecondary-light dark:text-textSecondary-dark font-medium">Preparing reports...</Text>
                         </View>
                     ) : (
-                        <View style={styles.mainContent}>
-                            <View style={styles.section}>
-                                <Text style={styles.sectionTitle}>Available Reports</Text>
-                                <View style={styles.reportGrid}>
+                        <View className="px-6 pb-6 gap-6">
+                            <View className="gap-4">
+                                <Text className="text-xl font-bold text-text-light dark:text-text-dark">Available Reports</Text>
+                                <View className="gap-4">
                                     <ReportCard
                                         title="Student Performance"
                                         description="Detailed metrics for all enrolled students including accuracy and attempts."
@@ -151,25 +150,25 @@ export default function ReportsPage() {
                                 </View>
                             </View>
 
-                            <View style={styles.summarySection}>
-                                <Text style={styles.sectionTitle}>Report Summaries</Text>
-                                <View style={styles.summaryCard}>
-                                    <View style={styles.summaryHeader}>
-                                        <Text style={styles.summaryLabel}>Total Records Available</Text>
+                            <View className="gap-4">
+                                <Text className="text-xl font-bold text-text-light dark:text-text-dark">Report Summaries</Text>
+                                <View className="bg-card-light dark:bg-card-dark p-6 rounded-[20px] border border-border-light dark:border-border-dark">
+                                    <View className="mb-5">
+                                        <Text className="text-sm font-semibold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[0.5px]">Total Records Available</Text>
                                     </View>
-                                    <View style={styles.summaryGrid}>
-                                        <View style={styles.summaryItem}>
-                                            <Text style={styles.summaryValue}>{studentsData.length}</Text>
-                                            <Text style={styles.summaryKey}>Students</Text>
+                                    <View className="flex-row items-center justify-around">
+                                        <View className="items-center">
+                                            <Text className="text-[28px] font-extrabold text-text-light dark:text-text-dark">{studentsData.length}</Text>
+                                            <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark mt-1 font-semibold">Students</Text>
                                         </View>
-                                        <View style={styles.summaryItem}>
-                                            <Text style={styles.summaryValue}>{coursesStats.length}</Text>
-                                            <Text style={styles.summaryKey}>Courses</Text>
+                                        <View className="items-center">
+                                            <Text className="text-[28px] font-extrabold text-text-light dark:text-text-dark">{coursesStats.length}</Text>
+                                            <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark mt-1 font-semibold">Courses</Text>
                                         </View>
-                                        <View style={styles.summaryValueSeparator} />
-                                        <View style={styles.summaryItem}>
-                                            <Text style={styles.summaryValue}>{globalLogs.length}</Text>
-                                            <Text style={styles.summaryKey}>Activity Logs</Text>
+                                        <View className="w-[1px] h-10 bg-background-light dark:bg-background-dark" />
+                                        <View className="items-center">
+                                            <Text className="text-[28px] font-extrabold text-text-light dark:text-text-dark">{globalLogs.length}</Text>
+                                            <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark mt-1 font-semibold">Activity Logs</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -181,83 +180,3 @@ export default function ReportsPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1 },
-    gradientBackground: { flex: 1 },
-    scrollView: { flex: 1 },
-    header: {
-        padding: 24,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: 40,
-    },
-    title: { fontSize: 32, fontWeight: "700", color: "#1e293b", letterSpacing: -0.5 },
-    subtitle: { fontSize: 16, color: "#64748b", marginTop: 4 },
-    refreshBtn: {
-        padding: 10,
-        borderRadius: 20,
-        backgroundColor: 'white',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-    },
-    mainContent: { padding: 24, paddingTop: 0, gap: 24 },
-    section: { gap: 16 },
-    sectionTitle: { fontSize: 20, fontWeight: "700", color: "#1e293b" },
-    reportGrid: { gap: 16 },
-    reportCard: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-    },
-    reportIconContainer: {
-        width: 48,
-        height: 48,
-        borderRadius: 12,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 16,
-    },
-    reportInfo: { flex: 1 },
-    reportTitle: { fontSize: 18, fontWeight: '700', color: '#1e293b' },
-    reportDescription: { fontSize: 14, color: '#64748b', marginTop: 2 },
-    downloadBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        borderRadius: 10,
-        gap: 8,
-    },
-    downloadBtnText: { color: 'white', fontWeight: '700', fontSize: 14 },
-    summarySection: { gap: 16 },
-    summaryCard: {
-        backgroundColor: 'white',
-        padding: 24,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-    },
-    summaryHeader: { marginBottom: 20 },
-    summaryLabel: { fontSize: 14, fontWeight: '600', color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.5 },
-    summaryGrid: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' },
-    summaryItem: { alignItems: 'center' },
-    summaryValue: { fontSize: 28, fontWeight: '800', color: '#1e293b' },
-    summaryKey: { fontSize: 13, color: '#94a3b8', marginTop: 4, fontWeight: '600' },
-    summaryValueSeparator: { width: 1, height: 40, backgroundColor: '#f1f5f9' },
-    loadingContainer: { padding: 60, alignItems: 'center' },
-    loadingText: { marginTop: 16, fontSize: 15, color: "#64748b", fontWeight: "500" },
-});

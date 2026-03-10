@@ -1,22 +1,18 @@
+import { UserRole } from "@/store/auth.store";
+import { supabase } from "@/utils/supabase";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import React, { useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  View,
-  Pressable,
-  Dimensions,
-  TextInput,
+  Alert,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
-  Alert,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
-import React, { useState } from "react";
-import { LinearGradient } from "expo-linear-gradient";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useAuthStore, UserRole } from "@/store/auth.store";
-import { supabase } from "@/utils/supabase";
-
-const { width } = Dimensions.get("window");
 
 const LoginScreen = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -82,18 +78,18 @@ const LoginScreen = () => {
   return (
     <LinearGradient
       colors={["#f8fafc", "#e2e8f0", "#cbd5e1"]}
-      style={styles.container}
+      className="flex-1"
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 40, alignItems: "center" }}>
+          <View className="items-center mb-8">
+            <View className="mb-4">
               <LinearGradient
                 colors={["#667eea", "#764ba2"]}
-                style={styles.logoGradient}
+                className="w-20 h-20 rounded-2xl justify-center items-center shadow-lg"
               >
                 <MaterialCommunityIcons
                   name="school-outline"
@@ -102,38 +98,38 @@ const LoginScreen = () => {
                 />
               </LinearGradient>
             </View>
-            <Text style={styles.title}>E-Learning Platform</Text>
-            <Text style={styles.subtitle}>
+            <Text className="text-3xl font-bold text-[#1e293b] mb-1">E-Learning Platform</Text>
+            <Text className="text-base text-[#64748b] font-medium">
               {isSignUp ? "Create an account" : "Welcome back!"}
             </Text>
           </View>
 
           {/* Tab Switcher */}
-          <View style={styles.tabContainer}>
+          <View className="flex-row bg-[#e2e8f0] rounded-xl p-1 mb-6 w-full">
             <Pressable
-              style={[styles.tab, !isSignUp && styles.activeTab]}
+              className={`flex-1 py-2.5 items-center rounded-lg ${!isSignUp ? "bg-white shadow-sm" : ""}`}
               onPress={() => setIsSignUp(false)}
             >
-              <Text style={[styles.tabText, !isSignUp && styles.activeTabText]}>
+              <Text className={`text-sm font-semibold ${!isSignUp ? "text-[#1e293b]" : "text-[#64748b]"}`}>
                 Login
               </Text>
             </Pressable>
             <Pressable
-              style={[styles.tab, isSignUp && styles.activeTab]}
+              className={`flex-1 py-2.5 items-center rounded-lg ${isSignUp ? "bg-white shadow-sm" : ""}`}
               onPress={() => setIsSignUp(true)}
             >
-              <Text style={[styles.tabText, isSignUp && styles.activeTabText]}>
+              <Text className={`text-sm font-semibold ${isSignUp ? "text-[#1e293b]" : "text-[#64748b]"}`}>
                 Sign Up
               </Text>
             </Pressable>
           </View>
 
-          <View style={styles.formCard}>
+          <View className="bg-white rounded-3xl p-6 w-full shadow-md">
             {isSignUp && (
               <>
-                <Text style={styles.label}>Full Name</Text>
+                <Text className="text-sm font-semibold text-[#475569] mb-2 mt-4">Full Name</Text>
                 <TextInput
-                  style={styles.input}
+                  className="bg-[#f8fafc] rounded-xl px-4 py-3 text-base text-[#1e293b] border border-[#e2e8f0]"
                   placeholder="John Doe"
                   value={fullName}
                   onChangeText={setFullName}
@@ -141,9 +137,9 @@ const LoginScreen = () => {
               </>
             )}
 
-            <Text style={styles.label}>Email Address</Text>
+            <Text className="text-sm font-semibold text-[#475569] mb-2 mt-4">Email Address</Text>
             <TextInput
-              style={styles.input}
+              className="bg-[#f8fafc] rounded-xl px-4 py-3 text-base text-[#1e293b] border border-[#e2e8f0]"
               placeholder="email@example.com"
               value={email}
               onChangeText={setEmail}
@@ -151,9 +147,9 @@ const LoginScreen = () => {
               keyboardType="email-address"
             />
 
-            <Text style={styles.label}>Password</Text>
+            <Text className="text-sm font-semibold text-[#475569] mb-2 mt-4">Password</Text>
             <TextInput
-              style={styles.input}
+              className="bg-[#f8fafc] rounded-xl px-4 py-3 text-base text-[#1e293b] border border-[#e2e8f0]"
               placeholder="••••••••"
               value={password}
               onChangeText={setPassword}
@@ -162,20 +158,15 @@ const LoginScreen = () => {
 
             {isSignUp && (
               <>
-                <Text style={styles.label}>I am a:</Text>
-                <View style={styles.roleContainer}>
+                <Text className="text-sm font-semibold text-[#475569] mb-2 mt-4">I am a:</Text>
+                <View className="flex-row gap-3 mt-2 w-full">
                   {roleCards.map((card) => {
                     const isSelected = selectedRole === card.role;
                     return (
                       <Pressable
                         key={card.role}
-                        style={[
-                          styles.roleCard,
-                          isSelected && {
-                            borderColor: card.iconColor,
-                            borderWidth: 2,
-                          },
-                        ]}
+                        className={`flex-1 flex-row items-center justify-center bg-[#f8fafc] p-3 rounded-xl gap-2 border ${isSelected ? "border-2" : "border-[#e2e8f0]"}`}
+                        style={isSelected ? { borderColor: card.iconColor } : undefined}
                         onPress={() => setSelectedRole(card.role)}
                       >
                         <MaterialCommunityIcons
@@ -184,10 +175,8 @@ const LoginScreen = () => {
                           color={isSelected ? card.iconColor : "#94a3b8"}
                         />
                         <Text
-                          style={[
-                            styles.roleCardText,
-                            isSelected && { color: card.iconColor },
-                          ]}
+                          className="text-sm font-semibold"
+                          style={{ color: isSelected ? card.iconColor : "#64748b" }}
                         >
                           {card.title}
                         </Text>
@@ -199,19 +188,15 @@ const LoginScreen = () => {
             )}
 
             <Pressable
-              style={({ pressed }) => [
-                styles.authButton,
-                loading && styles.authButtonDisabled,
-                pressed && !loading && { opacity: 0.9 },
-              ]}
+              className={`mt-8 rounded-2xl overflow-hidden shadow-lg ${loading ? "opacity-70" : ""}`}
               onPress={handleAuth}
               disabled={loading}
             >
               <LinearGradient
                 colors={["#667eea", "#764ba2"]}
-                style={styles.authButtonGradient}
+                className="flex-row items-center justify-center py-4 gap-2"
               >
-                <Text style={styles.authButtonText}>
+                <Text className="text-white text-lg font-bold">
                   {loading
                     ? "Processing..."
                     : isSignUp
@@ -229,8 +214,8 @@ const LoginScreen = () => {
             </Pressable>
           </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
+          <View className="mt-8 items-center">
+            <Text className="text-xs text-[#94a3b8] text-center">
               By continuing, you agree to our Terms & Privacy Policy
             </Text>
           </View>
@@ -241,160 +226,3 @@ const LoginScreen = () => {
 };
 
 export default LoginScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 40,
-    alignItems: "center",
-  },
-  header: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  logoContainer: {
-    marginBottom: 16,
-  },
-  logoGradient: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 8,
-    shadowColor: "#667eea",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#64748b",
-    fontWeight: "500",
-  },
-  tabContainer: {
-    flexDirection: "row",
-    backgroundColor: "#e2e8f0",
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 24,
-    width: "100%",
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-    borderRadius: 8,
-  },
-  activeTab: {
-    backgroundColor: "#ffffff",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#64748b",
-  },
-  activeTabText: {
-    color: "#1e293b",
-  },
-  formCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 24,
-    padding: 24,
-    width: "100%",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#475569",
-    marginBottom: 8,
-    marginTop: 16,
-  },
-  input: {
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: "#1e293b",
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
-  roleContainer: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 8,
-    width: "100%",
-  },
-  roleCard: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f8fafc",
-    padding: 12,
-    borderRadius: 12,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
-  roleCardText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#64748b",
-  },
-  authButton: {
-    marginTop: 32,
-    borderRadius: 16,
-    overflow: "hidden",
-    elevation: 6,
-    shadowColor: "#667eea",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-  },
-  authButtonDisabled: {
-    opacity: 0.7,
-  },
-  authButtonGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    gap: 8,
-  },
-  authButtonText: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  footer: {
-    marginTop: 32,
-    alignItems: "center",
-  },
-  footerText: {
-    fontSize: 12,
-    color: "#94a3b8",
-    textAlign: "center",
-  },
-});

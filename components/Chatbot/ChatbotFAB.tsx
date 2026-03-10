@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 
 interface ChatbotFABProps {
     onPress: () => void;
@@ -10,7 +10,7 @@ interface ChatbotFABProps {
 const ChatbotFAB: React.FC<ChatbotFABProps> = ({ onPress, isOpen }) => {
     return (
         <TouchableOpacity
-            style={styles.fab}
+            className="absolute bottom-[30px] right-[30px] bg-primary w-[60px] h-[60px] rounded-[30px] justify-center items-center elevation-8 shadow-lg shadow-primary/30 z-[1000]"
             onPress={onPress}
             activeOpacity={0.8}
         >
@@ -22,25 +22,5 @@ const ChatbotFAB: React.FC<ChatbotFABProps> = ({ onPress, isOpen }) => {
         </TouchableOpacity>
     );
 };
-
-const styles = StyleSheet.create({
-    fab: {
-        position: "absolute",
-        bottom: 30,
-        right: 30,
-        backgroundColor: "#6366f1",
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        justifyContent: "center",
-        alignItems: "center",
-        elevation: 8,
-        shadowColor: "#6366f1",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        zIndex: 1000,
-    },
-});
 
 export default ChatbotFAB;

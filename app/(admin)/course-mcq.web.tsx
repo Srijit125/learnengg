@@ -5,7 +5,7 @@ import { addMCQToBackend, deleteMCQ, fetchMCQsByChapter, updateMCQ } from '@/ser
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function CourseMCQPage() {
     const [courses, setCourses] = useState<Course[]>([]);
@@ -238,66 +238,72 @@ export default function CourseMCQPage() {
 
     if (loading) {
         return (
-            <View style={styles.centerContainer}>
+            <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size="large" color="#667eea" />
             </View>
         );
     }
 
     return (
-        <View style={styles.container}>
-            <LinearGradient colors={['#f8fafc', '#f1f5f9']} style={styles.background}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Add MCQ Questions</Text>
-                    <Text style={styles.subtitle}>Select course, chapter and create MCQs</Text>
+        <View className="flex-1">
+            <LinearGradient colors={['#f8fafc', '#f1f5f9']} className="flex-1">
+                <View className="px-6 pt-10 pb-6 bg-card-light dark:bg-card-dark border-b border-divider-light dark:border-divider-dark">
+                    <Text className="text-2xl font-bold color-[#1a202c] mb-1">Add MCQ Questions</Text>
+                    <Text className="text-sm font-medium color-[#718096]">Select course, chapter and create MCQs</Text>
                 </View>
 
-                <ScrollView contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.card}>
-                        <Text style={styles.sectionTitle}>1. Target Selection</Text>
+                <ScrollView contentContainerStyle={{ padding: 24, gap: 20 }}>
+                    <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 shadow-md shadow-[#000]/5 border border-transparent">
+                        <Text className="text-lg font-semibold color-[#2d3748] mb-5">1. Target Selection</Text>
 
-                        <View style={styles.row}>
-                            <View style={styles.inputGroup}>
-                                <Text style={styles.label}>Select Course</Text>
-                                <View style={styles.selectWrapper}>
+                        <View className="flex-row gap-4">
+                            <View className="mb-5 w-full">
+                                <Text className="text-sm font-semibold color-[#4a5568] mb-2">Select Course</Text>
+                                <View className="flex-row gap-2.5">
                                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                        {courses.map(course => (
-                                            <TouchableOpacity
-                                                key={course.course_id}
-                                                style={[styles.chip, selectedCourseId === course.course_id && styles.chipActive]}
-                                                onPress={() => setSelectedCourseId(course.course_id)}
-                                            >
-                                                <Text style={[styles.chipText, selectedCourseId === course.course_id && styles.chipTextActive]}>
-                                                    {course.course_name}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
+                                        {courses.map(course => {
+                                            const isActive = selectedCourseId === course.course_id;
+                                            return (
+                                                <TouchableOpacity
+                                                    key={course.course_id}
+                                                    className={`px-4 py-2 rounded-full mr-2 border ${isActive ? "bg-[#ebf4ff] border-[#667eea]" : "bg-[#edf2f7] border-divider-light dark:border-divider-dark"}`}
+                                                    onPress={() => setSelectedCourseId(course.course_id)}
+                                                >
+                                                    <Text className={`text-[13px] ${isActive ? "color-[#667eea] font-semibold" : "color-[#4a5568] font-medium"}`}>
+                                                        {course.course_name}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            );
+                                        })}
                                     </ScrollView>
                                 </View>
                             </View>
                         </View>
 
                         {fetchingStructure ? (
-                            <ActivityIndicator size="small" color="#667eea" style={{ marginVertical: 20 }} />
+                            <ActivityIndicator size="small" color="#667eea" className="my-5" />
                         ) : selectedCourseId && (
-                            <View style={styles.inputGroup}>
-                                <Text style={styles.label}>Select Chapter</Text>
-                                <View style={styles.selectWrapper}>
-                                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScrollContent}>
-                                        {chapters.map((chapter, idx) => (
-                                            <TouchableOpacity
-                                                key={chapter.id || `chapter-${idx}`}
-                                                style={[styles.chip, selectedChapterId === chapter.id && styles.chipActive]}
-                                                onPress={() => {
-                                                    console.log('User selected chapter:', chapter.id);
-                                                    setSelectedChapterId(chapter.id);
-                                                }}
-                                            >
-                                                <Text style={[styles.chipText, selectedChapterId === chapter.id && styles.chipTextActive]}>
-                                                    {chapter.name || `Chapter ${idx + 1}`}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
+                            <View className="mb-5 w-full">
+                                <Text className="text-sm font-semibold color-[#4a5568] mb-2">Select Chapter</Text>
+                                <View className="flex-row gap-2.5">
+                                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 24 }}>
+                                        {chapters.map((chapter, idx) => {
+                                            const isActive = selectedChapterId === chapter.id;
+                                            return (
+                                                <TouchableOpacity
+                                                    key={chapter.id || `chapter-${idx}`}
+                                                    className={`px-4 py-2 rounded-full mr-2 border ${isActive ? "bg-[#ebf4ff] border-[#667eea]" : "bg-[#edf2f7] border-divider-light dark:border-divider-dark"}`}
+                                                    onPress={() => {
+                                                        console.log('User selected chapter:', chapter.id);
+                                                        setSelectedChapterId(chapter.id);
+                                                    }}
+                                                >
+                                                    <Text className={`text-[13px] ${isActive ? "color-[#667eea] font-semibold" : "color-[#4a5568] font-medium"}`}>
+                                                        {chapter.name || `Chapter ${idx + 1}`}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            );
+                                        })}
                                     </ScrollView>
                                 </View>
                             </View>
@@ -305,13 +311,14 @@ export default function CourseMCQPage() {
                     </View>
 
                     {selectedChapterId && (
-                        <View style={styles.card}>
-                            <Text style={styles.sectionTitle}>{editingMcqId ? 'Edit Question' : '2. Question Details'}</Text>
+                        <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 shadow-md shadow-[#000]/5 border border-transparent">
+                            <Text className="text-lg font-semibold color-[#2d3748] mb-5">{editingMcqId ? 'Edit Question' : '2. Question Details'}</Text>
 
-                            <View style={styles.inputGroup}>
-                                <Text style={styles.label}>Question</Text>
+                            <View className="mb-5 w-full">
+                                <Text className="text-sm font-semibold color-[#4a5568] mb-2">Question</Text>
                                 <TextInput
-                                    style={styles.textInput}
+                                    className="bg-[#f7fafc] border border-divider-light dark:border-divider-dark rounded-lg p-3 text-[15px] color-[#2d3748]"
+                                    style={{ textAlignVertical: 'top' }}
                                     multiline
                                     numberOfLines={3}
                                     value={question}
@@ -320,17 +327,17 @@ export default function CourseMCQPage() {
                                 />
                             </View>
 
-                            <Text style={styles.label}>Options (Select the correct one)</Text>
+                            <Text className="text-sm font-semibold color-[#4a5568] mb-2">Options (Select the correct one)</Text>
                             {options.map((opt, index) => (
-                                <View key={index} style={styles.optionRow}>
+                                <View key={index} className="flex-row items-center gap-3 mb-3">
                                     <TouchableOpacity
-                                        style={[styles.radio, correctIndex === index && styles.radioActive]}
+                                        className={`w-[22px] h-[22px] rounded-full border-2 justify-center items-center ${correctIndex === index ? "border-[#667eea]" : "border-[#cbd5e0]"}`}
                                         onPress={() => setCorrectIndex(index)}
                                     >
-                                        {correctIndex === index && <View style={styles.radioInner} />}
+                                        {correctIndex === index && <View className="w-3 h-3 rounded-full bg-[#667eea]" />}
                                     </TouchableOpacity>
                                     <TextInput
-                                        style={styles.optionInput}
+                                        className="flex-1 bg-[#f7fafc] border border-divider-light dark:border-divider-dark rounded-lg p-2.5 text-sm"
                                         value={opt}
                                         onChangeText={(text) => handleOptionChange(text, index)}
                                         placeholder={`Option ${index + 1}`}
@@ -338,23 +345,41 @@ export default function CourseMCQPage() {
                                 </View>
                             ))}
 
-                            <View style={styles.inputGroup}>
-                                <Text style={styles.label}>Difficulty</Text>
-                                <View style={styles.difficultyRow}>
-                                    {(['Easy', 'Medium', 'Hard'] as const).map((level) => (
-                                        <TouchableOpacity
-                                            key={level}
-                                            style={[styles.diffBtn, difficulty === level && styles.diffBtnActive, styles[`diff${level}` as keyof typeof styles]]}
-                                            onPress={() => setDifficulty(level)}
-                                        >
-                                            <Text style={[styles.diffText, difficulty === level && styles.diffTextActive]}>{level}</Text>
-                                        </TouchableOpacity>
-                                    ))}
+                            <View className="mb-5 w-full mt-2">
+                                <Text className="text-sm font-semibold color-[#4a5568] mb-2">Difficulty</Text>
+                                <View className="flex-row gap-3">
+                                    {(['Easy', 'Medium', 'Hard'] as const).map((level) => {
+                                        const isActive = difficulty === level;
+
+                                        // Colors based on difficulty
+                                        let borderColor = '';
+                                        let activeBgColor = '';
+                                        if (level === 'Easy') {
+                                            borderColor = 'border-l-[#48bb78]';
+                                            activeBgColor = 'bg-[#48bb78]';
+                                        } else if (level === 'Medium') {
+                                            borderColor = 'border-l-[#ed8936]';
+                                            activeBgColor = 'bg-[#ed8936]';
+                                        } else if (level === 'Hard') {
+                                            borderColor = 'border-l-[#f56565]';
+                                            activeBgColor = 'bg-[#f56565]';
+                                        }
+
+                                        return (
+                                            <TouchableOpacity
+                                                key={level}
+                                                className={`flex-1 py-2.5 rounded-lg items-center border border-divider-light dark:border-divider-dark border-l-4 ${borderColor} ${isActive ? `border-transparent ${activeBgColor}` : "bg-[#f7fafc]"}`}
+                                                onPress={() => setDifficulty(level)}
+                                            >
+                                                <Text className={`text-sm font-semibold ${isActive ? "color-white" : "color-[#718096]"}`}>{level}</Text>
+                                            </TouchableOpacity>
+                                        );
+                                    })}
                                 </View>
                             </View>
 
                             <TouchableOpacity
-                                style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
+                                className={`flex-row items-center justify-center py-3.5 rounded-xl gap-2.5 mt-2.5 bg-[#667eea] shadow-md shadow-[#667eea]/30 ${saving ? "opacity-70" : ""}`}
                                 onPress={handleSaveMCQ}
                                 disabled={saving}
                             >
@@ -363,14 +388,14 @@ export default function CourseMCQPage() {
                                 ) : (
                                     <>
                                         <MaterialCommunityIcons name={editingMcqId ? "check-circle-outline" : "plus-circle-outline"} size={20} color="#fff" />
-                                        <Text style={styles.saveBtnText}>{editingMcqId ? 'Update Question' : 'Add Question'}</Text>
+                                        <Text className="color-white text-base font-bold">{editingMcqId ? 'Update Question' : 'Add Question'}</Text>
                                     </>
                                 )}
                             </TouchableOpacity>
 
                             {editingMcqId && (
                                 <TouchableOpacity
-                                    style={styles.cancelBtn}
+                                    className="mt-2.5 py-3 rounded-lg items-center border border-divider-light dark:border-divider-dark"
                                     onPress={() => {
                                         setEditingMcqId(null);
                                         setQuestion('');
@@ -378,42 +403,49 @@ export default function CourseMCQPage() {
                                         setCorrectIndex(0);
                                     }}
                                 >
-                                    <Text style={styles.cancelBtnText}>Cancel Edit</Text>
+                                    <Text className="color-[#718096] font-semibold">Cancel Edit</Text>
                                 </TouchableOpacity>
                             )}
                         </View>
                     )}
 
                     {selectedChapterId && !editingMcqId && (
-                        <View style={styles.card}>
-                            <Text style={styles.sectionTitle}>Existing Questions</Text>
+                        <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 shadow-md shadow-[#000]/5 border border-transparent">
+                            <Text className="text-lg font-semibold color-[#2d3748] mb-5">Existing Questions</Text>
                             {loadingMcqs ? (
                                 <ActivityIndicator size="small" color="#667eea" />
                             ) : mcqs.length === 0 ? (
-                                <Text style={styles.emptyText}>No questions found for this chapter.</Text>
+                                <Text className="text-center color-[#a0aec0] py-5">No questions found for this chapter.</Text>
                             ) : (
-                                <View style={styles.mcqList}>
-                                    {mcqs.map((mcq, idx) => (
-                                        <View key={mcq.mcqId || idx} style={styles.mcqItem}>
-                                            <View style={styles.mcqContent}>
-                                                <Text style={styles.mcqQuestion}>{idx + 1}. {mcq.Question}</Text>
-                                                <View style={styles.mcqMeta}>
-                                                    <View style={[styles.miniBadge, styles[`diff${mcq.Difficulty}` as keyof typeof styles]]}>
-                                                        <Text style={styles.miniBadgeText}>{mcq.Difficulty}</Text>
+                                <View className="gap-4 mt-2.5">
+                                    {mcqs.map((mcq, idx) => {
+                                        let badgeColor = '';
+                                        if (mcq.Difficulty === 'Easy') badgeColor = 'bg-[#48bb78]';
+                                        else if (mcq.Difficulty === 'Medium') badgeColor = 'bg-[#ed8936]';
+                                        else if (mcq.Difficulty === 'Hard') badgeColor = 'bg-[#f56565]';
+
+                                        return (
+                                            <View key={mcq.mcqId || idx} className="flex-row p-4 bg-background-light dark:bg-background-dark rounded-xl border border-divider-light dark:border-divider-dark gap-3">
+                                                <View className="flex-1">
+                                                    <Text className="text-[15px] font-semibold color-[#2d3748] mb-2">{idx + 1}. {mcq.Question}</Text>
+                                                    <View className="flex-row items-center gap-3">
+                                                        <View className={`px-2 py-0.5 rounded ${badgeColor}`}>
+                                                            <Text className="text-[11px] font-bold color-white uppercase">{mcq.Difficulty}</Text>
+                                                        </View>
+                                                        <Text className="text-xs color-[#718096]">{mcq.Options.length} Options</Text>
                                                     </View>
-                                                    <Text style={styles.optionCount}>{mcq.Options.length} Options</Text>
+                                                </View>
+                                                <View className="flex-row gap-2">
+                                                    <TouchableOpacity onPress={() => handleEdit(mcq)} className="w-9 h-9 rounded-full bg-card-light dark:bg-card-dark justify-center items-center border border-divider-light dark:border-divider-dark">
+                                                        <MaterialCommunityIcons name="pencil" size={18} color="#667eea" />
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity onPress={() => handleDelete(mcq.mcqId!)} className="w-9 h-9 rounded-full bg-card-light dark:bg-card-dark justify-center items-center border border-divider-light dark:border-divider-dark">
+                                                        <MaterialCommunityIcons name="trash-can-outline" size={18} color="#f56565" />
+                                                    </TouchableOpacity>
                                                 </View>
                                             </View>
-                                            <View style={styles.mcqActions}>
-                                                <TouchableOpacity onPress={() => handleEdit(mcq)} style={styles.actionBtn}>
-                                                    <MaterialCommunityIcons name="pencil" size={18} color="#667eea" />
-                                                </TouchableOpacity>
-                                                <TouchableOpacity onPress={() => handleDelete(mcq.mcqId!)} style={styles.actionBtn}>
-                                                    <MaterialCommunityIcons name="trash-can-outline" size={18} color="#f56565" />
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    ))}
+                                        );
+                                    })}
                                 </View>
                             )}
                         </View>
@@ -423,160 +455,3 @@ export default function CourseMCQPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1 },
-    background: { flex: 1 },
-    centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    header: {
-        paddingHorizontal: 24,
-        paddingTop: 40,
-        paddingBottom: 24,
-        backgroundColor: '#ffffff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#e2e8f0',
-    },
-    title: { fontSize: 24, fontWeight: '700', color: '#1a202c', marginBottom: 4 },
-    subtitle: { fontSize: 14, color: '#718096', fontWeight: '500' },
-    scrollContent: { padding: 24, gap: 20 },
-    horizontalScrollContent: { paddingRight: 24 },
-    card: {
-        backgroundColor: '#ffffff',
-        borderRadius: 16,
-        padding: 24,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 3,
-    },
-    sectionTitle: { fontSize: 18, fontWeight: '600', color: '#2d3748', marginBottom: 20 },
-    row: { flexDirection: 'row', gap: 16 },
-    inputGroup: { marginBottom: 20, width: '100%' },
-    label: { fontSize: 14, fontWeight: '600', color: '#4a5568', marginBottom: 8 },
-    selectWrapper: { flexDirection: 'row', gap: 10 },
-    chip: {
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        backgroundColor: '#edf2f7',
-        marginRight: 8,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-    },
-    chipActive: {
-        backgroundColor: '#ebf4ff',
-        borderColor: '#667eea',
-    },
-    chipText: { fontSize: 13, color: '#4a5568', fontWeight: '500' },
-    chipTextActive: { color: '#667eea', fontWeight: '600' },
-    textInput: {
-        backgroundColor: '#f7fafc',
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 15,
-        color: '#2d3748',
-        textAlignVertical: 'top',
-    },
-    optionRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 12 },
-    radio: {
-        width: 22,
-        height: 22,
-        borderRadius: 11,
-        borderWidth: 2,
-        borderColor: '#cbd5e0',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    radioActive: { borderColor: '#667eea' },
-    radioInner: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#667eea' },
-    optionInput: {
-        flex: 1,
-        backgroundColor: '#f7fafc',
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        borderRadius: 8,
-        padding: 10,
-        fontSize: 14,
-    },
-    difficultyRow: { flexDirection: 'row', gap: 12 },
-    diffBtn: {
-        flex: 1,
-        paddingVertical: 10,
-        borderRadius: 8,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        backgroundColor: '#f7fafc',
-    },
-    diffBtnActive: { borderColor: 'transparent' },
-    diffEasy: { borderLeftWidth: 4, borderLeftColor: '#48bb78' },
-    diffMedium: { borderLeftWidth: 4, borderLeftColor: '#ed8936' },
-    diffHard: { borderLeftWidth: 4, borderLeftColor: '#f56565' },
-    diffText: { fontSize: 14, fontWeight: '600', color: '#718096' },
-    diffTextActive: { color: '#ffffff' },
-    // Overwrite active styles for text color
-    diffBtnActive_Easy: { backgroundColor: '#48bb78' },
-    diffBtnActive_Medium: { backgroundColor: '#ed8936' },
-    diffBtnActive_Hard: { backgroundColor: '#f56565' },
-    saveBtn: {
-        backgroundColor: '#667eea',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 14,
-        borderRadius: 12,
-        gap: 10,
-        marginTop: 10,
-        shadowColor: '#667eea',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-    },
-    saveBtnDisabled: { opacity: 0.7 },
-    saveBtnText: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
-    cancelBtn: {
-        marginTop: 10,
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-    },
-    cancelBtnText: { color: '#718096', fontWeight: '600' },
-    mcqList: { gap: 16, marginTop: 10 },
-    mcqItem: {
-        flexDirection: 'row',
-        padding: 16,
-        backgroundColor: '#f8fafc',
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        gap: 12,
-    },
-    mcqContent: { flex: 1 },
-    mcqQuestion: { fontSize: 15, fontWeight: '600', color: '#2d3748', marginBottom: 8 },
-    mcqMeta: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-    miniBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
-    miniBadgeText: { fontSize: 11, fontWeight: '700', color: '#fff', textTransform: 'uppercase' },
-    optionCount: { fontSize: 12, color: '#718096' },
-    mcqActions: { flexDirection: 'row', gap: 8 },
-    actionBtn: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-    },
-    emptyText: { textAlign: 'center', color: '#a0aec0', paddingVertical: 20 },
-} as any);
-
-// Inject active level styles
-styles.diffBtnActive_Easy = { backgroundColor: '#48bb78' };
-styles.diffBtnActive_Medium = { backgroundColor: '#ed8936' };
-styles.diffBtnActive_Hard = { backgroundColor: '#f56565' };

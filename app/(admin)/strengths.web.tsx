@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View
@@ -26,7 +25,6 @@ export default function StrengthsPage() {
             const logs = await getGlobalStudyLogs();
             setTotalLogs(logs.length);
 
-            // Group by Chapter
             const counts: Record<string, { correct: number, total: number }> = {};
             logs.forEach((log: any) => {
                 const chapter = log.reference?.Chapter || "General Concepts";
@@ -35,7 +33,6 @@ export default function StrengthsPage() {
                 if (log.correct) counts[chapter].correct++;
             });
 
-            // Convert to array and sort
             const aggregated = Object.entries(counts)
                 .map(([name, stat]) => ({
                     name,
@@ -43,10 +40,10 @@ export default function StrengthsPage() {
                     attempts: stat.total,
                     correct: stat.correct
                 }))
-                .filter(item => item.attempts >= 1) // Minimum data points
-                .sort((a, b) => b.accuracy - a.accuracy); // Highest accuracy first
+                .filter(item => item.attempts >= 1)
+                .sort((a, b) => b.accuracy - a.accuracy);
 
-            setStrengths(aggregated.slice(0, 10)); // Top 10 strengths
+            setStrengths(aggregated.slice(0, 10));
         } catch (error) {
             console.error("Error fetching strengths data:", error);
         } finally {
@@ -55,57 +52,57 @@ export default function StrengthsPage() {
     };
 
     return (
-        <View style={styles.container}>
-            <LinearGradient colors={["#f8fafc", "#f0fdf4"]} style={styles.gradientBackground}>
-                <ScrollView style={styles.scrollView}>
-                    <View style={styles.header}>
+        <View className="flex-1">
+            <LinearGradient colors={["#f8fafc", "#f0fdf4"]} className="flex-1">
+                <ScrollView className="flex-1">
+                    <View className="p-6 pt-10 flex-row justify-between items-center">
                         <View>
-                            <Text style={styles.title}>System Strengths</Text>
-                            <Text style={styles.subtitle}>Top performing chapters where students excel the most</Text>
+                            <Text className="text-[32px] font-bold color-[#064e3b] tracking-tight">System Strengths</Text>
+                            <Text className="text-base color-[#059669] mt-1">Top performing chapters where students excel the most</Text>
                         </View>
-                        <TouchableOpacity onPress={fetchData} style={styles.refreshBtn}>
+                        <TouchableOpacity onPress={fetchData} className="p-2.5 rounded-[20px] bg-card-light dark:bg-card-dark border border-[#dcfce7] shadow-sm">
                             <Ionicons name="refresh" size={20} color="#059669" />
                         </TouchableOpacity>
                     </View>
 
                     {loading ? (
-                        <View style={styles.loadingContainer}>
+                        <View className="p-20 items-center">
                             <ActivityIndicator size="large" color="#10b981" />
-                            <Text style={styles.loadingText}>Analyzing performance...</Text>
+                            <Text className="mt-4 text-[15px] color-[#059669] font-medium">Analyzing performance...</Text>
                         </View>
                     ) : (
-                        <View style={styles.mainContent}>
-                            <View style={styles.summaryRow}>
-                                <View style={styles.summaryCard}>
-                                    <Text style={styles.summaryLabel}>Total Activities</Text>
-                                    <Text style={styles.summaryValue}>{totalLogs}</Text>
+                        <View className="px-6 pb-6 gap-6">
+                            <View className="flex-row gap-4">
+                                <View className="flex-1 bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-[#dcfce7]">
+                                    <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase">Total Activities</Text>
+                                    <Text className="text-2xl font-bold color-[#10b981] mt-1">{totalLogs}</Text>
                                 </View>
-                                <View style={styles.summaryCard}>
-                                    <Text style={styles.summaryLabel}>Identified Strengths</Text>
-                                    <Text style={styles.summaryValue}>{strengths.length}</Text>
+                                <View className="flex-1 bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-[#dcfce7]">
+                                    <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase">Identified Strengths</Text>
+                                    <Text className="text-2xl font-bold color-[#10b981] mt-1">{strengths.length}</Text>
                                 </View>
                             </View>
 
-                            <View style={styles.section}>
-                                <Text style={styles.sectionTitle}>Top 10 Performant Chapters</Text>
-                                <View style={styles.listContainer}>
+                            <View className="gap-4">
+                                <Text className="text-lg font-bold text-text-light dark:text-text-dark">Top 10 Performant Chapters</Text>
+                                <View className="gap-3">
                                     {strengths.map((item, index) => (
-                                        <View key={index} style={styles.strengthCard}>
-                                            <View style={styles.rankBadge}>
-                                                <Text style={styles.rankText}>#{index + 1}</Text>
+                                        <View key={index} className="bg-card-light dark:bg-card-dark p-4 rounded-2xl flex-row items-center border border-border-light dark:border-border-dark shadow-sm shadow-[#10b981]/5">
+                                            <View className="w-10 h-10 rounded-[20px] bg-[#dcfce7] justify-center items-center mr-4">
+                                                <Text className="color-[#059669] font-extrabold text-sm">#{index + 1}</Text>
                                             </View>
-                                            <View style={styles.strengthInfo}>
-                                                <Text style={styles.strengthName}>{item.name}</Text>
-                                                <Text style={styles.strengthMeta}>{item.attempts} attempts • {item.correct} correct</Text>
+                                            <View className="flex-1">
+                                                <Text className="text-base font-bold text-text-light dark:text-text-dark">{item.name}</Text>
+                                                <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mt-0.5">{item.attempts} attempts • {item.correct} correct</Text>
 
-                                                <View style={styles.progressRow}>
-                                                    <View style={styles.progressBarBg}>
-                                                        <View style={[styles.progressBarFill, { width: `${item.accuracy}%` }]} />
+                                                <View className="flex-row items-center mt-2 gap-2.5">
+                                                    <View className="flex-1 h-1.5 bg-background-light dark:bg-background-dark rounded-[3px] overflow-hidden">
+                                                        <View className="h-full bg-[#10b981] rounded-[3px]" style={{ width: `${item.accuracy}%` }} />
                                                     </View>
-                                                    <Text style={styles.accuracyText}>{Math.round(item.accuracy)}%</Text>
+                                                    <Text className="text-sm font-bold color-[#10b981] w-10">{Math.round(item.accuracy)}%</Text>
                                                 </View>
                                             </View>
-                                            <View style={styles.iconContainer}>
+                                            <View className="ml-4">
                                                 <MaterialCommunityIcons name="shield-check" size={28} color="#10b981" />
                                             </View>
                                         </View>
@@ -119,75 +116,3 @@ export default function StrengthsPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1 },
-    gradientBackground: { flex: 1 },
-    scrollView: { flex: 1 },
-    header: {
-        padding: 24,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: 40,
-    },
-    title: { fontSize: 32, fontWeight: "700", color: "#064e3b", letterSpacing: -0.5 },
-    subtitle: { fontSize: 16, color: "#059669", marginTop: 4 },
-    refreshBtn: {
-        padding: 10,
-        borderRadius: 20,
-        backgroundColor: 'white',
-        borderWidth: 1,
-        borderColor: '#dcfce7',
-        elevation: 2,
-    },
-    mainContent: { padding: 24, paddingTop: 0, gap: 24 },
-    summaryRow: { flexDirection: 'row', gap: 16 },
-    summaryCard: {
-        flex: 1,
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: '#dcfce7',
-    },
-    summaryLabel: { fontSize: 13, color: '#64748b', fontWeight: '600', textTransform: 'uppercase' },
-    summaryValue: { fontSize: 24, fontWeight: '700', color: '#10b981', marginTop: 4 },
-    section: { gap: 16 },
-    sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1e293b' },
-    listContainer: { gap: 12 },
-    strengthCard: {
-        backgroundColor: 'white',
-        padding: 16,
-        borderRadius: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-        elevation: 2,
-        shadowColor: '#10b981',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-    },
-    rankBadge: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#dcfce7',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 16,
-    },
-    rankText: { color: '#059669', fontWeight: '800', fontSize: 14 },
-    strengthInfo: { flex: 1 },
-    strengthName: { fontSize: 16, fontWeight: '700', color: '#1e293b' },
-    strengthMeta: { fontSize: 12, color: '#64748b', marginTop: 2 },
-    progressRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 10 },
-    progressBarBg: { flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden' },
-    progressBarFill: { height: '100%', backgroundColor: '#10b981', borderRadius: 3 },
-    accuracyText: { fontSize: 14, fontWeight: '700', color: '#10b981', width: 40 },
-    iconContainer: { marginLeft: 16 },
-    loadingContainer: { padding: 80, alignItems: 'center' },
-    loadingText: { marginTop: 16, fontSize: 15, color: "#059669", fontWeight: "500" },
-});

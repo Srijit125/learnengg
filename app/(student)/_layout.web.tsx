@@ -2,29 +2,40 @@ import ChatbotFAB from "@/components/Chatbot/ChatbotFAB";
 import ChatbotWindow from "@/components/Chatbot/ChatbotWindow";
 import CustomStudentDrawerContent from "@/components/Dashboard/CustomStudentDrawerContent";
 import Drawer from "expo-router/drawer";
+import { useColorScheme } from "nativewind";
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 const _layout = () => {
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   return (
-    <View style={{ flex: 1 }}>
+    <View className={`flex-1 ${isDark ? 'bg-background-dark' : 'bg-background-light'}`}>
       <Drawer
         drawerContent={(props) => <CustomStudentDrawerContent {...props} />}
         screenOptions={{
           drawerStyle: {
             width: 280,
+            backgroundColor: isDark ? "#0F172A" : "#FFFFFF",
           },
           headerShown: true,
           headerStyle: {
-            backgroundColor: "#ffffff",
+            backgroundColor: isDark ? "#1E293B" : "#FFFFFF",
+            borderBottomWidth: 1,
+            borderBottomColor: isDark ? "#334155" : "#E2E8F0",
+            elevation: 0,
+            shadowOpacity: 0,
           },
-          headerTintColor: "#1e293b",
+          headerTintColor: isDark ? "#F8FAFC" : "#0F172A",
           headerTitleStyle: {
             fontWeight: "700",
             fontSize: 18,
+            color: isDark ? "#F8FAFC" : "#0F172A",
           },
+          drawerActiveTintColor: "#6366F1",
+          drawerInactiveTintColor: isDark ? "#94A3B8" : "#64748B",
         }}
       >
         <Drawer.Screen
@@ -132,5 +143,3 @@ const _layout = () => {
 };
 
 export default _layout;
-
-const styles = StyleSheet.create({});

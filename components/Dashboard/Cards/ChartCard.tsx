@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import React, { ReactNode } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 type ChartCardProps = {
   title: string;
@@ -17,17 +17,20 @@ const ChartCard = ({
   height = 320,
 }: ChartCardProps) => {
   return (
-    <View style={[styles.container, { minHeight: height }]}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
-        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+    <View
+      className="flex-1 min-w-[320px] bg-card-light dark:bg-card-dark rounded-2xl m-2.5 p-5 shadow-sm border border-border-light dark:border-border-dark"
+      style={{ minHeight: height }}
+    >
+      <View className="mb-5 pb-3 border-b-2 border-border-light dark:border-border-dark">
+        <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-1">{title}</Text>
+        {subtitle && <Text className="text-[13px] font-normal text-textSecondary-light dark:text-textSecondary-dark">{subtitle}</Text>}
       </View>
 
-      <View style={styles.chartContent}>
+      <View className="flex-1 justify-center items-center min-h-[200px]">
         {loading ? (
-          <View style={styles.loadingContainer}>
+          <View className="justify-center items-center gap-3">
             <ActivityIndicator size="large" color="#667eea" />
-            <Text style={styles.loadingText}>Loading chart data...</Text>
+            <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">Loading chart data...</Text>
           </View>
         ) : (
           children
@@ -38,54 +41,3 @@ const ChartCard = ({
 };
 
 export default ChartCard;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minWidth: 320,
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    margin: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
-  },
-  header: {
-    marginBottom: 20,
-    paddingBottom: 12,
-    borderBottomWidth: 2,
-    borderBottomColor: '#f1f5f9',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 13,
-    fontWeight: '400',
-    color: '#64748b',
-  },
-  chartContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: 200,
-  },
-  loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 12,
-  },
-  loadingText: {
-    fontSize: 14,
-    color: '#64748b',
-    fontWeight: '500',
-  },
-});

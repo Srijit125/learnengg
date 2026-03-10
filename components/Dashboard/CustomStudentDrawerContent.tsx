@@ -6,9 +6,9 @@ import {
 } from "@react-navigation/drawer";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
 import React, { useState } from "react";
 import {
-  StyleSheet,
   Text,
   TouchableOpacity,
   View
@@ -25,83 +25,30 @@ type MenuItem = {
 const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
   const { navigation, state } = props;
   const { signOut, user } = useAuthStore();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const router = useRouter();
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
 
   const mainMenuItems: MenuItem[] = [
-    {
-      id: "overview",
-      label: "Dashboard",
-      icon: "view-dashboard-outline",
-      route: "index",
-    },
-    {
-      id: "courses",
-      label: "Courses",
-      icon: "book-open-variant",
-      route: "courses",
-    },
-    {
-      id: "recommendations",
-      label: "Recommendations",
-      icon: "lightbulb-on-outline",
-      route: "recommendations",
-    },
-    {
-      id: "quiz",
-      label: "Quiz",
-      icon: "clipboard-text-outline",
-      route: "quiz",
-    },
-    {
-      id: "performance",
-      label: "Performance",
-      icon: "chart-line",
-      route: "performance",
-    },
-    {
-      id: "progress",
-      label: "Progress",
-      icon: "trending-up",
-      route: "progress",
-    },
+    { id: "overview", label: "Dashboard", icon: "view-dashboard-outline", route: "index" },
+    { id: "courses", label: "Courses", icon: "book-open-variant", route: "courses" },
+    { id: "recommendations", label: "Recommendations", icon: "lightbulb-on-outline", route: "recommendations" },
+    { id: "quiz", label: "Quiz", icon: "clipboard-text-outline", route: "quiz" },
+    { id: "performance", label: "Performance", icon: "chart-line", route: "performance" },
+    { id: "progress", label: "Progress", icon: "trending-up", route: "progress" },
     { id: "search", label: "Search", icon: "magnify", route: "search" },
   ];
 
   const insightsMenuItems: MenuItem[] = [
-    {
-      id: "reports",
-      label: "Reports",
-      icon: "file-chart-outline",
-      route: "reports",
-    },
-    {
-      id: "strengths",
-      label: "Strengths",
-      icon: "shield-check-outline",
-      route: "strengths",
-    },
-    {
-      id: "weaknesses",
-      label: "Weaknesses",
-      icon: "alert-circle-outline",
-      route: "weaknesses",
-    },
+    { id: "reports", label: "Reports", icon: "file-chart-outline", route: "reports" },
+    { id: "strengths", label: "Strengths", icon: "shield-check-outline", route: "strengths" },
+    { id: "weaknesses", label: "Weaknesses", icon: "alert-circle-outline", route: "weaknesses" },
   ];
 
   const settingsMenuItems: MenuItem[] = [
-    {
-      id: "preferences",
-      label: "Preferences",
-      icon: "cog-outline",
-      route: "preferences",
-    },
-    {
-      id: "export",
-      label: "Export Data",
-      icon: "download-outline",
-      route: "export",
-    },
+    { id: "preferences", label: "Preferences", icon: "cog-outline", route: "preferences" },
+    { id: "export", label: "Export Data", icon: "download-outline", route: "export" },
     { id: "help", label: "Help", icon: "help-circle-outline", route: "help" },
   ];
 
@@ -126,90 +73,84 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
     return (
       <TouchableOpacity
         key={item.id}
-        style={[styles.menuItem, active && styles.menuItemActive]}
+        className={`flex-row items-center py-3 px-3 rounded-xl gap-3 ${active ? 'bg-primary/10' : ''}`}
         onPress={() => handleMenuItemPress(item.route)}
         activeOpacity={0.7}
       >
-        <View
-          style={[styles.iconContainer, active && styles.iconContainerActive]}
-        >
+        <View className={`w-9 h-9 rounded-xl justify-center items-center ${active ? 'bg-primary/20' : 'bg-background-light dark:bg-background-dark'}`}>
           <MaterialCommunityIcons
             name={item.icon}
             size={20}
-            color={active ? "#667eea" : "#64748b"}
+            color={active ? "#6366F1" : (isDark ? "#94A3B8" : "#64748B")}
           />
         </View>
-        <Text
-          style={[styles.menuItemText, active && styles.menuItemTextActive]}
-        >
+        <Text className={`flex-1 text-sm font-medium ${active ? 'text-primary font-semibold' : 'text-textSecondary-light dark:text-textSecondary-dark'}`}>
           {item.label}
         </Text>
         {item.badge !== undefined && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{item.badge}</Text>
+          <View className="bg-error rounded-xl px-2 py-0.5 min-w-[20px] justify-center items-center">
+            <Text className="text-[11px] font-bold text-white">{item.badge}</Text>
           </View>
         )}
       </TouchableOpacity>
     );
   };
 
+  const gradientColors = isDark ? ["#1E293B", "#0F172A"] : ["#FFFFFF", "#F8FAFC"];
+
   return (
-    <View style={styles.container}>
-      <LinearGradient colors={["#ffffff", "#f8fafc"]} style={styles.gradient}>
+    <View className="flex-1">
+      <LinearGradient colors={gradientColors as any} className="flex-1">
         {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
+        <View className="pt-8 pb-6 px-5 items-center border-b border-border-light dark:border-border-dark">
+          <View className="mb-4">
             <LinearGradient
-              colors={["#667eea", "#764ba2"]}
-              style={styles.logoGradient}
+              colors={["#6366F1", "#818CF8"]}
+              className="w-14 h-14 rounded-2xl justify-center items-center shadow-lg shadow-primary/30"
             >
-              <MaterialCommunityIcons
-                name="chart-box"
-                size={24}
-                color="#ffffff"
-              />
+              <MaterialCommunityIcons name="chart-box" size={24} color="#ffffff" />
             </LinearGradient>
           </View>
-          <Text style={styles.headerTitle}>Analytics</Text>
-          <Text style={styles.headerSubtitle}>Dashboard</Text>
+          <Text className="text-xl font-bold text-text-light dark:text-text-dark mb-0.5">Analytics</Text>
+          <Text className="text-[13px] font-medium text-textSecondary-light dark:text-textSecondary-dark">Dashboard</Text>
         </View>
 
         <DrawerContentScrollView
           {...props}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
         >
           {/* Main Menu Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>MAIN MENU</Text>
-            <View style={styles.menuList}>
+          <View className="pt-6 px-4">
+            <Text className="text-[11px] font-bold text-textSecondary-light/50 dark:text-textSecondary-dark/50 tracking-widest mb-3 px-2 uppercase">MAIN MENU</Text>
+            <View className="gap-1">
               {mainMenuItems.map((item) => renderMenuItem(item))}
             </View>
           </View>
 
           {/* Insights Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>INSIGHTS</Text>
-            <View style={styles.menuList}>
+          <View className="pt-6 px-4">
+            <Text className="text-[11px] font-bold text-textSecondary-light/50 dark:text-textSecondary-dark/50 tracking-widest mb-3 px-2 uppercase">INSIGHTS</Text>
+            <View className="gap-1">
               {insightsMenuItems.map((item) => renderMenuItem(item))}
             </View>
           </View>
 
           {/* Settings Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>SETTINGS</Text>
-            <View style={styles.menuList}>
+          <View className="pt-6 px-4">
+            <Text className="text-[11px] font-bold text-textSecondary-light/50 dark:text-textSecondary-dark/50 tracking-widest mb-3 px-2 uppercase">SETTINGS</Text>
+            <View className="gap-1">
               {settingsMenuItems.map((item) => renderMenuItem(item))}
             </View>
           </View>
         </DrawerContentScrollView>
 
         {/* User Profile Section */}
-        <View style={styles.footer}>
-          <View style={styles.divider} />
-          <View style={styles.userProfile}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>
+        <View className="pt-4 pb-5 px-4">
+          <View className="h-[1px] bg-border-light dark:bg-border-dark mb-4" />
+          <View className="flex-row items-center gap-3 px-2">
+            <View className="w-10 h-10 rounded-xl bg-primary justify-center items-center">
+              <Text className="text-sm font-bold text-white">
                 {user?.full_name
                   ?.split(" ")
                   .map((n) => n[0])
@@ -217,20 +158,20 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
                   .toUpperCase() || "SW"}
               </Text>
             </View>
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>{user?.full_name}</Text>
-              <Text style={styles.userEmail}>
+            <View className="flex-1">
+              <Text className="text-sm font-semibold text-text-light dark:text-text-dark mb-0.5">{user?.full_name}</Text>
+              <Text className="text-[12px] font-normal text-textSecondary-light dark:text-textSecondary-dark">
                 {user?.role === "admin" ? "Administrator" : "Student"}
               </Text>
             </View>
             <TouchableOpacity
-              style={styles.moreButton}
+              className="w-8 h-8 rounded-lg justify-center items-center"
               onPress={() => setShowLogoutMenu(!showLogoutMenu)}
             >
               <MaterialCommunityIcons
                 name="dots-vertical"
                 size={20}
-                color="#64748b"
+                color={isDark ? "#94A3B8" : "#64748B"}
               />
             </TouchableOpacity>
           </View>
@@ -238,26 +179,19 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
 
         {/* Logout Menu */}
         {showLogoutMenu && (
-          <>
+          <View className="absolute bottom-[80px] right-4 bg-card-light dark:bg-card-dark rounded-xl p-2 w-[140px] shadow-xl border border-border-light dark:border-border-dark z-10">
             <TouchableOpacity
-              style={styles.menuOverlay}
-              activeOpacity={1}
-              onPress={() => setShowLogoutMenu(false)}
-            />
-            <View style={styles.logoutMenu}>
-              <TouchableOpacity
-                style={styles.logoutMenuItem}
-                onPress={handleLogout}
-              >
-                <MaterialCommunityIcons
-                  name="logout"
-                  size={18}
-                  color="#ef4444"
-                />
-                <Text style={styles.logoutMenuText}>Logout</Text>
-              </TouchableOpacity>
-            </View>
-          </>
+              className="flex-row items-center gap-2.5 py-2.5 px-3 rounded-lg"
+              onPress={handleLogout}
+            >
+              <MaterialCommunityIcons
+                name="logout"
+                size={18}
+                color="#EF4444"
+              />
+              <Text className="text-sm font-semibold text-error">Logout</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </LinearGradient>
     </View>
@@ -265,195 +199,3 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
 };
 
 export default CustomStudentDrawerContent;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  gradient: {
-    flex: 1,
-  },
-  header: {
-    paddingTop: 32,
-    paddingBottom: 24,
-    paddingHorizontal: 20,
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  logoContainer: {
-    marginBottom: 16,
-  },
-  logoGradient: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#667eea",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 2,
-  },
-  headerSubtitle: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: "#64748b",
-  },
-  scrollContent: {
-    paddingBottom: 20,
-  },
-  section: {
-    paddingTop: 24,
-    paddingHorizontal: 16,
-  },
-  sectionTitle: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#94a3b8",
-    letterSpacing: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-  },
-  menuList: {
-    gap: 4,
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    gap: 12,
-  },
-  menuItemActive: {
-    backgroundColor: "#f0f4ff",
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: "#f8fafc",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  iconContainerActive: {
-    backgroundColor: "#e0e7ff",
-  },
-  menuItemText: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#64748b",
-  },
-  menuItemTextActive: {
-    fontWeight: "600",
-    color: "#667eea",
-  },
-  badge: {
-    backgroundColor: "#ef4444",
-    borderRadius: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    minWidth: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#ffffff",
-  },
-  footer: {
-    paddingTop: 16,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#e2e8f0",
-    marginBottom: 16,
-  },
-  userProfile: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingHorizontal: 8,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: "#667eea",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  avatarText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#ffffff",
-  },
-  userInfo: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#1e293b",
-    marginBottom: 2,
-  },
-  userEmail: {
-    fontSize: 12,
-    fontWeight: "400",
-    color: "#64748b",
-  },
-  moreButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  menuOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "transparent",
-    zIndex: 10,
-  },
-  logoutMenu: {
-    position: "absolute",
-    bottom: 80,
-    right: 16,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 8,
-    width: 140,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-    zIndex: 11,
-  },
-  logoutMenuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-  },
-  logoutMenuText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#ef4444",
-  },
-});

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MCQ } from '@/models/MCQ';
-import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface MCQReviewCardProps {
   mcq: MCQ;
@@ -19,11 +18,11 @@ const MCQReviewCard = ({ mcq, onApprove, onReject, onUpdate }: MCQReviewCardProp
   const [explanation, setExplanation] = useState(mcq.ChangeExplanation || '');
 
   const handleSave = () => {
-    onUpdate(mcq.mcqId!, { 
-      Question: editedQuestion, 
-      Options: editedOptions, 
+    onUpdate(mcq.mcqId!, {
+      Question: editedQuestion,
+      Options: editedOptions,
       AnswerIndex: editedAnswerIndex,
-      ChangeExplanation: explanation 
+      ChangeExplanation: explanation
     });
     setIsEditing(false);
   };
@@ -36,80 +35,81 @@ const MCQReviewCard = ({ mcq, onApprove, onReject, onUpdate }: MCQReviewCardProp
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Easy': return '#10b981';
-      case 'Medium': return '#f59e0b';
-      case 'Hard': return '#ef4444';
-      default: return '#64748b';
+      case 'Easy': return 'bg-[#10b981]';
+      case 'Medium': return 'bg-[#f59e0b]';
+      case 'Hard': return 'bg-[#ef4444]';
+      default: return 'bg-[#64748b]';
     }
   };
 
   return (
-    <View style={styles.card}>
-      <View style={styles.header}>
-        <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(mcq.Difficulty) }]}>
-          <Text style={styles.difficultyText}>{mcq.Difficulty}</Text>
+    <View className="bg-card-light dark:bg-card-dark rounded-2xl p-5 mb-4 shadow-sm border border-border-light dark:border-border-dark">
+      <View className="flex-row items-center justify-between mb-4">
+        <View className={`px-2.5 py-1 rounded-lg ${getDifficultyColor(mcq.Difficulty)}`}>
+          <Text className="text-white text-[12px] font-bold uppercase">{mcq.Difficulty}</Text>
         </View>
-        <Text style={styles.referenceText}>
+        <Text className="text-[12px] text-textSecondary-light dark:text-textSecondary-dark font-medium">
           {mcq.Reference?.Unit} • {mcq.Reference?.Chapter}
         </Text>
       </View>
 
       {isEditing ? (
-        <View style={styles.editContainer}>
+        <View className="mb-4 gap-3">
           <TextInput
-            style={styles.input}
+            className="bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg p-3 text-sm text-text-light dark:text-text-dark"
             value={editedQuestion}
             onChangeText={setEditedQuestion}
             multiline
             placeholder="Question"
           />
           {editedOptions.map((option, index) => (
-            <View key={index} style={styles.optionEditRow}>
-              <TouchableOpacity 
-                style={[styles.radioMarker, editedAnswerIndex === index && styles.radioMarkerSelected]}
+            <View key={index} className="flex-row items-center gap-3">
+              <TouchableOpacity
+                className={`w-5 h-5 rounded-full border-2 border-[#cbd5e1] justify-center items-center ${editedAnswerIndex === index ? 'border-[#667eea]' : ''}`}
                 onPress={() => setEditedAnswerIndex(index)}
               >
-                {editedAnswerIndex === index && <View style={styles.radioInner} />}
+                {editedAnswerIndex === index && <View className="w-2.5 h-2.5 rounded-full bg-[#667eea]" />}
               </TouchableOpacity>
               <TextInput
-                style={[styles.input, styles.optionInput, { flex: 1 }]}
+                className="flex-1 bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg px-3 py-2 text-sm text-text-light dark:text-text-dark"
                 value={option}
                 onChangeText={(text) => handleOptionChange(index, text)}
                 placeholder={`Option ${index + 1}`}
               />
             </View>
           ))}
-          <View style={styles.explanationContainer}>
-            <Text style={styles.label}>Explanation for Change</Text>
+          <View className="mt-2 gap-2">
+            <Text className="text-[12px] font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-wider">Explanation for Change</Text>
             <TextInput
-              style={[styles.input, styles.explanationInput]}
+              className="bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg p-3 text-sm text-text-light dark:text-text-dark min-h-[80px]"
+              style={{ textAlignVertical: 'top' }}
               value={explanation}
               onChangeText={setExplanation}
               multiline
               placeholder="e.g., Corrected typo in option B, updated correct answer to C"
             />
           </View>
-          <View style={styles.editActions}>
-            <TouchableOpacity style={[styles.actionButton, styles.saveButton]} onPress={handleSave}>
-              <Text style={styles.actionButtonText}>Save</Text>
+          <View className="flex-row justify-end gap-2.5 mt-2">
+            <TouchableOpacity className="bg-[#667eea] px-4 py-2 rounded-lg" onPress={handleSave}>
+              <Text className="text-white text-sm font-semibold">Save</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.actionButton, styles.cancelButton]} onPress={() => setIsEditing(false)}>
-              <Text style={styles.actionButtonText}>Cancel</Text>
+            <TouchableOpacity className="bg-[#94a3b8] px-4 py-2 rounded-lg" onPress={() => setIsEditing(false)}>
+              <Text className="text-white text-sm font-semibold">Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
       ) : (
-        <View style={styles.content}>
-          <Text style={styles.questionText}>{mcq.Question}</Text>
-          <View style={styles.optionsList}>
+        <View className="mb-5">
+          <Text className="text-base font-semibold text-text-light dark:text-text-dark leading-6 mb-4">{mcq.Question}</Text>
+          <View className="gap-2">
             {mcq.Options.map((option, index) => (
-              <View key={index} style={[styles.optionItem, index === mcq.AnswerIndex && styles.correctOption]}>
-                <View style={[styles.optionIndicator, index === mcq.AnswerIndex && styles.correctIndicator]}>
-                  <Text style={[styles.optionLabel, index === mcq.AnswerIndex && styles.correctLabelText]}>
+              <View key={index} className={`flex-row items-center p-3 bg-background-light dark:bg-background-dark rounded-xl border border-divider-light dark:border-divider-dark gap-3 ${index === mcq.AnswerIndex ? 'bg-[#f0fdf4] border-[#bcf0da]' : ''}`}>
+                <View className={`w-6 h-6 rounded-full bg-[#e2e8f0] justify-center items-center ${index === mcq.AnswerIndex ? 'bg-[#10b981]' : ''}`}>
+                  <Text className={`text-[12px] font-bold text-textSecondary-light dark:text-textSecondary-dark ${index === mcq.AnswerIndex ? 'text-white' : ''}`}>
                     {String.fromCharCode(65 + index)}
                   </Text>
                 </View>
-                <Text style={[styles.optionText, index === mcq.AnswerIndex && styles.correctOptionText]}>
+                <Text className={`flex-1 text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium ${index === mcq.AnswerIndex ? 'color-[#166534] font-semibold' : ''}`}>
                   {option}
                 </Text>
                 {index === mcq.AnswerIndex && (
@@ -119,10 +119,10 @@ const MCQReviewCard = ({ mcq, onApprove, onReject, onUpdate }: MCQReviewCardProp
             ))}
           </View>
           {mcq.ChangeExplanation && (
-            <View style={styles.explanationDisplay}>
+            <View className="mt-4 p-3 bg-background-light dark:bg-background-dark rounded-xl flex-row gap-2 items-start">
               <MaterialCommunityIcons name="information-outline" size={16} color="#64748b" />
-              <Text style={styles.explanationDisplayText}>
-                <Text style={{ fontWeight: '700' }}>Note: </Text>
+              <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark flex-1 leading-[18px]">
+                <Text className="font-bold">Note: </Text>
                 {mcq.ChangeExplanation}
               </Text>
             </View>
@@ -131,25 +131,25 @@ const MCQReviewCard = ({ mcq, onApprove, onReject, onUpdate }: MCQReviewCardProp
       )}
 
       {!isEditing && (
-        <View style={styles.footer}>
-          <View style={styles.mainActions}>
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.approveButton]} 
+        <View className="flex-row items-center justify-between pt-4 border-t border-border-light dark:border-border-dark">
+          <View className="flex-row gap-3">
+            <TouchableOpacity
+              className="flex-row items-center bg-[#10b981] py-2 px-4 rounded-lg gap-1.5"
               onPress={() => onApprove(mcq.mcqId!)}
             >
               <MaterialCommunityIcons name="check" size={18} color="#ffffff" />
-              <Text style={styles.actionButtonText}>Approve</Text>
+              <Text className="text-white text-sm font-semibold">Approve</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.rejectButton]} 
+            <TouchableOpacity
+              className="flex-row items-center bg-[#ef4444] py-2 px-4 rounded-lg gap-1.5"
               onPress={() => onReject(mcq.mcqId!)}
             >
               <MaterialCommunityIcons name="close" size={18} color="#ffffff" />
-              <Text style={styles.actionButtonText}>Reject</Text>
+              <Text className="text-white text-sm font-semibold">Reject</Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity 
-            style={styles.editButton} 
+          <TouchableOpacity
+            className="w-9 h-9 rounded-full bg-background-light dark:bg-background-dark justify-center items-center"
             onPress={() => setIsEditing(true)}
           >
             <MaterialCommunityIcons name="pencil-outline" size={18} color="#64748b" />
@@ -161,217 +161,3 @@ const MCQReviewCard = ({ mcq, onApprove, onReject, onUpdate }: MCQReviewCardProp
 };
 
 export default MCQReviewCard;
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  difficultyBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  difficultyText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-  referenceText: {
-    fontSize: 12,
-    color: '#94a3b8',
-    fontWeight: '500',
-  },
-  content: {
-    marginBottom: 20,
-  },
-  questionText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
-    lineHeight: 24,
-    marginBottom: 16,
-  },
-  optionsList: {
-    gap: 8,
-  },
-  optionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#f8fafc',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    gap: 12,
-  },
-  correctOption: {
-    backgroundColor: '#f0fdf4',
-    borderColor: '#bcf0da',
-  },
-  optionIndicator: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#e2e8f0',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  correctIndicator: {
-    backgroundColor: '#10b981',
-  },
-  optionLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#64748b',
-  },
-  correctLabelText: {
-    color: '#ffffff',
-  },
-  optionText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#475569',
-    fontWeight: '500',
-  },
-  correctOptionText: {
-    color: '#166534',
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#f1f5f9',
-  },
-  mainActions: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    gap: 6,
-  },
-  approveButton: {
-    backgroundColor: '#10b981',
-  },
-  rejectButton: {
-    backgroundColor: '#ef4444',
-  },
-  actionButtonText: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  editButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#f1f5f9',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  editContainer: {
-    marginBottom: 16,
-    gap: 12,
-  },
-  input: {
-    backgroundColor: '#f8fafc',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 14,
-    color: '#1e293b',
-  },
-  optionInput: {
-    paddingVertical: 8,
-  },
-  editActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 10,
-    marginTop: 8,
-  },
-  saveButton: {
-    backgroundColor: '#667eea',
-  },
-  cancelButton: {
-    backgroundColor: '#94a3b8',
-  },
-  optionEditRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  radioMarker: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#cbd5e1',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  radioMarkerSelected: {
-    borderColor: '#667eea',
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#667eea',
-  },
-  explanationContainer: {
-    marginTop: 8,
-    gap: 8,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#64748b',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  explanationInput: {
-    minHeight: 80,
-    textAlignVertical: 'top',
-  },
-  explanationDisplay: {
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: '#f1f5f9',
-    borderRadius: 10,
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'flex-start',
-  },
-  explanationDisplayText: {
-    fontSize: 13,
-    color: '#475569',
-    flex: 1,
-    lineHeight: 18,
-  },
-});

@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { Text, View } from 'react-native';
 
 type LegendItem = {
   label: string;
@@ -13,11 +13,11 @@ type ChartLegendProps = {
 
 const ChartLegend = ({ items, layout = 'horizontal' }: ChartLegendProps) => {
   return (
-    <View style={[styles.container, layout === 'vertical' && styles.vertical]}>
+    <View className={`mt-3 ${layout === 'vertical' ? 'flex-col items-start gap-4' : 'flex-row flex-wrap justify-center gap-4'}`}>
       {items.map((item, index) => (
-        <View key={index} style={styles.legendItem}>
-          <View style={[styles.colorBox, { backgroundColor: item.color }]} />
-          <Text style={styles.label}>{item.label}</Text>
+        <View key={index} className="flex-row items-center gap-2">
+          <View className="w-4 h-4 rounded" style={{ backgroundColor: item.color }} />
+          <Text className="text-[13px] font-medium text-textSecondary-light dark:text-textSecondary-dark">{item.label}</Text>
         </View>
       ))}
     </View>
@@ -25,32 +25,3 @@ const ChartLegend = ({ items, layout = 'horizontal' }: ChartLegendProps) => {
 };
 
 export default ChartLegend;
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-    marginTop: 12,
-    justifyContent: 'center',
-  },
-  vertical: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  colorBox: {
-    width: 16,
-    height: 16,
-    borderRadius: 4,
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#64748b',
-  },
-});

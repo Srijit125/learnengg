@@ -8,7 +8,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View
@@ -78,7 +77,6 @@ export default function StudentReportsPage() {
     const handleDownload = () => {
         if (!stats || !logs.length) return;
 
-        // Prepare data for CSV
         const reportData = logs.map(log => ({
             Date: new Date(log.timestamp).toLocaleString(),
             Chapter: log.reference?.Chapter || "General Concepts",
@@ -88,9 +86,8 @@ export default function StudentReportsPage() {
             Result: log.correct ? "Correct" : "Incorrect"
         }));
 
-        // Add a summary row at the end (optional, but helpful)
         const summaryData = [
-            {}, // Empty row
+            {},
             { Date: "SUMMARY STATISTICS" },
             { Date: "Total Questions", Chapter: stats.total },
             { Date: "Correct Answers", Chapter: stats.correct },
@@ -105,16 +102,15 @@ export default function StudentReportsPage() {
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
+            <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
                 <ActivityIndicator size="large" color="#6366f1" />
-                <Text style={styles.loadingText}>Generating your report...</Text>
+                <Text className="mt-4 text-base text-[#6366f1] font-semibold">Generating your report...</Text>
             </View>
         );
     }
 
     return (
-        <View style={styles.container}>
-            {/* Native Web Print Styles */}
+        <View className="flex-1">
             {typeof window !== 'undefined' && (
                 <style dangerouslySetInnerHTML={{
                     __html: `
@@ -128,22 +124,22 @@ export default function StudentReportsPage() {
                     .print-only { display: none; }
                 `}} />
             )}
-            <LinearGradient colors={["#f8fafc", "#f5f3ff"]} style={styles.gradientBackground}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.header}>
+            <LinearGradient colors={["#f8fafc", "#f5f3ff"]} className="flex-1">
+                <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 40 }}>
+                    <View className="flex-row justify-between items-center mb-6">
                         <View>
-                            <Text style={styles.title}>Learning Report</Text>
-                            <Text style={styles.subtitle}>Comprehensive overview of your progress</Text>
+                            <Text className="text-3xl font-extrabold text-text-light dark:text-text-dark tracking-tight">Learning Report</Text>
+                            <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark mt-1">Comprehensive overview of your progress</Text>
                         </View>
-                        <TouchableOpacity onPress={fetchData} style={[styles.refreshBtn, { className: 'no-print' } as any]}>
+                        <TouchableOpacity onPress={fetchData} className="no-print p-2.5 rounded-full bg-card-light dark:bg-card-dark border border-divider-light dark:border-divider-dark shadow-sm">
                             <Ionicons name="refresh" size={20} color="#6366f1" />
                         </TouchableOpacity>
                     </View>
 
                     {stats ? (
                         <>
-                            <View style={styles.mainCard}>
-                                <View style={styles.accuracySection}>
+                            <View className="print-card bg-card-light dark:bg-card-dark rounded-3xl p-8 mb-6 shadow-sm border border-border-light dark:border-border-dark">
+                                <View className="items-center">
                                     <DonutChart
                                         percentage={stats.accuracy}
                                         size={120}
@@ -151,61 +147,61 @@ export default function StudentReportsPage() {
                                         centerLabel="Accuracy"
                                         centerValue={`${stats.accuracy}%`}
                                     />
-                                    <View style={styles.quickStats}>
-                                        <View style={styles.quickStatItem}>
-                                            <Text style={styles.quickStatLabel}>Total Questions</Text>
-                                            <Text style={styles.quickStatValue}>{stats.total}</Text>
+                                    <View className="flex-row mt-8 w-full justify-center gap-10">
+                                        <View className="items-center">
+                                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase mb-1">Total Questions</Text>
+                                            <Text className="text-xl font-bold text-text-light dark:text-text-dark">{stats.total}</Text>
                                         </View>
-                                        <View style={styles.quickStatDivider} />
-                                        <View style={styles.quickStatItem}>
-                                            <Text style={styles.quickStatLabel}>Correct Answers</Text>
-                                            <Text style={styles.quickStatValue}>{stats.correct}</Text>
+                                        <View className="w-[1px] bg-[#e2e8f0] h-full" />
+                                        <View className="items-center">
+                                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase mb-1">Correct Answers</Text>
+                                            <Text className="text-xl font-bold text-text-light dark:text-text-dark">{stats.correct}</Text>
                                         </View>
                                     </View>
                                 </View>
                             </View>
 
-                            <View style={styles.grid}>
-                                <View style={styles.gridCard}>
-                                    <View style={[styles.gridIcon, { backgroundColor: '#e0f2fe' }]}>
+                            <View className="flex-row flex-wrap gap-4 mb-6">
+                                <View className="print-grid-card w-[48%] bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-border-light dark:border-border-dark min-h-[140px]">
+                                    <View className="w-10 h-10 rounded-xl justify-center items-center mb-3 bg-[#e0f2fe]">
                                         <MaterialCommunityIcons name="star-circle" size={24} color="#0284c7" />
                                     </View>
-                                    <Text style={styles.gridLabel}>Top Strength</Text>
-                                    <Text style={styles.gridValue} numberOfLines={2}>{stats.topStrength}</Text>
+                                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-1">Top Strength</Text>
+                                    <Text className="text-base font-bold text-text-light dark:text-text-dark leading-tight" numberOfLines={2}>{stats.topStrength}</Text>
                                 </View>
 
-                                <View style={styles.gridCard}>
-                                    <View style={[styles.gridIcon, { backgroundColor: '#fef2f2' }]}>
+                                <View className="print-grid-card w-[48%] bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-border-light dark:border-border-dark min-h-[140px]">
+                                    <View className="w-10 h-10 rounded-xl justify-center items-center mb-3 bg-[#fef2f2]">
                                         <MaterialCommunityIcons name="alert-octagon" size={24} color="#dc2626" />
                                     </View>
-                                    <Text style={styles.gridLabel}>Focus Needed</Text>
-                                    <Text style={styles.gridValue} numberOfLines={2}>{stats.primaryWeakness}</Text>
+                                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-1">Focus Needed</Text>
+                                    <Text className="text-base font-bold text-text-light dark:text-text-dark leading-tight" numberOfLines={2}>{stats.primaryWeakness}</Text>
                                 </View>
 
-                                <View style={styles.gridCard}>
-                                    <View style={[styles.gridIcon, { backgroundColor: '#f0fdf4' }]}>
+                                <View className="print-grid-card w-[48%] bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-border-light dark:border-border-dark min-h-[140px]">
+                                    <View className="w-10 h-10 rounded-xl justify-center items-center mb-3 bg-[#f0fdf4]">
                                         <MaterialCommunityIcons name="calendar-check" size={24} color="#16a34a" />
                                     </View>
-                                    <Text style={styles.gridLabel}>Learning Days</Text>
-                                    <Text style={styles.gridValue}>{stats.activeDays} Days</Text>
+                                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-1">Learning Days</Text>
+                                    <Text className="text-base font-bold text-text-light dark:text-text-dark leading-tight">{stats.activeDays} Days</Text>
                                 </View>
 
-                                <View style={styles.gridCard}>
-                                    <View style={[styles.gridIcon, { backgroundColor: '#fff7ed' }]}>
+                                <View className="print-grid-card w-[48%] bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-border-light dark:border-border-dark min-h-[140px]">
+                                    <View className="w-10 h-10 rounded-xl justify-center items-center mb-3 bg-[#fff7ed]">
                                         <MaterialCommunityIcons name="gauge" size={24} color="#ea580c" />
                                     </View>
-                                    <Text style={styles.gridLabel}>Current CPI</Text>
-                                    <Text style={styles.gridValue}>{cpi?.toFixed(1) || "0.0"}</Text>
+                                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-1">Current CPI</Text>
+                                    <Text className="text-base font-bold text-text-light dark:text-text-dark leading-tight">{cpi?.toFixed(1) || "0.0"}</Text>
                                 </View>
                             </View>
 
-                            <View style={styles.recommendationSection}>
-                                <Text style={styles.sectionTitle}>Performance Insights</Text>
-                                <View style={styles.infoBox}>
+                            <View className="mb-8">
+                                <Text className="text-xl font-bold text-text-light dark:text-text-dark mb-4">Performance Insights</Text>
+                                <View className="flex-row bg-[#f5f3ff] p-5 rounded-2xl gap-4 border border-[#ddd6fe]">
                                     <Ionicons name="bulb-outline" size={24} color="#8b5cf6" />
-                                    <View style={styles.infoTextContainer}>
-                                        <Text style={styles.infoTitle}>Expert Recommendation</Text>
-                                        <Text style={styles.infoText}>
+                                    <View className="flex-1">
+                                        <Text className="text-base font-bold text-[#5b21b6] mb-1">Expert Recommendation</Text>
+                                        <Text className="text-sm text-[#6d28d9] leading-5">
                                             Your overall accuracy is {stats.accuracy}%.
                                             You are performing remarkably well in "{stats.topStrength}".
                                             To improve your overall score, consider dedicating more time to "{stats.primaryWeakness}"
@@ -216,18 +212,18 @@ export default function StudentReportsPage() {
                             </View>
 
                             <TouchableOpacity
-                                style={[styles.downloadBtn, { className: 'no-print' } as any]}
+                                className="no-print flex-row bg-[#6366f1] py-4 rounded-2xl justify-center items-center gap-3 shadow-md shadow-[#6366f1]/30"
                                 onPress={handleDownload}
                             >
                                 <Ionicons name="download-outline" size={20} color="white" />
-                                <Text style={styles.downloadBtnText}>Download CSV Report</Text>
+                                <Text className="text-white text-base font-bold">Download CSV Report</Text>
                             </TouchableOpacity>
                         </>
                     ) : (
-                        <View style={styles.emptyState}>
+                        <View className="items-center justify-center p-14 bg-card-light dark:bg-card-dark rounded-3xl">
                             <Ionicons name="document-text-outline" size={64} color="#cbd5e1" />
-                            <Text style={styles.emptyTitle}>No Data Available</Text>
-                            <Text style={styles.emptySubtitle}>Complete more quizzes to generate your learning report.</Text>
+                            <Text className="text-xl font-bold text-text-light dark:text-text-dark mt-4">No Data Available</Text>
+                            <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark text-center mt-2">Complete more quizzes to generate your learning report.</Text>
                         </View>
                     )}
                 </ScrollView>
@@ -235,164 +231,3 @@ export default function StudentReportsPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1 },
-    gradientBackground: { flex: 1 },
-    scrollView: { flex: 1 },
-    scrollContent: { padding: 24, paddingBottom: 40 },
-    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8fafc' },
-    loadingText: { marginTop: 16, fontSize: 16, color: "#6366f1", fontWeight: "600" },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 24,
-    },
-    title: { fontSize: 32, fontWeight: "800", color: "#1e293b", letterSpacing: -0.5 },
-    subtitle: { fontSize: 16, color: "#64748b", marginTop: 4 },
-    refreshBtn: {
-        padding: 10,
-        borderRadius: 20,
-        backgroundColor: 'white',
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        elevation: 2,
-    },
-    mainCard: {
-        backgroundColor: 'white',
-        borderRadius: 24,
-        padding: 32,
-        marginBottom: 24,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 12,
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-    },
-    accuracySection: {
-        alignItems: 'center',
-    },
-    quickStats: {
-        flexDirection: 'row',
-        marginTop: 32,
-        width: '100%',
-        justifyContent: 'center',
-        gap: 40,
-    },
-    quickStatItem: {
-        alignItems: 'center',
-    },
-    quickStatLabel: {
-        fontSize: 12,
-        color: '#94a3b8',
-        fontWeight: '600',
-        textTransform: 'uppercase',
-        marginBottom: 4,
-    },
-    quickStatValue: {
-        fontSize: 20,
-        fontWeight: '700',
-        color: '#1e293b',
-    },
-    quickStatDivider: {
-        width: 1,
-        backgroundColor: '#e2e8f0',
-        height: '100%',
-    },
-    grid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 16,
-        marginBottom: 24,
-    },
-    gridCard: {
-        width: '48%',
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-        minHeight: 140,
-    },
-    gridIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    gridLabel: {
-        fontSize: 12,
-        color: '#64748b',
-        fontWeight: '600',
-        marginBottom: 4,
-    },
-    gridValue: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#1e293b',
-        lineHeight: 22,
-    },
-    recommendationSection: {
-        marginBottom: 32,
-    },
-    sectionTitle: {
-        fontSize: 20,
-        fontWeight: '700',
-        color: '#1e293b',
-        marginBottom: 16,
-    },
-    infoBox: {
-        flexDirection: 'row',
-        backgroundColor: '#f5f3ff',
-        padding: 20,
-        borderRadius: 20,
-        gap: 16,
-        borderWidth: 1,
-        borderColor: '#ddd6fe',
-    },
-    infoTextContainer: {
-        flex: 1,
-    },
-    infoTitle: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#5b21b6',
-        marginBottom: 4,
-    },
-    infoText: {
-        fontSize: 14,
-        color: '#6d28d9',
-        lineHeight: 20,
-    },
-    downloadBtn: {
-        flexDirection: 'row',
-        backgroundColor: '#6366f1',
-        paddingVertical: 16,
-        borderRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 12,
-        shadowColor: "#6366f1",
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.2,
-        shadowRadius: 16,
-    },
-    downloadBtnText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: '700',
-    },
-    emptyState: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 60,
-        backgroundColor: 'white',
-        borderRadius: 24,
-    },
-    emptyTitle: { fontSize: 20, fontWeight: '700', color: '#1e293b', marginTop: 16 },
-    emptySubtitle: { fontSize: 14, color: '#64748b', textAlign: 'center', marginTop: 8 },
-});

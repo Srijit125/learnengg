@@ -1,22 +1,17 @@
+import UnitProgressChart from "@/components/Dashboard/Charts/UnitProgressChart";
+import ProgressRing from "@/components/Dashboard/ProgressRing";
+import { getHierarchicalStats, getNoteStudyAnalysis, getUserActivityLogs, getUserLogs } from "@/services/analyticsService";
+import { useAuthStore } from "@/store/auth.store";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
   ActivityIndicator,
+  ScrollView,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { useAuthStore } from "@/store/auth.store";
-import { getNoteStudyAnalysis, getUserLogs } from "@/services/analyticsService";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import ProgressRing from "@/components/Dashboard/ProgressRing";
-import UnitProgressChart from "@/components/Dashboard/Charts/UnitProgressChart";
-import {
-  getHierarchicalStats,
-  getUserActivityLogs,
-} from "@/services/analyticsService";
 
 const ProgressPage = () => {
   const { user } = useAuthStore();
@@ -68,9 +63,9 @@ const ProgressPage = () => {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
+      <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
         <ActivityIndicator size="large" color="#6366f1" />
-        <Text style={styles.loadingText}>Analyzing your journey...</Text>
+        <Text className="mt-4 text-textSecondary-light dark:text-textSecondary-dark text-base font-medium">Analyzing your journey...</Text>
       </View>
     );
   }
@@ -78,37 +73,36 @@ const ProgressPage = () => {
   const overallCompletion = noteAnalysis?.overall_completion || 0;
   const quizAccuracy = quizAnalytics?.accuracy || 0;
 
-  // Process data for Unit Progress
   const unitColors = ["#6366f1", "#8b5cf6", "#10b981", "#f59e0b", "#ef4444"];
   const unitProgressData = Array.isArray(hierarchicalStats)
     ? [...new Set(hierarchicalStats.map((s) => s.unit))].map((unit, index) => {
-        const unitAttempts = hierarchicalStats
-          .filter((s) => s.unit === unit)
-          .reduce((acc, s) => acc + s.attempts, 0);
-        return {
-          value: unitAttempts,
-          label: unit as string,
-          color: unitColors[index % unitColors.length],
-        };
-      })
+      const unitAttempts = hierarchicalStats
+        .filter((s) => s.unit === unit)
+        .reduce((acc, s) => acc + s.attempts, 0);
+      return {
+        value: unitAttempts,
+        label: unit as string,
+        color: unitColors[index % unitColors.length],
+      };
+    })
     : [];
 
   return (
     <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
+      className="flex-1 bg-background-light dark:bg-background-dark"
+      contentContainerStyle={{ padding: 32 }}
     >
-      <View style={styles.header}>
+      <View className="mb-8">
         <View>
-          <Text style={styles.title}>Learning Progress</Text>
-          <Text style={styles.subtitle}>
+          <Text className="text-3xl font-extrabold text-text-light dark:text-text-dark mb-1">Learning Progress</Text>
+          <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark font-medium">
             Insights into your study habits and material completion
           </Text>
         </View>
       </View>
 
-      <View style={styles.summaryRow}>
-        <View style={styles.summaryCard}>
+      <View className="flex-row gap-6 mb-8">
+        <View className="flex-1 bg-card-light dark:bg-card-dark rounded-3xl p-6 flex-row items-center gap-8 shadow-sm">
           <ProgressRing
             percentage={overallCompletion}
             size={160}
@@ -116,14 +110,14 @@ const ProgressPage = () => {
             label="Notes Studied"
             color="#6366f1"
           />
-          <View style={styles.summaryInfo}>
-            <Text style={styles.summaryText}>You have completed</Text>
-            <Text style={styles.summaryValue}>{overallCompletion}%</Text>
-            <Text style={styles.summarySubtext}>of the entire curriculum</Text>
+          <View className="flex-1">
+            <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-semibold">You have completed</Text>
+            <Text className="text-4xl font-extrabold text-text-light dark:text-text-dark my-1">{overallCompletion}%</Text>
+            <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">of the entire curriculum</Text>
           </View>
         </View>
 
-        <View style={styles.summaryCard}>
+        <View className="flex-1 bg-card-light dark:bg-card-dark rounded-3xl p-6 flex-row items-center gap-8 shadow-sm">
           <ProgressRing
             percentage={quizAccuracy}
             size={160}
@@ -131,26 +125,26 @@ const ProgressPage = () => {
             label="Quiz Accuracy"
             color="#10b981"
           />
-          <View style={styles.summaryInfo}>
-            <Text style={styles.summaryText}>Your average accuracy</Text>
-            <Text style={styles.summaryValue}>{quizAccuracy}%</Text>
-            <Text style={styles.summarySubtext}>in recent quizzes</Text>
+          <View className="flex-1">
+            <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-semibold">Your average accuracy</Text>
+            <Text className="text-4xl font-extrabold text-text-light dark:text-text-dark my-1">{quizAccuracy}%</Text>
+            <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">in recent quizzes</Text>
           </View>
         </View>
       </View>
 
-      <View style={styles.mainGrid}>
-        <View style={styles.leftCol}>
-          <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Curriculum Completion</Text>
+      <View className="flex-row gap-6">
+        <View className="flex-[1.5] gap-6">
+          <View className="bg-card-light dark:bg-card-dark rounded-3xl p-6 shadow-sm">
+            <Text className="text-xl font-bold text-text-light dark:text-text-dark mb-5">Curriculum Completion</Text>
             {noteAnalysis?.hierarchy?.length > 0 ? (
               noteAnalysis.hierarchy.map((course: any) => (
-                <View key={course.courseId} style={styles.courseItem}>
+                <View key={course.courseId} className="mb-4 bg-background-light dark:bg-background-dark rounded-2xl overflow-hidden border border-divider-light dark:border-divider-dark">
                   <TouchableOpacity
                     onPress={() => toggleCourse(course.courseId)}
-                    style={styles.courseHeader}
+                    className="flex-row justify-between items-center p-4 bg-card-light dark:bg-card-dark"
                   >
-                    <View style={styles.courseTitleRow}>
+                    <View className="flex-row items-center gap-2 flex-1">
                       <MaterialCommunityIcons
                         name={
                           expandedCourses.includes(course.courseId)
@@ -160,32 +154,30 @@ const ProgressPage = () => {
                         size={24}
                         color="#64748b"
                       />
-                      <Text style={styles.courseName}>{course.courseName}</Text>
+                      <Text className="text-base font-bold text-text-light dark:text-text-dark">{course.courseName}</Text>
                     </View>
-                    <View style={styles.courseHeaderRight}>
-                      <Text style={styles.coursePercent}>
+                    <View className="flex-row items-center gap-3">
+                      <Text className="text-[15px] font-extrabold text-[#6366f1]">
                         {course.progress}%
                       </Text>
-                      <View style={styles.miniBarContainer}>
+                      <View className="w-[60px] h-1.5 bg-[#e2e8f0] rounded overflow-hidden">
                         <View
-                          style={[
-                            styles.miniBar,
-                            { width: `${course.progress}%` },
-                          ]}
+                          className="h-full bg-[#6366f1]"
+                          style={{ width: `${course.progress}%` }}
                         />
                       </View>
                     </View>
                   </TouchableOpacity>
 
                   {expandedCourses.includes(course.courseId) && (
-                    <View style={styles.unitList}>
+                    <View className="p-2 bg-background-light dark:bg-background-dark">
                       {course.units.map((unit: any) => (
-                        <View key={unit.unitId} style={styles.unitItem}>
+                        <View key={unit.unitId} className="mb-2 bg-card-light dark:bg-card-dark rounded-xl overflow-hidden">
                           <TouchableOpacity
                             onPress={() => toggleUnit(unit.unitId)}
-                            style={styles.unitHeader}
+                            className="flex-row justify-between items-center p-3"
                           >
-                            <View style={styles.unitTitleRow}>
+                            <View className="flex-row items-center gap-2">
                               <MaterialCommunityIcons
                                 name={
                                   expandedUnits.includes(unit.unitId)
@@ -195,35 +187,33 @@ const ProgressPage = () => {
                                 size={18}
                                 color="#94a3b8"
                               />
-                              <Text style={styles.unitTitle}>
+                              <Text className="text-sm font-semibold text-textSecondary-light dark:text-textSecondary-dark">
                                 {unit.unitTitle}
                               </Text>
                             </View>
-                            <Text style={styles.unitPercent}>
+                            <Text className="text-[13px] font-bold text-[#6366f1]">
                               {unit.progress}%
                             </Text>
                           </TouchableOpacity>
 
                           {expandedUnits.includes(unit.unitId) && (
-                            <View style={styles.chapterList}>
+                            <View className="px-3 pb-3 gap-2">
                               {unit.chapters.map((chapter: any) => (
                                 <View
                                   key={chapter.chapterId}
-                                  style={styles.chapterItem}
+                                  className="flex-row justify-between items-center py-2 border-t border-border-light dark:border-border-dark"
                                 >
-                                  <Text style={styles.chapterTitle}>
+                                  <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark flex-1">
                                     {chapter.chapterTitle}
                                   </Text>
-                                  <View style={styles.chapterProgressRow}>
-                                    <View style={styles.tinyBarContainer}>
+                                  <View className="flex-row items-center gap-2 w-[100px] justify-end">
+                                    <View className="flex-1 h-1 bg-background-light dark:bg-background-dark rounded overflow-hidden">
                                       <View
-                                        style={[
-                                          styles.tinyBar,
-                                          { width: `${chapter.progress}%` },
-                                        ]}
+                                        className="h-full bg-[#10b981]"
+                                        style={{ width: `${chapter.progress}%` }}
                                       />
                                     </View>
-                                    <Text style={styles.chapterPercent}>
+                                    <Text className="text-[11px] font-semibold text-textSecondary-light dark:text-textSecondary-dark w-[30px] text-right">
                                       {chapter.progress}%
                                     </Text>
                                   </View>
@@ -238,14 +228,14 @@ const ProgressPage = () => {
                 </View>
               ))
             ) : (
-              <Text style={styles.emptyText}>
+              <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark italic text-center my-5">
                 No curriculum data available.
               </Text>
             )}
           </View>
 
-          <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Recent Activity</Text>
+          <View className="bg-card-light dark:bg-card-dark rounded-3xl p-6 shadow-sm">
+            <Text className="text-xl font-bold text-text-light dark:text-text-dark mb-5">Recent Activity</Text>
             {studyActivity?.length > 0 ? (
               [...studyActivity]
                 .reverse()
@@ -285,17 +275,15 @@ const ProgressPage = () => {
                   };
 
                   return (
-                    <View key={index} style={styles.activityItem}>
+                    <View key={index} className="flex-row items-center gap-4 py-3 border-b border-border-light dark:border-border-dark">
                       <View
-                        style={[
-                          styles.activityIcon,
-                          {
-                            backgroundColor:
-                              activity.event_type === "course_completed"
-                                ? "#fef3c7"
-                                : "#f0f4ff",
-                          },
-                        ]}
+                        className="w-10 h-10 rounded-xl justify-center items-center"
+                        style={{
+                          backgroundColor:
+                            activity.event_type === "course_completed"
+                              ? "#fef3c7"
+                              : "#f0f4ff",
+                        }}
                       >
                         <MaterialCommunityIcons
                           name={getEventIcon(activity.event_type)}
@@ -307,15 +295,15 @@ const ProgressPage = () => {
                           }
                         />
                       </View>
-                      <View style={styles.activityContent}>
-                        <Text style={styles.activityTitle}>
+                      <View className="flex-1">
+                        <Text className="text-[15px] font-semibold text-text-light dark:text-text-dark mb-0.5">
                           {getEventLabel(activity.event_type)}:{" "}
                           {activity.metadata?.query ||
                             activity.chapter_id ||
                             activity.course_id ||
                             "Study Session"}
                         </Text>
-                        <Text style={styles.activityMeta}>
+                        <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark">
                           {activity.metadata?.results_count !== undefined
                             ? `${activity.metadata.results_count} results found • `
                             : ""}
@@ -333,27 +321,27 @@ const ProgressPage = () => {
                   );
                 })
             ) : (
-              <Text style={styles.emptyText}>No recent activity.</Text>
+              <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark italic text-center my-5">No recent activity.</Text>
             )}
           </View>
         </View>
 
-        <View style={styles.rightCol}>
+        <View className="flex-1 gap-6">
           <UnitProgressChart data={unitProgressData} />
 
-          <View style={styles.infoCard}>
+          <View className="rounded-3xl overflow-hidden">
             <LinearGradient
               colors={["#6366f1", "#4f46e5"]}
-              style={styles.tipGradient}
+              className="p-6 flex-row gap-4 items-start flex-wrap"
             >
               <MaterialCommunityIcons
                 name="lightbulb-on"
                 size={24}
                 color="#ffffff"
               />
-              <View>
-                <Text style={styles.tipTitle}>Learning Tip</Text>
-                <Text style={styles.tipText}>
+              <View className="flex-1">
+                <Text className="text-lg font-bold text-white mb-1">Learning Tip</Text>
+                <Text className="text-sm text-white/90 leading-5">
                   Try to maintain a steady reading pace. Students who read at
                   least 2 chapters daily have 30% higher quiz accuracy.
                 </Text>
@@ -367,286 +355,3 @@ const ProgressPage = () => {
 };
 
 export default ProgressPage;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8fafc",
-  },
-  contentContainer: {
-    padding: 32,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f8fafc",
-  },
-  loadingText: {
-    marginTop: 16,
-    color: "#64748b",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  header: {
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: "#1e293b",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#64748b",
-    fontWeight: "500",
-  },
-  summaryRow: {
-    flexDirection: "row",
-    gap: 24,
-    marginBottom: 32,
-  },
-  summaryCard: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    borderRadius: 24,
-    padding: 24,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 32,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  summaryInfo: {
-    flex: 1,
-  },
-  summaryText: {
-    fontSize: 14,
-    color: "#64748b",
-    fontWeight: "600",
-  },
-  summaryValue: {
-    fontSize: 36,
-    fontWeight: "800",
-    color: "#1e293b",
-    marginVertical: 4,
-  },
-  summarySubtext: {
-    fontSize: 14,
-    color: "#94a3b8",
-    fontWeight: "500",
-  },
-  mainGrid: {
-    flexDirection: "row",
-    gap: 24,
-  },
-  leftCol: {
-    flex: 1.5,
-    gap: 24,
-  },
-  rightCol: {
-    flex: 1,
-    gap: 24,
-  },
-  sectionCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 24,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 20,
-  },
-  activityItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  activityIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: "#f0f4ff",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#1e293b",
-    marginBottom: 2,
-  },
-  activityMeta: {
-    fontSize: 13,
-    color: "#64748b",
-  },
-  emptyText: {
-    fontSize: 14,
-    color: "#94a3b8",
-    fontStyle: "italic",
-    textAlign: "center",
-    marginVertical: 20,
-  },
-  infoCard: {
-    borderRadius: 24,
-    overflow: "hidden",
-  },
-  tipGradient: {
-    padding: 24,
-    flexDirection: "row",
-    gap: 16,
-    alignItems: "flex-start",
-    flexWrap: "wrap",
-  },
-  tipTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#ffffff",
-    marginBottom: 4,
-  },
-  tipText: {
-    fontSize: 14,
-    color: "rgba(255, 255, 255, 0.9)",
-    lineHeight: 20,
-    flexWrap: "wrap",
-  },
-  // Hierarchical Styles
-  courseItem: {
-    marginBottom: 16,
-    backgroundColor: "#f8fafc",
-    borderRadius: 16,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
-  courseHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-    backgroundColor: "#ffffff",
-  },
-  courseTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    flex: 1,
-  },
-  courseName: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-  courseHeaderRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  coursePercent: {
-    fontSize: 15,
-    fontWeight: "800",
-    color: "#6366f1",
-  },
-  miniBarContainer: {
-    width: 60,
-    height: 6,
-    backgroundColor: "#e2e8f0",
-    borderRadius: 3,
-    overflow: "hidden",
-  },
-  miniBar: {
-    height: "100%",
-    backgroundColor: "#6366f1",
-  },
-  unitList: {
-    padding: 8,
-    backgroundColor: "#f1f5f9",
-  },
-  unitItem: {
-    marginBottom: 8,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  unitHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 12,
-  },
-  unitTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  unitTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#475569",
-  },
-  unitPercent: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#6366f1",
-  },
-  chapterList: {
-    paddingHorizontal: 12,
-    paddingBottom: 12,
-    gap: 8,
-  },
-  chapterItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
-  },
-  chapterTitle: {
-    fontSize: 13,
-    color: "#64748b",
-    flex: 1,
-  },
-  chapterProgressRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    width: 100,
-    justifyContent: "flex-end",
-  },
-  tinyBarContainer: {
-    flex: 1,
-    height: 4,
-    backgroundColor: "#f1f5f9",
-    borderRadius: 2,
-    overflow: "hidden",
-  },
-  tinyBar: {
-    height: "100%",
-    backgroundColor: "#10b981",
-  },
-  chapterPercent: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#94a3b8",
-    width: 30,
-    textAlign: "right",
-  },
-});

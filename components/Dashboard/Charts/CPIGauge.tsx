@@ -1,6 +1,6 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
-import Svg, { Path, Circle, G, Text as SvgText } from "react-native-svg";
+import { Text, View } from "react-native";
+import Svg, { Circle, G, Path, Text as SvgText } from "react-native-svg";
 
 type CPIGaugeProps = {
   value: number;
@@ -41,9 +41,9 @@ const CPIGauge = ({
   };
 
   return (
-    <View style={styles.container}>
-      {title && <Text style={styles.title}>{title}</Text>}
-      <View style={styles.gaugeWrapper}>
+    <View className="bg-card-light dark:bg-card-dark rounded-2xl p-5 items-center shadow-md shadow-[#000]/5 elevation-3">
+      {title && <Text className="text-sm font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-2.5">{title}</Text>}
+      <View className="-mt-5">
         <Svg height={size} width={size}>
           <G>
             {/* Background Track */}
@@ -112,12 +112,10 @@ const CPIGauge = ({
         </Svg>
       </View>
       <View
-        style={[
-          styles.statusBadge,
-          { backgroundColor: getStatusColor(value) + "20" },
-        ]}
+        className="-mt-2.5 px-3 py-1.5 rounded-[20px]"
+        style={{ backgroundColor: getStatusColor(value) + "20" }}
       >
-        <Text style={[styles.statusText, { color: getStatusColor(value) }]}>
+        <Text className="text-xs font-bold uppercase" style={{ color: getStatusColor(value) }}>
           {value >= 70 ? "Excellent" : value >= 40 ? "Steady" : "Action Needed"}
         </Text>
       </View>
@@ -126,39 +124,3 @@ const CPIGauge = ({
 };
 
 export default CPIGauge;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#64748b",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 10,
-  },
-  gaugeWrapper: {
-    marginTop: -20,
-  },
-  statusBadge: {
-    marginTop: -10,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "700",
-    textTransform: "uppercase",
-  },
-});

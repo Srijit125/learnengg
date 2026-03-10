@@ -17,7 +17,6 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -84,7 +83,6 @@ const StudentRecommendationsPage = () => {
   const fetchTabData = async (tab: TabType) => {
     if (!user?.id || !selectedCourseId || !recommendationData) return;
 
-    // Create payload from overview data
     const payload: RecommendationPayload = {
       course_id: selectedCourseId,
       user_id: user.id,
@@ -93,7 +91,6 @@ const StudentRecommendationsPage = () => {
     console.log(payload);
     setLoadingTabData(true);
     try {
-      // Fetch course structure if not available (needed for mapping titles to IDs)
       let currentStructure = courseStructure;
       if (!currentStructure) {
         currentStructure = await fetchCourseStructure(selectedCourseId);
@@ -127,24 +124,24 @@ const StudentRecommendationsPage = () => {
     if (!topics) return null;
     if (Array.isArray(topics)) {
       return topics.map((topic, index) => (
-        <View key={index} style={styles.topicBadge}>
+        <View key={index} className="flex-row items-center gap-1.5 bg-[#f0fdf4] px-3 py-2 rounded-xl border border-[#bbf7d0]">
           <MaterialCommunityIcons
             name="check-circle-outline"
             size={14}
             color="#15803d"
           />
-          <Text style={styles.topicText}>{topic}</Text>
+          <Text className="text-[13px] font-semibold text-[#15803d]">{topic}</Text>
         </View>
       ));
     }
     return Object.entries(topics).map(([key, value]) => (
-      <View key={key} style={styles.topicBadge}>
+      <View key={key} className="flex-row items-center gap-1.5 bg-[#f0fdf4] px-3 py-2 rounded-xl border border-[#bbf7d0]">
         <MaterialCommunityIcons
           name="check-circle-outline"
           size={14}
           color="#15803d"
         />
-        <Text style={styles.topicText}>{value}</Text>
+        <Text className="text-[13px] font-semibold text-[#15803d]">{value}</Text>
       </View>
     ));
   };
@@ -152,37 +149,21 @@ const StudentRecommendationsPage = () => {
   const renderOverview = () => {
     if (!recommendationData) return null;
     return (
-      <ScrollView contentContainerStyle={styles.tabContent}>
-        {/* AI Summary Section */}
-        {/* <View style={styles.summaryCard}>
-          <View style={styles.cardHeader}>
-            <MaterialCommunityIcons
-              name="robot-happy-outline"
-              size={24}
-              color="#667eea"
-            />
-            <Text style={styles.cardTitle}>AI Insight</Text>
-          </View>
-          <Text style={styles.summaryText}>
-            {recommendationData.recommendation_text}
-          </Text>
-        </View> */}
-
-        {/* Weak Topics Section */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader}>Topics to Improve</Text>
-          <View style={styles.topicsGrid}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+        <View className="mb-6">
+          <Text className="text-base font-bold text-text-light dark:text-text-dark mb-3">Topics to Improve</Text>
+          <View className="flex-row flex-wrap gap-2.5">
             {recommendationData.weak_topics?.map((topic, index) => (
               <View
                 key={index}
-                style={[styles.topicBadge, styles.topicBadgeWarning]}
+                className="flex-row items-center gap-1.5 bg-[#fffbeb] px-3 py-2 rounded-xl border border-[#fde68a]"
               >
                 <MaterialCommunityIcons
                   name="alert-circle-outline"
                   size={14}
                   color="#b45309"
                 />
-                <Text style={[styles.topicText, styles.topicTextWarning]}>
+                <Text className="text-[13px] font-semibold text-[#b45309]">
                   {topic}
                 </Text>
               </View>
@@ -190,36 +171,32 @@ const StudentRecommendationsPage = () => {
           </View>
         </View>
 
-        {/* Strong Topics Section */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader}>Strong Topics</Text>
-          <View style={styles.topicsGrid}>
+        <View className="mb-6">
+          <Text className="text-base font-bold text-text-light dark:text-text-dark mb-3">Strong Topics</Text>
+          <View className="flex-row flex-wrap gap-2.5">
             {renderStrongTopics(recommendationData.strong_topics)}
           </View>
         </View>
 
-        {/* Suggested Study Path Section */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader}>Suggested Study Path</Text>
-          <View style={styles.roadmapContainer}>
+        <View className="mb-6">
+          <Text className="text-base font-bold text-text-light dark:text-text-dark mb-3">Suggested Study Path</Text>
+          <View className="pl-1">
             {recommendationData.study_order?.map((topic, index) => {
               const chId = findChapterId(topic);
               const isLast =
                 index === (recommendationData.study_order?.length || 0) - 1;
 
               return (
-                <View key={index} style={styles.roadmapStep}>
-                  <View style={styles.roadmapIndicator}>
-                    <View style={styles.roadmapCircle}>
-                      <Text style={styles.roadmapNumber}>{index + 1}</Text>
+                <View key={index} className="flex-row gap-4">
+                  <View className="items-center w-8">
+                    <View className="w-8 h-8 rounded-full justify-center items-center bg-[#667eea] z-10 shadow-sm shadow-[#667eea]">
+                      <Text className="text-white text-sm font-bold">{index + 1}</Text>
                     </View>
-                    {!isLast && <View style={styles.roadmapLine} />}
+                    {!isLast && <View className="w-[3px] flex-1 bg-[#e2e8f0] my-1" />}
                   </View>
                   <TouchableOpacity
-                    style={[
-                      styles.roadmapCard,
-                      chId && styles.roadmapCardInteractive,
-                    ]}
+                    className={`flex-1 flex-row items-center justify-between bg-card-light dark:bg-card-dark rounded-xl p-4 mb-5 border ${chId ? "border-[#e0e7ff] shadow-sm" : "border-divider-light dark:border-divider-dark"
+                      }`}
                     onPress={() => {
                       if (chId) {
                         router.push(
@@ -229,16 +206,16 @@ const StudentRecommendationsPage = () => {
                     }}
                     disabled={!chId}
                   >
-                    <View style={styles.roadmapCardContent}>
-                      <Text style={styles.roadmapTopic}>{topic}</Text>
+                    <View className="flex-1">
+                      <Text className="text-[15px] font-semibold text-text-light dark:text-text-dark mb-1">{topic}</Text>
                       {chId && (
-                        <View style={styles.roadmapBadge}>
+                        <View className="flex-row items-center bg-[#e0e7ff] px-2 py-1 rounded-md self-start gap-1">
                           <MaterialCommunityIcons
                             name="book-open-variant"
                             size={12}
                             color="#6366f1"
                           />
-                          <Text style={styles.roadmapBadgeText}>
+                          <Text className="text-[10px] font-bold text-[#6366f1] uppercase">
                             Course Note
                           </Text>
                         </View>
@@ -263,14 +240,12 @@ const StudentRecommendationsPage = () => {
 
   const findChapterId = (chapterTitle: string) => {
     if (!courseStructure?.units) return null;
-    // Handle "Chapter Title -> Section Title" format
     const cleanTitle = chapterTitle.split("->")[0].trim().toLowerCase();
 
     for (const unit of courseStructure.units) {
       const chapter = unit.chapters?.find(
         (c: any) =>
           c.chapterTitle.toLowerCase().trim() === cleanTitle ||
-          // Fallback check if the input already contains only the title
           c.chapterTitle.toLowerCase().trim() ===
           chapterTitle.toLowerCase().trim(),
       );
@@ -284,41 +259,41 @@ const StudentRecommendationsPage = () => {
       return <ActivityIndicator style={{ marginTop: 40 }} color="#667eea" />;
     if (!weakTopicsExtra)
       return (
-        <View style={styles.emptyState}>
+        <View className="items-center py-10 gap-3">
           <Text>No extra data available.</Text>
         </View>
       );
 
     return (
-      <ScrollView contentContainerStyle={styles.tabContent}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         {Object.entries(weakTopicsExtra).map(([topicName, snippets]: any) => (
-          <View key={topicName} style={styles.topicDeepDiveCard}>
-            <Text style={styles.topicDeepDiveTitle}>{topicName}</Text>
+          <View key={topicName} className="bg-card-light dark:bg-card-dark rounded-2xl p-6 mb-6 border border-divider-light dark:border-divider-dark shadow-sm">
+            <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-5 pb-2 border-b-2 border-[#667eea] self-start">{topicName}</Text>
             {snippets.map((snippet: any, index: number) => {
               const chId = findChapterId(snippet.chapter);
               return (
-                <View key={index} style={styles.snippetContainer}>
-                  <View style={styles.snippetHeader}>
-                    <View style={styles.snippetMeta}>
+                <View key={index} className="bg-background-light dark:bg-background-dark rounded-xl p-4 mb-4 border border-border-light dark:border-border-dark">
+                  <View className="flex-row justify-between items-center mb-3">
+                    <View className="flex-row items-center gap-1.5">
                       <MaterialCommunityIcons
                         name="book-open-page-variant"
                         size={16}
                         color="#6366f1"
                       />
-                      <Text style={styles.snippetChapter}>
+                      <Text className="text-xs font-bold text-[#6366f1] tracking-wider uppercase">
                         {snippet.chapter}
                       </Text>
                     </View>
                     {chId && (
                       <TouchableOpacity
-                        style={styles.readNotesButton}
+                        className="flex-row items-center bg-[#eff6ff] px-2.5 py-1.5 rounded-lg gap-1"
                         onPress={() =>
                           router.push(
                             `/(student)/course/${selectedCourseId}?chapterId=${chId}`,
                           )
                         }
                       >
-                        <Text style={styles.readNotesButtonText}>
+                        <Text className="text-xs font-semibold text-[#6366f1]">
                           Read Notes
                         </Text>
                         <MaterialCommunityIcons
@@ -329,8 +304,8 @@ const StudentRecommendationsPage = () => {
                       </TouchableOpacity>
                     )}
                   </View>
-                  <Text style={styles.snippetSection}>{snippet.section}</Text>
-                  <Text style={styles.snippetText}>{snippet.text}</Text>
+                  <Text className="text-[15px] font-bold text-[#334155] mb-2">{snippet.section}</Text>
+                  <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark leading-relaxed">{snippet.text}</Text>
                 </View>
               );
             })}
@@ -345,7 +320,7 @@ const StudentRecommendationsPage = () => {
       return <ActivityIndicator style={{ marginTop: 40 }} color="#667eea" />;
     if (!personalizedPlan)
       return (
-        <View style={styles.emptyState}>
+        <View className="items-center py-10 gap-3">
           <Text>Plan not generated yet.</Text>
         </View>
       );
@@ -356,13 +331,13 @@ const StudentRecommendationsPage = () => {
 
     if (!planItems) {
       return (
-        <ScrollView contentContainerStyle={styles.tabContent}>
-          <View style={[styles.detailCard, { borderLeftColor: "#10b981" }]}>
-            <Text style={styles.detailTitle}>Your Personalized Roadmap</Text>
+        <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+          <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 border border-divider-light dark:border-divider-dark border-l-6 border-l-[#10b981] shadow-sm">
+            <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-4">Your Personalized Roadmap</Text>
             {typeof personalizedPlan === "string" ? (
-              <Text style={styles.detailText}>{personalizedPlan}</Text>
+              <Text className="text-[15px] text-textSecondary-light dark:text-textSecondary-dark leading-relaxed">{personalizedPlan}</Text>
             ) : (
-              <Text style={styles.detailText}>
+              <Text className="text-[15px] text-textSecondary-light dark:text-textSecondary-dark leading-relaxed">
                 {personalizedPlan.text ||
                   JSON.stringify(personalizedPlan, null, 2)}
               </Text>
@@ -373,29 +348,29 @@ const StudentRecommendationsPage = () => {
     }
 
     return (
-      <ScrollView contentContainerStyle={styles.tabContent}>
-        <View style={styles.planHeader}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+        <View className="flex-row items-center gap-3 mb-5 px-1">
           <MaterialCommunityIcons
             name="calendar-check"
             size={24}
             color="#10b981"
           />
-          <Text style={styles.planHeaderTitle}>Targeted Study Plan</Text>
+          <Text className="text-xl font-bold text-text-light dark:text-text-dark">Targeted Study Plan</Text>
         </View>
 
         {planItems.map((item: any, idx: number) => (
-          <View key={idx} style={styles.planCard}>
-            <View style={styles.planDayBadge}>
-              <Text style={styles.planDayText}>Day {item.day}</Text>
+          <View key={idx} className="bg-card-light dark:bg-card-dark rounded-2xl p-5 mb-5 border border-divider-light dark:border-divider-dark overflow-hidden relative shadow-sm">
+            <View className="absolute top-0 right-0 bg-[#10b981] px-3 py-1.5 rounded-bl-xl z-20">
+              <Text className="text-white text-xs font-bold uppercase">Day {item.day}</Text>
             </View>
 
-            <View style={styles.planContent}>
-              <Text style={styles.planFocusLabel}>Main Focus:</Text>
-              <Text style={styles.planFocusTopic}>{item.focus_topic}</Text>
+            <View className="mt-2 text-left">
+              <Text className="text-xs font-semibold text-textSecondary-light dark:text-textSecondary-dark tracking-wider uppercase mb-1">Main Focus:</Text>
+              <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-4">{item.focus_topic}</Text>
 
               {item.faiss_results && item.faiss_results.length > 0 && (
-                <View style={styles.planResources}>
-                  <Text style={styles.planResourcesLabel}>
+                <View className="bg-background-light dark:bg-background-dark rounded-xl p-3 mb-4">
+                  <Text className="text-[13px] font-semibold text-textSecondary-light dark:text-textSecondary-dark mb-2">
                     Recommended Reading:
                   </Text>
                   {item.faiss_results.map((res: string, resIdx: number) => {
@@ -403,7 +378,7 @@ const StudentRecommendationsPage = () => {
                     return (
                       <TouchableOpacity
                         key={resIdx}
-                        style={styles.planResourceLink}
+                        className="flex-row items-center bg-card-light dark:bg-card-dark p-2.5 rounded-lg mb-2 border border-border-light dark:border-border-dark gap-2.5"
                         onPress={() => {
                           if (chId) {
                             router.push(
@@ -417,7 +392,7 @@ const StudentRecommendationsPage = () => {
                           size={16}
                           color="#6366f1"
                         />
-                        <Text style={styles.planResourceText} numberOfLines={1}>
+                        <Text className="flex-1 text-[13px] text-[#6366f1] font-medium" numberOfLines={1}>
                           {res}
                         </Text>
                         {chId && (
@@ -433,22 +408,22 @@ const StudentRecommendationsPage = () => {
                 </View>
               )}
 
-              <View style={styles.planTasks}>
-                <View style={styles.planTaskItem}>
+              <View className="gap-2.5">
+                <View className="flex-row items-center gap-2.5">
                   <MaterialCommunityIcons
                     name="checkbox-blank-circle-outline"
                     size={14}
                     color="#94a3b8"
                   />
-                  <Text style={styles.planTaskText}>Solve 5 practice MCQs</Text>
+                  <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark">Solve 5 practice MCQs</Text>
                 </View>
-                <View style={styles.planTaskItem}>
+                <View className="flex-row items-center gap-2.5">
                   <MaterialCommunityIcons
                     name="checkbox-blank-circle-outline"
                     size={14}
                     color="#94a3b8"
                   />
-                  <Text style={styles.planTaskText}>
+                  <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark">
                     Review previous errors
                   </Text>
                 </View>
@@ -457,13 +432,13 @@ const StudentRecommendationsPage = () => {
           </View>
         ))}
 
-        <View style={styles.planFooter}>
+        <View className="flex-row items-center bg-[#fffbeb] p-4 rounded-xl border border-[#fef3c7] gap-3 mt-2 mb-6">
           <MaterialCommunityIcons
             name="lightbulb-on"
             size={20}
             color="#f59e0b"
           />
-          <Text style={styles.planFooterText}>
+          <Text className="flex-1 text-[13px] text-[#92400e] leading-relaxed font-medium">
             Tip: Attempt an adaptive quiz after completing this 3-day plan!
           </Text>
         </View>
@@ -473,46 +448,44 @@ const StudentRecommendationsPage = () => {
 
   if (loadingCourses) {
     return (
-      <View style={styles.centerContainer}>
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#667eea" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} style={styles.background}>
-        <View style={styles.header}>
-          <Text style={styles.title}>AI Recommendations</Text>
-          <Text style={styles.subtitle}>
+    <View className="flex-1 min-h-full">
+      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1 min-h-[100vh]">
+        <View className="px-6 pt-8 pb-3 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark min-w-full">
+          <Text className="text-2xl font-bold text-text-light dark:text-text-dark mb-1">AI Recommendations</Text>
+          <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">
             Personalized learning paths and suggestions
           </Text>
         </View>
 
-        <View style={styles.content}>
-          <Text style={styles.sectionTitle}>Select a Course</Text>
+        <View className="flex-1 px-6 pt-3 pb-0">
+          <Text className="text-lg font-semibold text-[#334155] mb-2">Select a Course</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.coursesScrollView}
-            contentContainerStyle={styles.coursesList}
+            className="flex-grow-0 h-12 mb-2"
+            contentContainerStyle={{ gap: 12, paddingBottom: 0 }}
           >
             {courses.map((course) => (
               <TouchableOpacity
                 key={course.course_id}
-                style={[
-                  styles.courseChip,
-                  selectedCourseId === course.course_id &&
-                  styles.courseChipSelected,
-                ]}
+                className={`px-4 py-2 bg-card-light dark:bg-card-dark rounded-full border mr-2.5 h-10 justify-center ${selectedCourseId === course.course_id
+                    ? "bg-[#667eea] border-[#667eea]"
+                    : "border-divider-light dark:border-divider-dark"
+                  }`}
                 onPress={() => handleCourseSelect(course.course_id)}
               >
                 <Text
-                  style={[
-                    styles.courseChipText,
-                    selectedCourseId === course.course_id &&
-                    styles.courseChipTextSelected,
-                  ]}
+                  className={`text-sm font-semibold ${selectedCourseId === course.course_id
+                      ? "text-white"
+                      : "text-textSecondary-light dark:text-textSecondary-dark"
+                    }`}
                 >
                   {course.course_name}
                 </Text>
@@ -520,54 +493,42 @@ const StudentRecommendationsPage = () => {
             ))}
           </ScrollView>
 
-          <View style={styles.divider} />
+          <View className="h-[1px] bg-[#e2e8f0] mt-0 mb-2" />
 
           {selectedCourseId && recommendationData && (
-            <View style={styles.tabBar}>
+            <View className="flex-row bg-background-light dark:bg-background-dark rounded-xl p-1 mb-4">
               <TouchableOpacity
-                style={[
-                  styles.tab,
-                  activeTab === "overview" && styles.activeTab,
-                ]}
+                className={`flex-[2] py-2.5 items-center rounded-lg ${activeTab === "overview" ? "bg-card-light dark:bg-card-dark shadow-sm" : ""
+                  }`}
                 onPress={() => handleTabChange("overview")}
               >
                 <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === "overview" && styles.activeTabText,
-                  ]}
+                  className={`text-sm font-semibold ${activeTab === "overview" ? "text-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"
+                    }`}
                 >
                   Overview
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.tab,
-                  activeTab === "weak_topics" && styles.activeTab,
-                ]}
+                className={`flex-[2] py-2.5 items-center rounded-lg ${activeTab === "weak_topics" ? "bg-card-light dark:bg-card-dark shadow-sm" : ""
+                  }`}
                 onPress={() => handleTabChange("weak_topics")}
               >
                 <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === "weak_topics" && styles.activeTabText,
-                  ]}
+                  className={`text-sm font-semibold ${activeTab === "weak_topics" ? "text-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"
+                    }`}
                 >
                   Weak Topics
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.tab,
-                  activeTab === "personalized_plan" && styles.activeTab,
-                ]}
+                className={`flex-[2] py-2.5 items-center rounded-lg ${activeTab === "personalized_plan" ? "bg-card-light dark:bg-card-dark shadow-sm" : ""
+                  }`}
                 onPress={() => handleTabChange("personalized_plan")}
               >
                 <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === "personalized_plan" && styles.activeTabText,
-                  ]}
+                  className={`text-sm font-semibold ${activeTab === "personalized_plan" ? "text-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"
+                    }`}
                 >
                   Suggested Plan
                 </Text>
@@ -576,34 +537,34 @@ const StudentRecommendationsPage = () => {
           )}
 
           {loadingRecommendations ? (
-            <View style={styles.loadingContainer}>
+            <View className="items-center py-10">
               <ActivityIndicator size="large" color="#667eea" />
-              <Text style={styles.loadingText}>Analyzing your progress...</Text>
+              <Text className="mt-3 text-textSecondary-light dark:text-textSecondary-dark">Analyzing your progress...</Text>
             </View>
           ) : !selectedCourseId ? (
-            <View style={styles.emptyState}>
+            <View className="items-center py-10 gap-3">
               <MaterialCommunityIcons
                 name="school-outline"
                 size={48}
                 color="#cbd5e1"
               />
-              <Text style={styles.emptyStateText}>
+              <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark font-medium">
                 Select a course to see AI recommendations
               </Text>
             </View>
           ) : !recommendationData ? (
-            <View style={styles.emptyState}>
+            <View className="items-center py-10 gap-3">
               <MaterialCommunityIcons
                 name="alert-circle-outline"
                 size={48}
                 color="#cbd5e1"
               />
-              <Text style={styles.emptyStateText}>
+              <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark font-medium">
                 No recommendations found for this course yet.
               </Text>
             </View>
           ) : (
-            <View style={{ flex: 1 }}>
+            <View className="flex-1">
               {activeTab === "overview" && renderOverview()}
               {activeTab === "weak_topics" && renderWeakTopicsDeepDive()}
               {activeTab === "personalized_plan" && renderPersonalizedPlan()}
@@ -616,469 +577,3 @@ const StudentRecommendationsPage = () => {
 };
 
 export default StudentRecommendationsPage;
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  background: { flex: 1 },
-  centerContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 12,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  title: { fontSize: 24, fontWeight: "700", color: "#1e293b", marginBottom: 4 },
-  subtitle: { fontSize: 14, color: "#64748b", fontWeight: "500" },
-  content: { flex: 1, padding: 24, paddingTop: 12, paddingBottom: 0 },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#334155",
-    marginBottom: 0,
-  },
-  coursesScrollView: {
-    flexGrow: 0,
-    height: 48,
-    marginBottom: 8,
-  },
-  coursesList: {
-    gap: 12,
-    paddingBottom: 0,
-  },
-  courseChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    backgroundColor: "#ffffff",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    marginRight: 10,
-    height: 40,
-    justifyContent: "center",
-  },
-  courseChipSelected: {
-    backgroundColor: "#667eea",
-    borderColor: "#667eea",
-  },
-  courseChipText: {
-    fontSize: 14,
-    color: "#64748b",
-    fontWeight: "600",
-  },
-  courseChipTextSelected: {
-    color: "#ffffff",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#e2e8f0",
-    marginTop: 0,
-    marginBottom: 8,
-  },
-  tabBar: {
-    flexDirection: "row",
-    backgroundColor: "#f1f5f9",
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 16,
-  },
-  tab: {
-    flex: 2,
-    paddingVertical: 10,
-    alignItems: "center",
-    borderRadius: 8,
-  },
-  activeTab: {
-    backgroundColor: "#ffffff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#64748b",
-  },
-  activeTabText: {
-    color: "#667eea",
-  },
-  tabContent: {
-    paddingBottom: 40,
-  },
-  loadingContainer: {
-    alignItems: "center",
-    paddingVertical: 40,
-  },
-  loadingText: {
-    marginTop: 12,
-    color: "#64748b",
-  },
-  emptyState: {
-    alignItems: "center",
-    paddingVertical: 40,
-    gap: 12,
-  },
-  emptyStateText: {
-    fontSize: 16,
-    color: "#64748b",
-    fontWeight: "500",
-  },
-  summaryCard: {
-    backgroundColor: "#f0f9ff",
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: "#bae6fd",
-    marginBottom: 24,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 12,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#0369a1",
-  },
-  summaryText: {
-    fontSize: 14,
-    color: "#334155",
-    lineHeight: 22,
-  },
-  sectionContainer: {
-    marginBottom: 24,
-  },
-  sectionHeader: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 12,
-  },
-  topicsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  topicBadge: {
-    backgroundColor: "#f0fdf4",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#bbf7d0",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  topicBadgeWarning: {
-    backgroundColor: "#fffbeb",
-    borderColor: "#fde68a",
-  },
-  topicText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#15803d",
-  },
-  topicTextWarning: {
-    color: "#b45309",
-  },
-  roadmapContainer: {
-    paddingLeft: 4,
-  },
-  roadmapStep: {
-    flexDirection: "row",
-    gap: 16,
-  },
-  roadmapIndicator: {
-    alignItems: "center",
-    width: 32,
-  },
-  roadmapCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: "#667eea",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1,
-    shadowColor: "#667eea",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  roadmapNumber: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
-  roadmapLine: {
-    width: 3,
-    flex: 1,
-    backgroundColor: "#e2e8f0",
-    marginVertical: 4,
-  },
-  roadmapCard: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  roadmapCardInteractive: {
-    borderColor: "#e0e7ff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  roadmapCardContent: {
-    flex: 1,
-  },
-  roadmapTopic: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#1e293b",
-    marginBottom: 4,
-  },
-  roadmapBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#e0e7ff",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    alignSelf: "flex-start",
-    gap: 4,
-  },
-  roadmapBadgeText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: "#6366f1",
-    textTransform: "uppercase",
-  },
-  detailCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderLeftWidth: 6,
-    borderLeftColor: "#667eea",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  detailTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 16,
-  },
-  detailText: {
-    fontSize: 15,
-    color: "#475569",
-    lineHeight: 24,
-  },
-  topicDeepDiveCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 24,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
-  },
-  topicDeepDiveTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 20,
-    borderBottomWidth: 2,
-    borderBottomColor: "#667eea",
-    paddingBottom: 8,
-    alignSelf: "flex-start",
-  },
-  snippetContainer: {
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-  },
-  snippetHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  snippetMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  snippetChapter: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#6366f1",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  readNotesButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#eff6ff",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    gap: 4,
-  },
-  readNotesButtonText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#6366f1",
-  },
-  snippetSection: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#334155",
-    marginBottom: 8,
-  },
-  snippetText: {
-    fontSize: 14,
-    color: "#475569",
-    lineHeight: 22,
-  },
-  planHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginBottom: 20,
-    paddingHorizontal: 4,
-  },
-  planHeaderTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-  planCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    position: "relative",
-    overflow: "hidden",
-  },
-  planDayBadge: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    backgroundColor: "#10b981",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderBottomLeftRadius: 12,
-  },
-  planDayText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "700",
-    textTransform: "uppercase",
-  },
-  planContent: {
-    marginTop: 8,
-  },
-  planFocusLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#64748b",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  planFocusTopic: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 16,
-  },
-  planResources: {
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-  },
-  planResourcesLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#475569",
-    marginBottom: 8,
-  },
-  planResourceLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: "#f1f5f9",
-    gap: 10,
-  },
-  planResourceText: {
-    flex: 1,
-    fontSize: 13,
-    color: "#6366f1",
-    fontWeight: "500",
-  },
-  planTasks: {
-    gap: 10,
-  },
-  planTaskItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  planTaskText: {
-    fontSize: 14,
-    color: "#475569",
-  },
-  planFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fffbeb",
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#fef3c7",
-    gap: 12,
-    marginTop: 8,
-    marginBottom: 24,
-  },
-  planFooterText: {
-    flex: 1,
-    fontSize: 13,
-    color: "#92400e",
-    lineHeight: 18,
-    fontWeight: "500",
-  },
-});

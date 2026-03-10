@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { Text, View } from 'react-native';
 import { LineChart, lineDataItem } from 'react-native-gifted-charts';
 
 type TrendLineChartProps = {
@@ -22,9 +22,9 @@ const TrendLineChart = ({
   showDataPoints = true,
 }: TrendLineChartProps) => {
   return (
-    <View style={styles.container}>
-      {title && <Text style={styles.title}>{title}</Text>}
-      <View style={styles.chartWrapper}>
+    <View className="w-full">
+      {title && <Text className="text-base font-semibold text-text-light dark:text-text-dark mb-4">{title}</Text>}
+      <View className="items-center">
         <LineChart
           data={data}
           height={height}
@@ -47,8 +47,8 @@ const TrendLineChart = ({
           xAxisColor="#e2e8f0"
           hideRules
           noOfSections={4}
-          yAxisTextStyle={styles.yAxisText}
-          xAxisLabelTextStyle={styles.xAxisText}
+          yAxisTextStyle={{ fontSize: 11, color: '#64748b' }}
+          xAxisLabelTextStyle={{ fontSize: 12, color: '#64748b', fontWeight: '500' }}
         />
       </View>
     </View>
@@ -56,27 +56,3 @@ const TrendLineChart = ({
 };
 
 export default TrendLineChart;
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: 16,
-  },
-  chartWrapper: {
-    alignItems: 'center',
-  },
-  yAxisText: {
-    fontSize: 11,
-    color: '#64748b',
-  },
-  xAxisText: {
-    fontSize: 12,
-    color: '#64748b',
-    fontWeight: '500',
-  },
-});

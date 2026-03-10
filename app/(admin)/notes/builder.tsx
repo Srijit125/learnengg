@@ -6,7 +6,6 @@ import {
   Alert,
   Platform,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -308,29 +307,27 @@ const NotesBuilder = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className={`flex-1 ${Platform.OS === "web" ? "flex-row" : "flex-col"} bg-background-light dark:bg-background-dark`}>
       {/* Sidebar - Settings */}
-      <View style={styles.sidebar}>
+      <View className={`${Platform.OS === "web" ? "w-[340px]" : "w-full"} bg-card-light dark:bg-card-dark border-r border-divider-light dark:border-divider-dark`}>
         <LinearGradient
           colors={["#667eea", "#764ba2"]}
-          style={styles.sidebarHeaderGradient}
+          className="p-6 flex-row items-center gap-3"
         >
           <MaterialCommunityIcons
             name="file-document-edit-outline"
             size={24}
             color="white"
           />
-          <Text style={styles.sidebarHeader}>Note Builder</Text>
+          <Text className="text-xl font-bold color-white">Note Builder</Text>
         </LinearGradient>
 
-        <ScrollView style={styles.sidebarScroll}>
-          <View style={styles.card}>
-            <Text style={styles.label}>Mode Selection</Text>
+        <ScrollView className="p-4">
+          <View className="bg-card-light dark:bg-card-dark rounded-xl p-4 mb-4 border border-divider-light dark:border-divider-dark shadow-sm shadow-[#000]/5">
+            <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-3">Mode Selection</Text>
             <TouchableOpacity
-              style={[
-                styles.standaloneToggle,
-                standaloneMode && styles.activeStandalone,
-              ]}
+              className={`flex-row items-center p-3 rounded-lg border mb-4 ${standaloneMode ? "bg-[#667eea] border-[#667eea]" : "bg-background-light dark:bg-background-dark border-divider-light dark:border-divider-dark"
+                }`}
               onPress={() => {
                 setStandaloneMode(!standaloneMode);
                 if (!standaloneMode) {
@@ -345,10 +342,8 @@ const NotesBuilder = () => {
                 color={standaloneMode ? "white" : "#64748b"}
               />
               <Text
-                style={[
-                  styles.standaloneText,
-                  standaloneMode && { color: "white" },
-                ]}
+                className={`ml-2 text-sm font-semibold ${standaloneMode ? "color-white" : "text-textSecondary-light dark:text-textSecondary-dark"
+                  }`}
               >
                 Standalone Mode
               </Text>
@@ -356,77 +351,62 @@ const NotesBuilder = () => {
 
             {!standaloneMode && (
               <>
-                <Text style={styles.label}>Select Course</Text>
-                <View style={styles.pickerWrapper}>
+                <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-3">Select Course</Text>
+                <View className="border border-divider-light dark:border-divider-dark rounded-lg bg-background-light dark:bg-background-dark mb-4 overflow-hidden">
                   <ScrollView style={{ maxHeight: 150 }}>
-                    {courses.map((c) => (
-                      <TouchableOpacity
-                        key={c.course_id}
-                        style={[
-                          styles.optionItem,
-                          selectedCourseId === c.course_id &&
-                          styles.activeOption,
-                        ]}
-                        onPress={() => handleCourseChange(c.course_id)}
-                      >
-                        <Text
-                          style={{
-                            color:
-                              selectedCourseId === c.course_id
-                                ? "white"
-                                : "#1e293b",
-                            fontWeight:
-                              selectedCourseId === c.course_id
-                                ? "600"
-                                : "400",
-                          }}
+                    {courses.map((c) => {
+                      const isActive = selectedCourseId === c.course_id;
+                      return (
+                        <TouchableOpacity
+                          key={c.course_id}
+                          className={`p-3 border-b border-border-light dark:border-border-dark ${isActive ? "bg-[#667eea]" : ""}`}
+                          onPress={() => handleCourseChange(c.course_id)}
                         >
-                          {c.course_name}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
+                          <Text
+                            className={`text-[15px] ${isActive ? "color-white font-semibold" : "text-text-light dark:text-text-dark font-normal"}`}
+                          >
+                            {c.course_name}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
                   </ScrollView>
                 </View>
 
-                <Text style={styles.label}>Link to Chapter/Unit</Text>
-                <View style={styles.pickerWrapper}>
+                <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-3">Link to Chapter/Unit</Text>
+                <View className="border border-divider-light dark:border-divider-dark rounded-lg bg-background-light dark:bg-background-dark mb-4 overflow-hidden">
                   <ScrollView style={{ maxHeight: 350 }}>
                     {xmlStructure?.units ? (
                       xmlStructure.units.map((unit: any) => (
-                        <View key={unit.unitId} style={styles.unitSection}>
-                          <View style={styles.unitHeaderRow}>
+                        <View key={unit.unitId} className="bg-card-light dark:bg-card-dark">
+                          <View className="flex-row items-center p-2.5 bg-background-light dark:bg-background-dark gap-2">
                             <MaterialCommunityIcons name="folder-outline" size={16} color="#64748b" />
-                            <Text style={styles.unitLabel}>{unit.unitTitle}</Text>
+                            <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark flex-1">{unit.unitTitle}</Text>
                           </View>
-                          {unit.chapters?.map((chapter: any) => (
-                            <TouchableOpacity
-                              key={chapter.chapterId}
-                              style={[
-                                styles.optionItem,
-                                styles.chapterIndent,
-                                selectedChapterId === chapter.chapterId && styles.activeOption,
-                              ]}
-                              onPress={() => {
-                                setSelectedChapterId(chapter.chapterId);
-                                if (!chapterTitle) setChapterTitle(chapter.chapterTitle);
-                                if (!unitName) setUnitName(unit.unitTitle);
-                              }}
-                            >
-                              <Text
-                                style={{
-                                  color: selectedChapterId === chapter.chapterId ? "white" : "#1e293b",
-                                  fontWeight: selectedChapterId === chapter.chapterId ? "600" : "400",
-                                  fontSize: 13,
+                          {unit.chapters?.map((chapter: any) => {
+                            const isActive = selectedChapterId === chapter.chapterId;
+                            return (
+                              <TouchableOpacity
+                                key={chapter.chapterId}
+                                className={`p-3 border-b border-border-light dark:border-border-dark pl-6 border-l-2 border-l-[#e2e8f0] ${isActive ? "bg-[#667eea]" : ""}`}
+                                onPress={() => {
+                                  setSelectedChapterId(chapter.chapterId);
+                                  if (!chapterTitle) setChapterTitle(chapter.chapterTitle);
+                                  if (!unitName) setUnitName(unit.unitTitle);
                                 }}
                               >
-                                {chapter.chapterTitle}
-                              </Text>
-                            </TouchableOpacity>
-                          ))}
+                                <Text
+                                  className={`text-[13px] ${isActive ? "color-white font-semibold" : "text-text-light dark:text-text-dark font-normal"}`}
+                                >
+                                  {chapter.chapterTitle}
+                                </Text>
+                              </TouchableOpacity>
+                            );
+                          })}
                         </View>
                       ))
                     ) : (
-                      <Text style={{ padding: 12, color: "#94a3b8" }}>
+                      <Text className="p-3 text-textSecondary-light dark:text-textSecondary-dark">
                         {loading ? "Loading structure..." : "Select a course first"}
                       </Text>
                     )}
@@ -436,46 +416,46 @@ const NotesBuilder = () => {
             )}
           </View>
 
-          <View style={styles.card}>
-            <Text style={styles.label}>Metadata</Text>
+          <View className="bg-card-light dark:bg-card-dark rounded-xl p-4 mb-4 border border-divider-light dark:border-divider-dark shadow-sm shadow-[#000]/5">
+            <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-3">Metadata</Text>
             <TextInput
-              style={styles.input}
+              className="bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg p-3 text-[15px] text-text-light dark:text-text-dark mb-4"
               placeholder="Note Chapter Title"
               value={chapterTitle}
               onChangeText={setChapterTitle}
             />
             <TextInput
-              style={styles.input}
+              className="bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg p-3 text-[15px] text-text-light dark:text-text-dark mb-4"
               placeholder="Unit/Course context"
               value={unitName}
               onChangeText={setUnitName}
             />
           </View>
 
-          <View style={styles.actionContainer}>
+          <View className="gap-3 mb-10">
             {!standaloneMode && (
               <TouchableOpacity
-                style={styles.primaryBtn}
+                className="rounded-lg overflow-hidden"
                 onPress={linkToXml}
                 disabled={loading}
               >
                 <LinearGradient
                   colors={["#667eea", "#764ba2"]}
-                  style={styles.btnGradient}
+                  className="p-3.5 flex-row items-center justify-center gap-2"
                 >
                   <Ionicons name="link" size={18} color="white" />
-                  <Text style={styles.btnText}>Link to XML & Save</Text>
+                  <Text className="color-white font-bold text-sm">Link to XML & Save</Text>
                 </LinearGradient>
               </TouchableOpacity>
             )}
 
-            <TouchableOpacity style={styles.secondaryBtn} onPress={downloadHtml}>
+            <TouchableOpacity className="bg-[#334155] p-3 rounded-lg flex-row items-center justify-center gap-2" onPress={downloadHtml}>
               <Ionicons name="download-outline" size={18} color="white" />
-              <Text style={styles.btnText}>Download HTML Only</Text>
+              <Text className="color-white font-bold text-sm">Download HTML Only</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.clearBtn}
+              className="bg-[#ef4444] p-3 rounded-lg flex-row items-center justify-center gap-2"
               onPress={() => {
                 Alert.alert(
                   "Clear All",
@@ -492,7 +472,7 @@ const NotesBuilder = () => {
               }}
             >
               <Ionicons name="trash-outline" size={18} color="white" />
-              <Text style={styles.btnText}>Clear All Blocks</Text>
+              <Text className="color-white font-bold text-sm">Clear All Blocks</Text>
             </TouchableOpacity>
           </View>
 
@@ -506,77 +486,74 @@ const NotesBuilder = () => {
       </View>
 
       {/* Main Content */}
-      <View style={styles.main}>
+      <View className="flex-1 bg-background-light dark:bg-background-dark">
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 24 }}>
-          <View style={styles.mainCard}>
-            <Text style={styles.sectionHeader}>Add New Section</Text>
-            <View style={styles.row}>
+          <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 border border-divider-light dark:border-divider-dark shadow-sm shadow-[#000]/5">
+            <Text className="text-xl font-extrabold text-text-light dark:text-text-dark mb-5">Add New Section</Text>
+            <View className="flex-row items-center">
               <TextInput
-                style={[styles.input, { flex: 1, marginRight: 10 }]}
+                className="bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg p-3 text-[15px] text-text-light dark:text-text-dark mb-4 flex-1 mr-2.5"
                 placeholder="Section Header (e.g. Introduction)"
                 value={secTitle}
                 onChangeText={setSecTitle}
               />
               <TextInput
-                style={[styles.input, { flex: 1 }]}
+                className="bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg p-3 text-[15px] text-text-light dark:text-text-dark mb-4 flex-1"
                 placeholder="Sub-Header (Optional)"
                 value={secSubtitle}
                 onChangeText={setSecSubtitle}
               />
             </View>
             <TextInput
-              style={styles.input}
+              className="bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg p-3 text-[15px] text-text-light dark:text-text-dark mb-4"
               placeholder="Video URL (Optional)"
               value={secVideo}
               onChangeText={setSecVideo}
             />
-            <TouchableOpacity onPress={addSection} style={styles.addBtn}>
+            <TouchableOpacity onPress={addSection} className="rounded-lg overflow-hidden">
               <LinearGradient
                 colors={["#10b981", "#059669"]}
-                style={styles.btnGradient}
+                className="p-3.5 flex-row items-center justify-center gap-2"
               >
                 <Ionicons name="add-circle-outline" size={20} color="white" />
-                <Text style={styles.btnText}>Add Section</Text>
+                <Text className="color-white font-bold text-sm">Add Section</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
 
-          <View style={[styles.mainCard, { marginTop: 24 }]}>
-            <Text style={styles.sectionHeader}>Add Content Block</Text>
+          <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 border border-divider-light dark:border-divider-dark shadow-sm shadow-[#000]/5 mt-6">
+            <Text className="text-xl font-extrabold text-text-light dark:text-text-dark mb-5">Add Content Block</Text>
             {sections.length > 0 ? (
               <>
-                <Text style={styles.subLabel}>Target Section:</Text>
+                <Text className="text-sm font-semibold text-textSecondary-light dark:text-textSecondary-dark mb-2">Target Section:</Text>
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  style={styles.chipScroll}
+                  className="mb-4"
                 >
-                  {sections.map((s) => (
-                    <TouchableOpacity
-                      key={s.id}
-                      style={[
-                        styles.chip,
-                        selectedSectionId === s.id && styles.activeChip,
-                      ]}
-                      onPress={() => setSelectedSectionId(s.id)}
-                    >
-                      <Text
-                        style={[
-                          styles.chipText,
-                          selectedSectionId === s.id && styles.activeChipText,
-                        ]}
+                  {sections.map((s) => {
+                    const isActive = selectedSectionId === s.id;
+                    return (
+                      <TouchableOpacity
+                        key={s.id}
+                        className={`px-4 py-2 rounded-[20px] mr-2 border ${isActive ? "bg-[#6366f1] border-[#6366f1]" : "bg-background-light dark:bg-background-dark border-divider-light dark:border-divider-dark"}`}
+                        onPress={() => setSelectedSectionId(s.id)}
                       >
-                        {s.title}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text
+                          className={`text-[13px] font-semibold ${isActive ? "color-white" : "text-textSecondary-light dark:text-textSecondary-dark"}`}
+                        >
+                          {s.title}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </ScrollView>
 
-                <Text style={styles.subLabel}>Content Type:</Text>
+                <Text className="text-sm font-semibold text-textSecondary-light dark:text-textSecondary-dark mb-2">Content Type:</Text>
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  style={styles.chipScroll}
+                  className="mb-4"
                 >
                   {[
                     "paragraph",
@@ -586,29 +563,27 @@ const NotesBuilder = () => {
                     "formula",
                     "image",
                     "video",
-                  ].map((t) => (
-                    <TouchableOpacity
-                      key={t}
-                      style={[
-                        styles.chip,
-                        blockType === t && styles.activeChip,
-                      ]}
-                      onPress={() => setBlockType(t as any)}
-                    >
-                      <Text
-                        style={[
-                          styles.chipText,
-                          blockType === t && styles.activeChipText,
-                        ]}
+                  ].map((t) => {
+                    const isActive = blockType === t;
+                    return (
+                      <TouchableOpacity
+                        key={t}
+                        className={`px-4 py-2 rounded-[20px] mr-2 border ${isActive ? "bg-[#6366f1] border-[#6366f1]" : "bg-background-light dark:bg-background-dark border-divider-light dark:border-divider-dark"}`}
+                        onPress={() => setBlockType(t as any)}
                       >
-                        {t.charAt(0).toUpperCase() + t.slice(1)}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text
+                          className={`text-[13px] font-semibold ${isActive ? "color-white" : "text-textSecondary-light dark:text-textSecondary-dark"}`}
+                        >
+                          {t.charAt(0).toUpperCase() + t.slice(1)}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </ScrollView>
 
                 <TextInput
-                  style={styles.textArea}
+                  className="bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg p-3 text-[15px] text-text-light dark:text-text-dark mb-4 min-h-[120px]"
+                  style={{ textAlignVertical: 'top' }}
                   placeholder={
                     blockType === "bullets"
                       ? "Item 1\n  Sub item 1.1\n    Sub item 1.1.1"
@@ -623,50 +598,50 @@ const NotesBuilder = () => {
 
                 {blockType === "image" && (
                   <TextInput
-                    style={styles.input}
+                    className="bg-background-light dark:bg-background-dark border border-divider-light dark:border-divider-dark rounded-lg p-3 text-[15px] text-text-light dark:text-text-dark mb-4"
                     placeholder="Image Caption"
                     value={imageCaption}
                     onChangeText={setImageCaption}
                   />
                 )}
 
-                <TouchableOpacity onPress={addBlock} style={styles.addBtn}>
+                <TouchableOpacity onPress={addBlock} className="rounded-lg overflow-hidden">
                   <LinearGradient
                     colors={["#6366f1", "#4f46e5"]}
-                    style={styles.btnGradient}
+                    className="p-3.5 flex-row items-center justify-center gap-2"
                   >
                     <Ionicons name="document-text" size={20} color="white" />
-                    <Text style={styles.btnText}>Add {blockType}</Text>
+                    <Text className="color-white font-bold text-sm">Add {blockType}</Text>
                   </LinearGradient>
                 </TouchableOpacity>
               </>
             ) : (
-              <View style={styles.emptyState}>
+              <View className="p-10 items-center justify-center bg-background-light dark:bg-background-dark rounded-xl border-2 border-dashed border-divider-light dark:border-divider-dark">
                 <Ionicons name="information-circle" size={24} color="#94a3b8" />
-                <Text style={styles.emptyText}>
+                <Text className="mt-3 text-sm text-textSecondary-light dark:text-textSecondary-dark text-center">
                   Add at least one section above to start adding content blocks.
                 </Text>
               </View>
             )}
           </View>
 
-          <View style={[styles.mainCard, { marginTop: 24, marginBottom: 40 }]}>
-            <Text style={styles.sectionHeader}>Structure & Hierarchy</Text>
+          <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 border border-divider-light dark:border-divider-dark shadow-sm shadow-[#000]/5 mt-6 mb-10">
+            <Text className="text-xl font-extrabold text-text-light dark:text-text-dark mb-5">Structure & Hierarchy</Text>
             {sections.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>No sections added yet.</Text>
+              <View className="p-10 items-center justify-center bg-background-light dark:bg-background-dark rounded-xl border-2 border-dashed border-divider-light dark:border-divider-dark">
+                <Text className="mt-3 text-sm text-textSecondary-light dark:text-textSecondary-dark text-center">No sections added yet.</Text>
               </View>
             ) : (
               sections.map((sec, index) => (
-                <View key={sec.id} style={styles.sectionItem}>
-                  <View style={styles.sectionHeaderLine}>
-                    <View style={styles.sectionTitleRow}>
-                      <View style={styles.indexBadge}>
-                        <Text style={styles.indexText}>{index + 1}</Text>
+                <View key={sec.id} className="bg-background-light dark:bg-background-dark rounded-xl p-4 mb-4 border border-divider-light dark:border-divider-dark">
+                  <View className="flex-row justify-between items-center mb-3 border-b border-divider-light dark:border-divider-dark pb-3">
+                    <View className="flex-row items-center gap-2.5">
+                      <View className="w-6 h-6 rounded-full bg-[#6366f1] items-center justify-center">
+                        <Text className="color-white text-xs font-bold">{index + 1}</Text>
                       </View>
-                      <Text style={styles.sectionTitle}>{sec.title}</Text>
+                      <Text className="text-base font-bold text-text-light dark:text-text-dark">{sec.title}</Text>
                     </View>
-                    <View style={styles.controls}>
+                    <View className="flex-row items-center gap-2">
                       <TouchableOpacity onPress={() => moveSection(index, -1)}>
                         <Ionicons
                           name="arrow-up-circle"
@@ -688,14 +663,14 @@ const NotesBuilder = () => {
                   </View>
 
                   {sec.blocks.map((block) => (
-                    <View key={block.id} style={styles.blockRow}>
-                      <View style={styles.blockInfo}>
-                        <View style={styles.blockTypeBadge}>
-                          <Text style={styles.blockTypeText}>
+                    <View key={block.id} className="flex-row items-center justify-between bg-card-light dark:bg-card-dark p-2.5 rounded-lg mt-2 border border-divider-light dark:border-divider-dark">
+                      <View className="flex-row items-center flex-1 gap-2.5">
+                        <View className="bg-background-light dark:bg-background-dark px-1.5 py-0.5 rounded">
+                          <Text className="text-[10px] font-extrabold text-textSecondary-light dark:text-textSecondary-dark">
                             {block.type.toUpperCase()}
                           </Text>
                         </View>
-                        <Text style={styles.blockText} numberOfLines={1}>
+                        <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark flex-1" numberOfLines={1}>
                           {typeof block.content === "string"
                             ? block.content
                             : "Structured content"}
@@ -716,15 +691,15 @@ const NotesBuilder = () => {
       </View>
 
       {/* Preview Panel */}
-      <View style={styles.preview}>
+      <View className="flex-1 bg-card-light dark:bg-card-dark border-l border-divider-light dark:border-divider-dark">
         <LinearGradient
           colors={["#f8fafc", "#f1f5f9"]}
-          style={styles.previewHeader}
+          className="flex-row items-center gap-2 p-4 border-b border-divider-light dark:border-divider-dark"
         >
           <Ionicons name="eye-outline" size={20} color="#1e293b" />
-          <Text style={styles.previewHeaderText}>Live Preview</Text>
+          <Text className="font-bold text-text-light dark:text-text-dark text-[15px]">Live Preview</Text>
         </LinearGradient>
-        <View style={styles.previewContent}>
+        <View className="flex-1">
           <HtmlRenderer html={finalHtml} />
         </View>
       </View>
@@ -733,351 +708,3 @@ const NotesBuilder = () => {
 };
 
 export default NotesBuilder;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: Platform.OS === "web" ? "row" : "column",
-    backgroundColor: "#f1f5f9",
-  },
-  sidebar: {
-    width: Platform.OS === "web" ? 340 : "100%",
-    backgroundColor: "white",
-    borderRightWidth: 1,
-    borderRightColor: "#e2e8f0",
-  },
-  sidebarHeaderGradient: {
-    padding: 24,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  sidebarHeader: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "white",
-  },
-  sidebarScroll: {
-    padding: 16,
-  },
-  sidebarHeaderText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "#1e293b",
-  },
-  card: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  mainCard: {
-    backgroundColor: "white",
-    borderRadius: 16,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  standaloneToggle: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    backgroundColor: "#f8fafc",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    marginBottom: 16,
-    gap: 10,
-  },
-  activeStandalone: {
-    backgroundColor: "#667eea",
-    borderColor: "#667eea",
-  },
-  standaloneText: {
-    fontSize: 14,
-    color: "#64748b",
-    fontWeight: "600",
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#94a3b8",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginBottom: 12,
-  },
-  subLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#475569",
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: "#f8fafc",
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 15,
-    color: "#1e293b",
-    marginBottom: 16,
-  },
-  textArea: {
-    backgroundColor: "#f8fafc",
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 15,
-    color: "#1e293b",
-    minHeight: 120,
-    textAlignVertical: "top",
-    marginBottom: 16,
-  },
-  pickerWrapper: {
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 8,
-    backgroundColor: "#f8fafc",
-    marginBottom: 16,
-    overflow: "hidden",
-  },
-  optionItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  unitSection: {
-    backgroundColor: "#ffffff",
-  },
-  unitHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#f1f5f9",
-    gap: 8,
-  },
-  unitLabel: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#475569",
-    flex: 1,
-  },
-  chapterIndent: {
-    paddingLeft: 24,
-    borderLeftWidth: 2,
-    borderLeftColor: "#e2e8f0",
-  },
-  activeOption: {
-    backgroundColor: "#667eea",
-  },
-  actionContainer: {
-    gap: 12,
-    marginBottom: 40,
-  },
-  primaryBtn: {
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  secondaryBtn: {
-    backgroundColor: "#334155",
-    padding: 12,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  clearBtn: {
-    backgroundColor: "#ef4444",
-    padding: 12,
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  addBtn: {
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  btnGradient: {
-    padding: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  btnText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 14,
-  },
-  main: {
-    flex: 1,
-    backgroundColor: "#f1f5f9",
-  },
-  sectionHeader: {
-    fontSize: 20,
-    fontWeight: "800",
-    color: "#1e293b",
-    marginBottom: 20,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  chipScroll: {
-    marginBottom: 16,
-  },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: "#f1f5f9",
-    borderRadius: 20,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
-  activeChip: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
-  },
-  chipText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#64748b",
-  },
-  activeChipText: {
-    color: "white",
-  },
-  emptyState: {
-    padding: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
-    borderStyle: "dashed",
-    borderWidth: 2,
-    borderColor: "#e2e8f0",
-  },
-  emptyText: {
-    marginTop: 12,
-    fontSize: 14,
-    color: "#94a3b8",
-    textAlign: "center",
-  },
-  sectionItem: {
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
-  sectionHeaderLine: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
-    paddingBottom: 12,
-  },
-  sectionTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  indexBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#6366f1",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  indexText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-  controls: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  blockRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "white",
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: "#e2e8f0",
-  },
-  blockInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-    gap: 10,
-  },
-  blockTypeBadge: {
-    backgroundColor: "#f1f5f9",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  blockTypeText: {
-    fontSize: 10,
-    fontWeight: "800",
-    color: "#64748b",
-  },
-  blockText: {
-    fontSize: 14,
-    color: "#475569",
-    flex: 1,
-  },
-  preview: {
-    flex: 1,
-    backgroundColor: "white",
-    borderLeftWidth: 1,
-    borderLeftColor: "#e2e8f0",
-  },
-  previewHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
-  },
-  previewHeaderText: {
-    fontWeight: "700",
-    color: "#1e293b",
-    fontSize: 15,
-  },
-  previewContent: {
-    flex: 1,
-  },
-});

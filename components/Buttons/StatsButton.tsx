@@ -1,13 +1,10 @@
-import { StyleSheet } from "react-native-unistyles";
-import { View, Text, TouchableOpacity } from "react-native";
-// import ToDoListIcon from './assets/todolisticon.svg';
-
 import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export interface StatsButtonProps {
   state: (typeof StatsButtonVariants.state)[number];
-  
-  onPress?: ()=>void;
+
+  onPress?: () => void;
 }
 
 export const StatsButtonVariants = {
@@ -16,70 +13,23 @@ export const StatsButtonVariants = {
 
 export function StatsButton(props: StatsButtonProps) {
   const { state } = props;
-  styles.useVariants({
-    state: state!,
-  });
+  const isPressed = state === "Pressed";
 
   return (
-    <TouchableOpacity style={[styles.root]} disabled={state == "Pressed"} onPress={props.onPress}>
-      <View style={styles.button}>
-        {/* <ToDoListIcon/> */}
-        <Text style={styles.label}>{`Stats`}</Text>
+    <TouchableOpacity
+      className="w-28 h-10"
+      disabled={isPressed}
+      onPress={props.onPress}
+      activeOpacity={0.7}
+    >
+      <View
+        className={`flex-row w-[100px] h-[30px] justify-center items-center rounded border-4 border-solid border-[#594A16] bg-[#F2CA3C] ${isPressed ? "bg-[#BFA02F]" : ""
+          }`}
+        style={!isPressed ? { shadowColor: "rgba(89,74,22,1)", shadowOffset: { height: 4, width: 4 }, shadowOpacity: 1, shadowRadius: 0, elevation: 4 } : {}}
+      >
+        <Text className="text-[#594A16] text-base font-bold">Stats</Text>
       </View>
     </TouchableOpacity>
   );
 }
 
-const styles = StyleSheet.create((theme) => ({
-  root: {
-    width: 112,
-    height: 42,
-  },
-  label: {
-    color: "rgba(89, 74, 22, 1)",
-    fontFamily: "Cabinet Grotesk Variable",
-    fontSize: 16,
-    fontStyle: "normal",
-    fontWeight: "700",
-  },
-  button: {
-    variants: {
-      state: {
-        Default: {
-          flexDirection: "row",
-          width: 100,
-          height: 30,
-          justifyContent: "center",
-          alignItems: "center",
-          rowGap: 2,
-          columnGap: 2,
-          borderRadius:4,
-          borderWidth: 4,
-          borderStyle: "solid",
-          borderColor: "rgba(89, 74, 22, 1)",
-          backgroundColor: "rgba(242, 202, 60, 1)",
-          shadowColor: "rgba(89,74,22,1)",
-          shadowRadius: 4,
-          shadowOffset: {height: 4, width: 4}
-        },
-        Pressed: {
-          flexDirection: "row",
-          width: 100,
-          height: 30,
-          justifyContent: "center",
-          alignItems: "center",
-          rowGap: 2,
-          columnGap: 2,
-          borderRadius: 4,
-          borderWidth: 4,
-          borderStyle: "solid",
-          borderColor: "rgba(89, 74, 22, 1)",
-          backgroundColor: "rgba(242, 202, 60, 1)",
-        },
-      },
-    },
-  },
-  buttonStatePressed: {
-    backgroundColor: "rgba(191, 160, 47, 1)",
-  },
-}));

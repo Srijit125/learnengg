@@ -1,15 +1,13 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    presets: [
+      ['babel-preset-expo', { jsxImportSource: 'nativewind' }], // Example preset
+      'nativewind/babel', // Example NativeWind inclusion
+    ],
     plugins: [
-      '@babel/plugin-syntax-import-meta',
-      [
-        'react-native-unistyles/plugin',
-        {
-          root: 'app'
-        }
-      ]
-    ]
+      'transform-import-meta',
+      'react-native-reanimated/plugin', // Must be listed last
+    ],
   };
 };

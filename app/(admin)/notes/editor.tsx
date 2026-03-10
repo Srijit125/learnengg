@@ -6,7 +6,6 @@ import {
     Alert,
     Platform,
     ScrollView,
-    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
@@ -87,7 +86,6 @@ const NotesEditor = () => {
         try {
             setFetchingNotes(true);
             const data = await fetchCourseChapterNotes(courseId, chapterId);
-            // data might be { html: "..." } or similar
             const content = typeof data === 'string' ? data : data?.notes || "";
             setHtmlContent(content);
         } catch (error) {
@@ -118,85 +116,77 @@ const NotesEditor = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <View className={`flex-1 ${Platform.OS === "web" ? "flex-row" : "flex-col"} bg-background-light dark:bg-background-dark`}>
             {/* Sidebar - Course & Chapter Selection */}
-            <View style={styles.sidebar}>
+            <View className={`${Platform.OS === "web" ? "w-[340px]" : "w-full"} bg-card-light dark:bg-card-dark border-r border-divider-light dark:border-divider-dark`}>
                 <LinearGradient
                     colors={["#764ba2", "#667eea"]}
-                    style={styles.sidebarHeaderGradient}
+                    className="p-6 flex-row items-center gap-3"
                 >
                     <MaterialCommunityIcons
                         name="file-document-edit"
                         size={24}
                         color="white"
                     />
-                    <Text style={styles.sidebarHeader}>Notes Editor</Text>
+                    <Text className="text-xl font-bold color-white">Notes Editor</Text>
                 </LinearGradient>
 
-                <ScrollView style={styles.sidebarScroll}>
-                    <View style={styles.card}>
-                        <Text style={styles.label}>Select Course</Text>
-                        <View style={styles.pickerWrapper}>
+                <ScrollView className="p-4">
+                    <View className="bg-card-light dark:bg-card-dark rounded-xl p-4 mb-4 border border-divider-light dark:border-divider-dark">
+                        <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-3">Select Course</Text>
+                        <View className="border border-divider-light dark:border-divider-dark rounded-lg bg-background-light dark:bg-background-dark mb-4 overflow-hidden">
                             <ScrollView style={{ maxHeight: 200 }}>
-                                {courses.map((c) => (
-                                    <TouchableOpacity
-                                        key={c.course_id}
-                                        style={[
-                                            styles.optionItem,
-                                            selectedCourseId === c.course_id && styles.activeOption,
-                                        ]}
-                                        onPress={() => handleCourseChange(c.course_id)}
-                                    >
-                                        <Text
-                                            style={{
-                                                color: selectedCourseId === c.course_id ? "white" : "#1e293b",
-                                                fontWeight: selectedCourseId === c.course_id ? "600" : "400",
-                                            }}
+                                {courses.map((c) => {
+                                    const isActive = selectedCourseId === c.course_id;
+                                    return (
+                                        <TouchableOpacity
+                                            key={c.course_id}
+                                            className={`p-3 border-b border-border-light dark:border-border-dark ${isActive ? "bg-[#764ba2]" : ""}`}
+                                            onPress={() => handleCourseChange(c.course_id)}
                                         >
-                                            {c.course_name}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
+                                            <Text
+                                                className={`text-[15px] ${isActive ? "color-white font-semibold" : "text-text-light dark:text-text-dark font-normal"}`}
+                                            >
+                                                {c.course_name}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    );
+                                })}
                             </ScrollView>
                         </View>
 
                         {selectedCourseId && (
                             <>
-                                <Text style={styles.label}>Select Chapter</Text>
-                                <View style={styles.pickerWrapper}>
+                                <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-3">Select Chapter</Text>
+                                <View className="border border-divider-light dark:border-divider-dark rounded-lg bg-background-light dark:bg-background-dark mb-4 overflow-hidden">
                                     <ScrollView style={{ maxHeight: 350 }}>
                                         {xmlStructure?.units ? (
                                             xmlStructure.units.map((unit: any) => (
-                                                <View key={unit.unitId} style={styles.unitSection}>
-                                                    <View style={styles.unitHeaderRow}>
+                                                <View key={unit.unitId} className="bg-card-light dark:bg-card-dark">
+                                                    <View className="flex-row items-center p-2.5 bg-background-light dark:bg-background-dark gap-2">
                                                         <MaterialCommunityIcons name="folder-outline" size={16} color="#64748b" />
-                                                        <Text style={styles.unitLabel}>{unit.unitTitle}</Text>
+                                                        <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark flex-1">{unit.unitTitle}</Text>
                                                     </View>
-                                                    {unit.chapters?.map((chapter: any) => (
-                                                        <TouchableOpacity
-                                                            key={chapter.chapterId}
-                                                            style={[
-                                                                styles.optionItem,
-                                                                styles.chapterIndent,
-                                                                selectedChapterId === chapter.chapterId && styles.activeOption,
-                                                            ]}
-                                                            onPress={() => handleChapterSelect(chapter.chapterId)}
-                                                        >
-                                                            <Text
-                                                                style={{
-                                                                    color: selectedChapterId === chapter.chapterId ? "white" : "#1e293b",
-                                                                    fontWeight: selectedChapterId === chapter.chapterId ? "600" : "400",
-                                                                    fontSize: 13,
-                                                                }}
+                                                    {unit.chapters?.map((chapter: any) => {
+                                                        const isActive = selectedChapterId === chapter.chapterId;
+                                                        return (
+                                                            <TouchableOpacity
+                                                                key={chapter.chapterId}
+                                                                className={`p-3 border-b border-border-light dark:border-border-dark pl-6 border-l-2 border-l-[#e2e8f0] ${isActive ? "bg-[#764ba2]" : ""}`}
+                                                                onPress={() => handleChapterSelect(chapter.chapterId)}
                                                             >
-                                                                {chapter.chapterTitle}
-                                                            </Text>
-                                                        </TouchableOpacity>
-                                                    ))}
+                                                                <Text
+                                                                    className={`text-[13px] ${isActive ? "color-white font-semibold" : "text-text-light dark:text-text-dark font-normal"}`}
+                                                                >
+                                                                    {chapter.chapterTitle}
+                                                                </Text>
+                                                            </TouchableOpacity>
+                                                        );
+                                                    })}
                                                 </View>
                                             ))
                                         ) : (
-                                            <Text style={{ padding: 12, color: "#94a3b8" }}>
+                                            <Text className="p-3 text-textSecondary-light dark:text-textSecondary-dark">
                                                 {loading ? "Loading structure..." : "No units found for this course."}
                                             </Text>
                                         )}
@@ -207,20 +197,20 @@ const NotesEditor = () => {
                     </View>
 
                     <TouchableOpacity
-                        style={styles.saveBtn}
+                        className="rounded-lg overflow-hidden mt-2"
                         onPress={handleSave}
                         disabled={loading || fetchingNotes}
                     >
                         <LinearGradient
                             colors={["#10b981", "#059669"]}
-                            style={styles.btnGradient}
+                            className="p-3.5 flex-row items-center justify-center gap-2"
                         >
                             {loading ? (
                                 <ActivityIndicator color="white" size="small" />
                             ) : (
                                 <>
                                     <Ionicons name="save-outline" size={20} color="white" />
-                                    <Text style={styles.btnText}>Save Changes</Text>
+                                    <Text className="color-white font-bold text-[15px]">Save Changes</Text>
                                 </>
                             )}
                         </LinearGradient>
@@ -229,16 +219,16 @@ const NotesEditor = () => {
             </View>
 
             {/* Main Content - Editor */}
-            <View style={styles.main}>
+            <View className="flex-[2] bg-background-light dark:bg-background-dark">
                 {selectedChapterId ? (
-                    <View style={styles.editorContainer}>
-                        <View style={styles.editorTabs}>
-                            <View style={styles.activeTab}>
-                                <Text style={styles.tabText}>HTML Editor</Text>
+                    <View className="flex-1 bg-[#1e1e1e]">
+                        <View className="h-10 bg-[#2d2d2d] flex-row border-b border-[#3d3d3d]">
+                            <View className="bg-[#1e1e1e] px-5 justify-center border-t-2 border-[#007acc]">
+                                <Text className="color-white text-[13px] font-medium">HTML Editor</Text>
                             </View>
                         </View>
 
-                        <View style={{ flex: 1, backgroundColor: "#1e1e1e" }}>
+                        <View className="flex-1 bg-[#1e1e1e]">
                             {Platform.OS === "web" && Editor ? (
                                 <Editor
                                     height="100%"
@@ -254,7 +244,8 @@ const NotesEditor = () => {
                                 />
                             ) : (
                                 <TextInput
-                                    style={styles.mobileTextArea}
+                                    className={`flex-1 color-white p-4 text-sm ${Platform.OS === 'web' ? 'font-mono' : ''}`}
+                                    style={{ textAlignVertical: 'top' }}
                                     multiline
                                     value={htmlContent}
                                     onChangeText={setHtmlContent}
@@ -265,32 +256,32 @@ const NotesEditor = () => {
                         </View>
                     </View>
                 ) : (
-                    <View style={styles.emptyState}>
+                    <View className="flex-1 items-center justify-center p-10">
                         <MaterialCommunityIcons name="file-search-outline" size={64} color="#e2e8f0" />
-                        <Text style={styles.emptyTitle}>No Chapter Selected</Text>
-                        <Text style={styles.emptySubtitle}>Select a course and chapter from the sidebar to start editing notes.</Text>
+                        <Text className="text-xl font-bold text-textSecondary-light dark:text-textSecondary-dark mt-4">No Chapter Selected</Text>
+                        <Text className="text-[15px] text-textSecondary-light dark:text-textSecondary-dark text-center mt-2 max-w-[300px]">Select a course and chapter from the sidebar to start editing notes.</Text>
                     </View>
                 )}
             </View>
 
             {/* Preview Panel */}
-            <View style={styles.preview}>
+            <View className="flex-[1.5] bg-card-light dark:bg-card-dark border-l border-divider-light dark:border-divider-dark">
                 <LinearGradient
                     colors={["#f8fafc", "#f1f5f9"]}
-                    style={styles.previewHeader}
+                    className="flex-row items-center gap-2 p-4 border-b border-divider-light dark:border-divider-dark"
                 >
                     <Ionicons name="eye-outline" size={20} color="#1e293b" />
-                    <Text style={styles.previewHeaderText}>Live Preview</Text>
+                    <Text className="font-bold text-text-light dark:text-text-dark text-[15px]">Live Preview</Text>
                 </LinearGradient>
-                <View style={styles.previewContent}>
+                <View className="flex-1">
                     <HtmlRenderer html={htmlContent} />
                 </View>
             </View>
 
             {(loading || fetchingNotes) && (
-                <View style={styles.globalLoading}>
+                <View className="absolute z-50 bg-white/70 items-center justify-center" style={{ top: 0, bottom: 0, left: 0, right: 0 }}>
                     <ActivityIndicator size="large" color="#764ba2" />
-                    <Text style={styles.loadingText}>
+                    <Text className="mt-3 text-base font-semibold text-text-light dark:text-text-dark">
                         {fetchingNotes ? "Fetching Notes..." : "Saving Changes..."}
                     </Text>
                 </View>
@@ -300,190 +291,3 @@ const NotesEditor = () => {
 };
 
 export default NotesEditor;
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: Platform.OS === "web" ? "row" : "column",
-        backgroundColor: "#f8fafc",
-    },
-    sidebar: {
-        width: Platform.OS === "web" ? 340 : "100%",
-        backgroundColor: "white",
-        borderRightWidth: 1,
-        borderRightColor: "#e2e8f0",
-    },
-    sidebarHeaderGradient: {
-        padding: 24,
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 12,
-    },
-    sidebarHeader: {
-        fontSize: 20,
-        fontWeight: "700",
-        color: "white",
-    },
-    sidebarScroll: {
-        padding: 16,
-    },
-    card: {
-        backgroundColor: "white",
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
-        borderWidth: 1,
-        borderColor: "#e2e8f0",
-    },
-    label: {
-        fontSize: 12,
-        fontWeight: "700",
-        color: "#94a3b8",
-        textTransform: "uppercase",
-        letterSpacing: 1,
-        marginBottom: 12,
-    },
-    pickerWrapper: {
-        borderWidth: 1,
-        borderColor: "#e2e8f0",
-        borderRadius: 8,
-        backgroundColor: "#f8fafc",
-        marginBottom: 16,
-        overflow: "hidden",
-    },
-    optionItem: {
-        padding: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: "#f1f5f9",
-    },
-    unitSection: {
-        backgroundColor: "#ffffff",
-    },
-    unitHeaderRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        padding: 10,
-        backgroundColor: "#f1f5f9",
-        gap: 8,
-    },
-    unitLabel: {
-        fontSize: 12,
-        fontWeight: "700",
-        color: "#475569",
-        flex: 1,
-    },
-    chapterIndent: {
-        paddingLeft: 24,
-        borderLeftWidth: 2,
-        borderLeftColor: "#e2e8f0",
-    },
-    activeOption: {
-        backgroundColor: "#764ba2",
-    },
-    saveBtn: {
-        borderRadius: 8,
-        overflow: "hidden",
-        marginTop: 8,
-    },
-    btnGradient: {
-        padding: 14,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-    },
-    btnText: {
-        color: "white",
-        fontWeight: "700",
-        fontSize: 15,
-    },
-    main: {
-        flex: 2,
-        backgroundColor: "#f1f5f9",
-    },
-    editorContainer: {
-        flex: 1,
-        backgroundColor: "#1e1e1e",
-    },
-    editorTabs: {
-        height: 40,
-        backgroundColor: "#2d2d2d",
-        flexDirection: "row",
-        borderBottomWidth: 1,
-        borderBottomColor: "#3d3d3d",
-    },
-    activeTab: {
-        backgroundColor: "#1e1e1e",
-        paddingHorizontal: 20,
-        justifyContent: "center",
-        borderTopWidth: 2,
-        borderTopColor: "#007acc",
-    },
-    tabText: {
-        color: "white",
-        fontSize: 13,
-        fontWeight: "500",
-    },
-    mobileTextArea: {
-        flex: 1,
-        color: "white",
-        padding: 16,
-        fontFamily: Platform.OS === "web" ? "monospace" : undefined,
-        textAlignVertical: "top",
-        fontSize: 14,
-    },
-    preview: {
-        flex: 1.5,
-        backgroundColor: "white",
-        borderLeftWidth: 1,
-        borderLeftColor: "#e2e8f0",
-    },
-    previewHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 8,
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: "#e2e8f0",
-    },
-    previewHeaderText: {
-        fontWeight: "700",
-        color: "#1e293b",
-        fontSize: 15,
-    },
-    previewContent: {
-        flex: 1,
-    },
-    emptyState: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 40,
-    },
-    emptyTitle: {
-        fontSize: 20,
-        fontWeight: "700",
-        color: "#64748b",
-        marginTop: 16,
-    },
-    emptySubtitle: {
-        fontSize: 15,
-        color: "#94a3b8",
-        textAlign: "center",
-        marginTop: 8,
-        maxWidth: 300,
-    },
-    globalLoading: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: "rgba(255,255,255,0.7)",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-    },
-    loadingText: {
-        marginTop: 12,
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#1e293b",
-    },
-});

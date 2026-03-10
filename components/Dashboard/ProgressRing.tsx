@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { Text, View } from 'react-native';
 
 type ProgressRingProps = {
   percentage: number;
@@ -24,8 +24,8 @@ const ProgressRing = ({
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
-    <View style={[styles.container, { width: size, height: size }]}>
-      <svg width={size} height={size} style={styles.svg}>
+    <View className="relative justify-center items-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="absolute">
         {/* Background circle */}
         <circle
           cx={size / 2}
@@ -49,38 +49,12 @@ const ProgressRing = ({
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
       </svg>
-      <View style={styles.textContainer}>
-        <Text style={styles.percentage}>{progress.toFixed(0)}%</Text>
-        <Text style={styles.label}>{label}</Text>
+      <View className="justify-center items-center">
+        <Text className="text-[28px] font-bold text-text-light dark:text-text-dark">{progress.toFixed(0)}%</Text>
+        <Text className="text-xs font-medium text-textSecondary-light dark:text-textSecondary-dark mt-0.5">{label}</Text>
       </View>
     </View>
   );
 };
 
 export default ProgressRing;
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  svg: {
-    position: 'absolute',
-  },
-  textContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  percentage: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1e293b',
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#64748b',
-    marginTop: 2,
-  },
-});

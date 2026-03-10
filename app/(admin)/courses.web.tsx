@@ -12,7 +12,6 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View
@@ -108,75 +107,65 @@ export default function CourseManagementPage() {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#667eea" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} style={styles.background}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Course Management</Text>
-          <Text style={styles.subtitle}>
+    <View className="flex-1">
+      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+        <View className="px-6 pt-8 pb-5 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark">
+          <Text className="text-2xl font-bold text-text-light dark:text-text-dark mb-1">Course Management</Text>
+          <Text className="text-sm font-medium text-textSecondary-light dark:text-textSecondary-dark">
             Configure course metadata and content
           </Text>
         </View>
 
-        <View style={styles.content}>
+        <View className="flex-1 flex-row">
           {/* Sidebar */}
-          <View style={styles.sidebar}>
-            <Text style={styles.sidebarTitle}>Available Courses</Text>
+          <View className="w-[260px] bg-card-light dark:bg-card-dark border-r border-border-light dark:border-border-dark p-4">
+            <Text className="text-[11px] font-bold text-textSecondary-light dark:text-textSecondary-dark tracking-[1px] uppercase mb-4 px-2">Available Courses</Text>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {courses.map((course) => (
-                <TouchableOpacity
-                  key={course.course_id}
-                  style={[
-                    styles.courseItem,
-                    selectedCourseId === course.course_id &&
-                    styles.courseItemActive,
-                  ]}
-                  onPress={() => setSelectedCourseId(course.course_id)}
-                >
-                  <MaterialCommunityIcons
-                    name="book-open-outline"
-                    size={20}
-                    color={
-                      selectedCourseId === course.course_id
-                        ? "#667eea"
-                        : "#64748b"
-                    }
-                  />
-                  <Text
-                    style={[
-                      styles.courseName,
-                      selectedCourseId === course.course_id &&
-                      styles.courseNameActive,
-                    ]}
+              {courses.map((course) => {
+                const isActive = selectedCourseId === course.course_id;
+                return (
+                  <TouchableOpacity
+                    key={course.course_id}
+                    className={`flex-row items-center p-3 rounded-lg gap-3 mb-1 ${isActive ? "bg-[#f0f4ff]" : ""}`}
+                    onPress={() => setSelectedCourseId(course.course_id)}
                   >
-                    {course.course_name || course.course_id}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <MaterialCommunityIcons
+                      name="book-open-outline"
+                      size={20}
+                      color={
+                        isActive ? "#667eea" : "#64748b"
+                      }
+                    />
+                    <Text
+                      className={`text-sm flex-1 ${isActive ? "color-[#667eea] font-semibold" : "text-textSecondary-light dark:text-textSecondary-dark font-medium"}`}
+                    >
+                      {course.course_name || course.course_id}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
           </View>
 
           {/* Main Area */}
-          <View style={styles.mainContent}>
+          <View className="flex-1">
             {fetchingData ? (
-              <View style={styles.centerContainer}>
+              <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size="large" color="#667eea" />
               </View>
             ) : selectedCourseId ? (
-              <View style={styles.dataContainer}>
+              <View className="flex-1">
                 {/* Tabs */}
-                <View style={styles.tabBar}>
+                <View className="flex-row px-6 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark">
                   <TouchableOpacity
-                    style={[
-                      styles.tab,
-                      activeTab === "summary" && styles.activeTab,
-                    ]}
+                    className={`flex-row items-center py-3.5 px-4 gap-2 border-b-2 ${activeTab === "summary" ? "border-[#667eea]" : "border-transparent"}`}
                     onPress={() => setActiveTab("summary")}
                   >
                     <MaterialCommunityIcons
@@ -185,19 +174,13 @@ export default function CourseManagementPage() {
                       color={activeTab === "summary" ? "#667eea" : "#64748b"}
                     />
                     <Text
-                      style={[
-                        styles.tabText,
-                        activeTab === "summary" && styles.activeTabText,
-                      ]}
+                      className={`text-sm font-semibold ${activeTab === "summary" ? "color-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"}`}
                     >
                       Summary
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[
-                      styles.tab,
-                      activeTab === "xml" && styles.activeTab,
-                    ]}
+                    className={`flex-row items-center py-3.5 px-4 gap-2 border-b-2 ${activeTab === "xml" ? "border-[#667eea]" : "border-transparent"}`}
                     onPress={() => setActiveTab("xml")}
                   >
                     <MaterialCommunityIcons
@@ -206,10 +189,7 @@ export default function CourseManagementPage() {
                       color={activeTab === "xml" ? "#667eea" : "#64748b"}
                     />
                     <Text
-                      style={[
-                        styles.tabText,
-                        activeTab === "xml" && styles.activeTabText,
-                      ]}
+                      className={`text-sm font-semibold ${activeTab === "xml" ? "color-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"}`}
                     >
                       XML Editor
                     </Text>
@@ -217,72 +197,72 @@ export default function CourseManagementPage() {
                 </View>
 
                 {/* Tab Content */}
-                <View style={styles.tabContent}>
+                <View className="flex-1">
                   {activeTab === "summary" ? (
-                    <ScrollView contentContainerStyle={styles.summaryContainer}>
-                      <View style={styles.summaryCard}>
-                        <Text style={styles.summaryLabel}>Course ID</Text>
-                        <Text style={styles.summaryValue}>
+                    <ScrollView contentContainerStyle={{ padding: 24 }}>
+                      <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 shadow-md shadow-[#000]/5 border border-divider-light dark:border-divider-dark">
+                        <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-2">Course ID</Text>
+                        <Text className="text-base text-text-light dark:text-text-dark leading-6 mb-5">
                           {selectedCourseId}
                         </Text>
 
-                        <View style={styles.divider} />
+                        <View className="h-[1px] bg-background-light dark:bg-background-dark mb-5" />
 
-                        <Text style={styles.summaryLabel}>Course Name</Text>
-                        <Text style={styles.summaryValue}>
+                        <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-2">Course Name</Text>
+                        <Text className="text-base text-text-light dark:text-text-dark leading-6 mb-5">
                           {summary?.course_name || "No description available."}
                         </Text>
 
-                        <View style={styles.divider} />
+                        <View className="h-[1px] bg-background-light dark:bg-background-dark mb-5" />
 
-                        <View style={styles.statsRow}>
-                          <View style={styles.statItem}>
-                            <Text style={styles.statLabel}>Units</Text>
-                            <Text style={styles.statValue}>
+                        <View className="flex-row gap-8 flex-wrap">
+                          <View className="flex-[1_1_25%] min-w-[120px]">
+                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Units</Text>
+                            <Text className="text-2xl font-bold color-[#667eea]">
                               {summary?.units || 0}
                             </Text>
                           </View>
-                          <View style={styles.statItem}>
-                            <Text style={styles.statLabel}>Chapters</Text>
-                            <Text style={styles.statValue}>
+                          <View className="flex-[1_1_25%] min-w-[120px]">
+                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Chapters</Text>
+                            <Text className="text-2xl font-bold color-[#667eea]">
                               {summary?.chapters || 0}
                             </Text>
                           </View>
-                          <View style={styles.statItem}>
-                            <Text style={styles.statLabel}>Glossary</Text>
-                            <Text style={styles.statValue}>
+                          <View className="flex-[1_1_25%] min-w-[120px]">
+                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Glossary</Text>
+                            <Text className="text-2xl font-bold color-[#667eea]">
                               {summary?.glossary_terms || 0}
                             </Text>
                           </View>
-                          <View style={styles.statItem}>
-                            <Text style={styles.statLabel}>
+                          <View className="flex-[1_1_25%] min-w-[120px]">
+                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">
                               Solved Problems
                             </Text>
-                            <Text style={styles.statValue}>
+                            <Text className="text-2xl font-bold color-[#667eea]">
                               {summary?.solved_problems || 0}
                             </Text>
                           </View>
-                          <View style={styles.statItem}>
-                            <Text style={styles.statLabel}>Topics</Text>
-                            <Text style={styles.statValue}>
+                          <View className="flex-[1_1_25%] min-w-[120px]">
+                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Topics</Text>
+                            <Text className="text-2xl font-bold color-[#667eea]">
                               {summary?.topics || 0}
                             </Text>
                           </View>
-                          <View style={styles.statItem}>
-                            <Text style={styles.statLabel}>Question Bank</Text>
-                            <Text style={styles.statValue}>
+                          <View className="flex-[1_1_25%] min-w-[120px]">
+                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Question Bank</Text>
+                            <Text className="text-2xl font-bold color-[#667eea]">
                               {summary?.questions || 0}
                             </Text>
                           </View>
-                          <View style={styles.statItem}>
-                            <Text style={styles.statLabel}>Images</Text>
-                            <Text style={styles.statValue}>
+                          <View className="flex-[1_1_25%] min-w-[120px]">
+                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Images</Text>
+                            <Text className="text-2xl font-bold color-[#667eea]">
                               {summary?.images || 0}
                             </Text>
                           </View>
-                          <View style={styles.statItem}>
-                            <Text style={styles.statLabel}>Videos</Text>
-                            <Text style={styles.statValue}>
+                          <View className="flex-[1_1_25%] min-w-[120px]">
+                            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Videos</Text>
+                            <Text className="text-2xl font-bold color-[#667eea]">
                               {summary?.videos || 0}
                             </Text>
                           </View>
@@ -290,11 +270,11 @@ export default function CourseManagementPage() {
                       </View>
                     </ScrollView>
                   ) : (
-                    <View style={styles.editorContainer}>
-                      <View style={styles.editorHeader}>
-                        <View style={styles.editorActions}>
+                    <View className="flex-1 bg-card-light dark:bg-card-dark">
+                      <View className="p-3 flex-row justify-end border-b border-border-light dark:border-border-dark">
+                        <View className="flex-row gap-3">
                           <TouchableOpacity
-                            style={[styles.btn, styles.btnSecondary]}
+                            className="flex-row items-center py-2 px-4 rounded-lg gap-2 bg-background-light dark:bg-background-dark"
                             onPress={handleValidateXML}
                             disabled={validating}
                           >
@@ -307,12 +287,12 @@ export default function CourseManagementPage() {
                                 color="#64748b"
                               />
                             )}
-                            <Text style={styles.btnTextSecondary}>
+                            <Text className="text-textSecondary-light dark:text-textSecondary-dark text-[13px] font-semibold">
                               Validate
                             </Text>
                           </TouchableOpacity>
                           <TouchableOpacity
-                            style={[styles.btn, styles.btnPrimary]}
+                            className="flex-row items-center py-2 px-4 rounded-lg gap-2 bg-[#667eea]"
                             onPress={handleSaveXML}
                             disabled={saving}
                           >
@@ -325,22 +305,12 @@ export default function CourseManagementPage() {
                                 color="#ffffff"
                               />
                             )}
-                            <Text style={styles.btnTextPrimary}>
+                            <Text className="color-white text-[13px] font-semibold">
                               Save Changes
                             </Text>
                           </TouchableOpacity>
                         </View>
                       </View>
-                      {/* <TextInput
-                        style={styles.xmlInput}
-                        value={xmlContent}
-                        onChangeText={setXmlContent}
-                        multiline
-                        numberOfLines={30}
-                        spellCheck={false}
-                        autoCapitalize="none"
-                        placeholder="XML Content"
-                      /> */}
                       <XMLEditor
                         xmlContent={xmlContent}
                         setXmlContent={setXmlContent}
@@ -350,13 +320,13 @@ export default function CourseManagementPage() {
                 </View>
               </View>
             ) : (
-              <View style={styles.emptyContainer}>
+              <View className="flex-1 justify-center items-center gap-4">
                 <MaterialCommunityIcons
                   name="book-search"
                   size={48}
                   color="#cbd5e1"
                 />
-                <Text style={styles.emptyText}>Select a course to manage</Text>
+                <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark font-medium">Select a course to manage</Text>
               </View>
             )}
           </View>
@@ -365,135 +335,3 @@ export default function CourseManagementPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  background: { flex: 1 },
-  centerContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 20,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  title: { fontSize: 24, fontWeight: "700", color: "#1e293b", marginBottom: 4 },
-  subtitle: { fontSize: 14, color: "#64748b", fontWeight: "500" },
-  content: { flex: 1, flexDirection: "row" },
-  sidebar: {
-    width: 260,
-    backgroundColor: "#ffffff",
-    borderRightWidth: 1,
-    borderRightColor: "#f1f5f9",
-    padding: 16,
-  },
-  sidebarTitle: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#94a3b8",
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    marginBottom: 16,
-    paddingHorizontal: 8,
-  },
-  courseItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 12,
-    borderRadius: 10,
-    gap: 12,
-    marginBottom: 4,
-  },
-  courseItemActive: { backgroundColor: "#f0f4ff" },
-  courseName: { fontSize: 14, fontWeight: "500", color: "#64748b", flex: 1 },
-  courseNameActive: { color: "#667eea", fontWeight: "600" },
-  mainContent: { flex: 1 },
-  dataContainer: { flex: 1 },
-  tabBar: {
-    flexDirection: "row",
-    paddingHorizontal: 24,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  tab: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    gap: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
-  },
-  activeTab: { borderBottomColor: "#667eea" },
-  tabText: { fontSize: 14, fontWeight: "600", color: "#64748b" },
-  activeTabText: { color: "#667eea" },
-  tabContent: { flex: 1 },
-  summaryContainer: { padding: 24 },
-  summaryCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  summaryLabel: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#94a3b8",
-    textTransform: "uppercase",
-    marginBottom: 8,
-  },
-  summaryValue: {
-    fontSize: 16,
-    color: "#1e293b",
-    lineHeight: 24,
-    marginBottom: 20,
-  },
-  divider: { height: 1, backgroundColor: "#f1f5f9", marginBottom: 20 },
-  statsRow: { flexDirection: "row", gap: 32 },
-  statItem: { flex: 1 },
-  statLabel: { fontSize: 12, color: "#64748b", marginBottom: 4 },
-  statValue: { fontSize: 24, fontWeight: "700", color: "#667eea" },
-  editorContainer: { flex: 1, backgroundColor: "#ffffff" },
-  editorHeader: {
-    padding: 12,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
-  },
-  editorActions: { flexDirection: "row", gap: 12 },
-  xmlInput: {
-    flex: 1,
-    padding: 20,
-    fontFamily: "monospace",
-    fontSize: 14,
-    color: "#334155",
-    textAlignVertical: "top",
-    backgroundColor: "#fafafa",
-  },
-  btn: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    gap: 8,
-  },
-  btnPrimary: { backgroundColor: "#667eea" },
-  btnSecondary: { backgroundColor: "#f1f5f9" },
-  btnTextPrimary: { color: "#ffffff", fontSize: 13, fontWeight: "600" },
-  btnTextSecondary: { color: "#64748b", fontSize: 13, fontWeight: "600" },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 16,
-  },
-  emptyText: { fontSize: 16, color: "#94a3b8", fontWeight: "500" },
-});

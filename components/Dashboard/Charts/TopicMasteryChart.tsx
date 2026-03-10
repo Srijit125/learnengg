@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import { Dimensions, Text, View } from "react-native";
 import { BarChart } from "react-native-gifted-charts";
 
 type TopicStats = {
@@ -34,7 +34,7 @@ const TopicMasteryChart = ({
       label: item.topic,
       frontColor: "#e45756", // Weak (Red)
       topLabelComponent: () => (
-        <Text style={styles.barLabel}>{Math.round(item.accuracy * 100)}%</Text>
+        <Text className="text-[10px] text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-0.5">{Math.round(item.accuracy * 100)}%</Text>
       ),
     })),
     ...strongest.reverse().map((item) => ({
@@ -42,15 +42,15 @@ const TopicMasteryChart = ({
       label: item.topic,
       frontColor: "#4caf50", // Strong (Green)
       topLabelComponent: () => (
-        <Text style={styles.barLabel}>{Math.round(item.accuracy * 100)}%</Text>
+        <Text className="text-[10px] text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-0.5">{Math.round(item.accuracy * 100)}%</Text>
       ),
     })),
   ];
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
-      <View style={styles.chartWrapper}>
+    <View className="bg-card-light dark:bg-card-dark rounded-2xl p-5 shadow-sm shadow-[#000]/5 border border-transparent elevation-3 mb-5">
+      <Text className="text-base font-bold text-text-light dark:text-text-dark mb-6">{title}</Text>
+      <View className="items-center pl-0.5">
         <BarChart
           horizontal={false}
           data={chartData}
@@ -71,14 +71,14 @@ const TopicMasteryChart = ({
           barBorderRadius={4}
         />
       </View>
-      <View style={styles.legend}>
-        <View style={styles.legendItem}>
-          <View style={[styles.dot, { backgroundColor: "#e45756" }]} />
-          <Text style={styles.legendText}>Needs Attention</Text>
+      <View className="flex-row justify-center gap-5 mt-5">
+        <View className="flex-row items-center gap-2">
+          <View className="w-2.5 h-2.5 rounded-full bg-[#e45756]" />
+          <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">Needs Attention</Text>
         </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.dot, { backgroundColor: "#4caf50" }]} />
-          <Text style={styles.legendText}>Strong Topics</Text>
+        <View className="flex-row items-center gap-2">
+          <View className="w-2.5 h-2.5 rounded-full bg-[#4caf50]" />
+          <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">Strong Topics</Text>
         </View>
       </View>
     </View>
@@ -86,65 +86,3 @@ const TopicMasteryChart = ({
 };
 
 export default TopicMasteryChart;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 24,
-  },
-  chartWrapper: {
-    alignItems: "center",
-    paddingLeft: 2,
-  },
-  barLabel: {
-    fontSize: 10,
-    color: "#64748b",
-    fontWeight: "600",
-    marginBottom: 2,
-  },
-  xAxisLabel: {
-    fontSize: 11,
-    color: "#64748b",
-    width: 120,
-    textAlign: "right",
-    marginRight: 10,
-  },
-  yAxisText: {
-    fontSize: 10,
-    color: "#94a3b8",
-  },
-  legend: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 20,
-    marginTop: 20,
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  legendText: {
-    fontSize: 12,
-    color: "#64748b",
-    fontWeight: "500",
-  },
-});

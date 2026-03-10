@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { listCourses } from '@/services/course.service';
-import { fetchMCQs, approveMCQ, rejectMCQ, updateMCQ } from '@/services/mcq.service';
+import MCQReviewCard from '@/components/Dashboard/Cards/MCQReviewCard';
 import { Course } from '@/models/Course';
 import { MCQ } from '@/models/MCQ';
-import MCQReviewCard from '@/components/Dashboard/Cards/MCQReviewCard';
+import { listCourses } from '@/services/course.service';
+import { approveMCQ, fetchMCQs, rejectMCQ, updateMCQ } from '@/services/mcq.service';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function MCQReviewPage() {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -85,67 +85,64 @@ export default function MCQReviewPage() {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#667eea" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       <LinearGradient
         colors={['#f8fafc', '#f1f5f9']}
-        style={styles.background}
+        className="flex-1"
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>MCQ Review</Text>
-          <Text style={styles.subtitle}>Manage and validate course questions</Text>
+        <View className="px-6 pt-8 pb-5 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark">
+          <Text className="text-[28px] font-bold text-text-light dark:text-text-dark mb-1">MCQ Review</Text>
+          <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">Manage and validate course questions</Text>
         </View>
 
-        <View style={styles.content}>
+        <View className="flex-1 flex-row">
           {/* Course Sidebar */}
-          <View style={styles.sidebar}>
-            <Text style={styles.sidebarTitle}>Courses</Text>
+          <View className="w-[280px] bg-card-light dark:bg-card-dark border-r border-border-light dark:border-border-dark p-4">
+            <Text className="text-xs font-bold text-textSecondary-light dark:text-textSecondary-dark tracking-[1px] uppercase mb-4 px-2">Courses</Text>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {courses.map((course) => (
-                <TouchableOpacity
-                  key={course.course_id}
-                  style={[
-                    styles.courseItem,
-                    selectedCourseId === course.course_id && styles.courseItemActive
-                  ]}
-                  onPress={() => setSelectedCourseId(course.course_id)}
-                >
-                  <MaterialCommunityIcons 
-                    name="book-open-variant" 
-                    size={20} 
-                    color={selectedCourseId === course.course_id ? '#667eea' : '#64748b'} 
-                  />
-                  <Text style={[
-                    styles.courseName,
-                    selectedCourseId === course.course_id && styles.courseNameActive
-                  ]}>
-                    {course.course_name || course.course_id}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              {courses.map((course) => {
+                const isActive = selectedCourseId === course.course_id;
+                return (
+                  <TouchableOpacity
+                    key={course.course_id}
+                    className={`flex-row items-center p-3 rounded-xl gap-3 mb-1 ${isActive ? "bg-[#f0f4ff]" : ""}`}
+                    onPress={() => setSelectedCourseId(course.course_id)}
+                  >
+                    <MaterialCommunityIcons
+                      name="book-open-variant"
+                      size={20}
+                      color={isActive ? '#667eea' : '#64748b'}
+                    />
+                    <Text className={`text-sm flex-1 ${isActive ? "color-[#667eea] font-semibold" : "text-textSecondary-light dark:text-textSecondary-dark font-medium"}`}>
+                      {course.course_name || course.course_id}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
           </View>
 
           {/* MCQ List */}
-          <View style={styles.mainContent}>
+          <View className="flex-1">
             {fetchingMcqs ? (
-              <View style={styles.centerContainer}>
+              <View className="flex-1 justify-center items-center">
                 <ActivityIndicator size="large" color="#667eea" />
-                <Text style={styles.loadingText}>Fetching questions...</Text>
+                <Text className="mt-3 text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">Fetching questions...</Text>
               </View>
             ) : mcqs.length > 0 ? (
-              <ScrollView 
-                contentContainerStyle={styles.listContainer}
+              <ScrollView
+                contentContainerStyle={{ padding: 24 }}
                 showsVerticalScrollIndicator={false}
               >
-                <View style={styles.listHeader}>
-                  <Text style={styles.countText}>{mcqs.length} questions pending review</Text>
+                <View className="mb-4">
+                  <Text className="text-sm font-semibold text-textSecondary-light dark:text-textSecondary-dark">{mcqs.length} questions pending review</Text>
                 </View>
                 {mcqs.map((mcq) => (
                   <MCQReviewCard
@@ -158,10 +155,10 @@ export default function MCQReviewPage() {
                 ))}
               </ScrollView>
             ) : (
-              <View style={styles.emptyContainer}>
+              <View className="flex-1 justify-center items-center gap-3">
                 <MaterialCommunityIcons name="check-all" size={64} color="#cbd5e1" />
-                <Text style={styles.emptyText}>All caught up!</Text>
-                <Text style={styles.emptySubtext}>No MCQs pending review for this course.</Text>
+                <Text className="text-xl font-bold text-textSecondary-light dark:text-textSecondary-dark">All caught up!</Text>
+                <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark text-center">No MCQs pending review for this course.</Text>
               </View>
             )}
           </View>
@@ -170,113 +167,3 @@ export default function MCQReviewPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  background: {
-    flex: 1,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 20,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#64748b',
-    fontWeight: '500',
-  },
-  content: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  sidebar: {
-    width: 280,
-    backgroundColor: '#ffffff',
-    borderRightWidth: 1,
-    borderRightColor: '#f1f5f9',
-    padding: 16,
-  },
-  sidebarTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#94a3b8',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: 16,
-    paddingHorizontal: 8,
-  },
-  courseItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 10,
-    gap: 12,
-    marginBottom: 4,
-  },
-  courseItemActive: {
-    backgroundColor: '#f0f4ff',
-  },
-  courseName: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#64748b',
-    flex: 1,
-  },
-  courseNameActive: {
-    color: '#667eea',
-    fontWeight: '600',
-  },
-  mainContent: {
-    flex: 1,
-  },
-  listContainer: {
-    padding: 24,
-  },
-  listHeader: {
-    marginBottom: 16,
-  },
-  countText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#64748b',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#64748b',
-    fontWeight: '500',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 12,
-  },
-  emptyText: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#475569',
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#94a3b8',
-    textAlign: 'center',
-  },
-});

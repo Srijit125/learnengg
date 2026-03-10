@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
-import { useAuthStore } from "../../store/auth.store";
-import { getUserLogs, getUserLogsData } from "../../services/analyticsService";
-import { analyticsInfo, logDataInfo } from "../../types/analyticsType";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useColorScheme } from "nativewind";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { getUserLogs, getUserLogsData } from "../../services/analyticsService";
+import { useAuthStore } from "../../store/auth.store";
+import { analyticsInfo, logDataInfo } from "../../types/analyticsType";
 
 interface WeakConcept {
   chapter: string;
@@ -37,6 +37,7 @@ const defaultAnalytics: analyticsInfo = {
 
 const AnalyticsMobile = () => {
   const { user } = useAuthStore();
+  const { colorScheme } = useColorScheme();
   const [analytics, setAnalytics] = useState<analyticsInfo | null>(null);
   const [logs, setLogs] = useState<logDataInfo[]>([]);
   const [weakConcepts, setWeakConcepts] = useState<WeakConcept[]>([]);
@@ -81,16 +82,16 @@ const AnalyticsMobile = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4F46E5" />
+      <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
+        <ActivityIndicator size="large" color="#6366F1" />
       </View>
     );
   }
 
   if (!analytics) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>Could not load analytics.</Text>
+      <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
+        <Text className="text-error text-base">Could not load analytics.</Text>
       </View>
     );
   }
@@ -98,16 +99,16 @@ const AnalyticsMobile = () => {
   const hasActivity = analytics.total_attempts > 0;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Your Progress</Text>
-      <Text style={styles.subtitle}>Keep pushing forward!</Text>
+    <ScrollView className="flex-1 bg-background-light dark:bg-background-dark" contentContainerStyle={{ padding: 20, flexGrow: 1 }}>
+      <Text className="text-3xl font-extrabold text-text-light dark:text-text-dark mb-1">Your Progress</Text>
+      <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark mb-6">Keep pushing forward!</Text>
 
-      <View style={styles.statsGrid}>
+      <View className="flex-row gap-4 mb-4">
         <StatCardMobile
           label="Total Questions"
           value={analytics.total_attempts}
           icon="albums"
-          colors={["#3B82F6", "#2563EB"]}
+          colors={["#6366F1", "#4F46E5"]}
         />
         <StatCardMobile
           label="Accuracy"
@@ -117,7 +118,7 @@ const AnalyticsMobile = () => {
         />
       </View>
 
-      <View style={styles.statsGrid}>
+      <View className="flex-row gap-4 mb-4">
         <StatCardMobile
           label="Correct"
           value={analytics.correct}
@@ -133,17 +134,17 @@ const AnalyticsMobile = () => {
       </View>
 
       {!hasActivity ? (
-        <View style={styles.emptyStateContainer}>
-          <Ionicons name="bar-chart-outline" size={48} color="#94A3B8" />
-          <Text style={styles.emptyStateTitle}>No activity yet</Text>
-          <Text style={styles.emptyText}>
+        <View className="items-center justify-center p-8 bg-card-light dark:bg-card-dark rounded-3xl mt-4">
+          <Ionicons name="bar-chart-outline" size={48} className="opacity-40 text-textSecondary-light dark:text-textSecondary-dark" />
+          <Text className="text-lg font-bold text-text-light dark:text-text-dark mt-3 mb-1">No activity yet</Text>
+          <Text className="text-sm italic text-textSecondary-light dark:text-textSecondary-dark text-center">
             Start taking quizzes to populate your dashboard!
           </Text>
         </View>
       ) : (
         <>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Difficulty Breakdown</Text>
+          <View className="bg-card-light dark:bg-card-dark p-5 rounded-3xl mt-2 shadow-sm">
+            <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-4">Difficulty Breakdown</Text>
             <DistributionBarMobile
               label="Easy"
               count={analytics.difficulty_distribution?.easy || 0}
@@ -164,16 +165,16 @@ const AnalyticsMobile = () => {
             />
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Focus Areas</Text>
+          <View className="bg-card-light dark:bg-card-dark p-5 rounded-3xl mt-2 shadow-sm">
+            <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-4">Focus Areas</Text>
             {weakConcepts.length > 0 ? (
-              <View style={styles.focusList}>
+              <View className="gap-2">
                 {weakConcepts.map((concept, index) => (
-                  <View key={index} style={styles.focusCard}>
+                  <View key={index} className="flex-row items-center gap-3 p-3 rounded-xl bg-error/10">
                     <Ionicons name="alert-circle" size={20} color="#EF4444" />
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.focusTitle}>{concept.chapter}</Text>
-                      <Text style={styles.focusSubtitle}>
+                    <View className="flex-1">
+                      <Text className="text-sm font-semibold text-text-light dark:text-text-dark">{concept.chapter}</Text>
+                      <Text className="text-xs font-medium text-error">
                         {concept.count} Incorrect
                       </Text>
                     </View>
@@ -181,26 +182,26 @@ const AnalyticsMobile = () => {
                 ))}
               </View>
             ) : (
-              <Text style={styles.emptyText}>No weak areas identified!</Text>
+              <Text className="text-sm italic text-textSecondary-light dark:text-textSecondary-dark text-center py-2">No weak areas identified!</Text>
             )}
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Recent Activity</Text>
+          <View className="bg-card-light dark:bg-card-dark p-5 rounded-3xl mt-2 shadow-sm mb-10">
+            <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-4">Recent Activity</Text>
             {logs.length > 0 ? (
-              <View style={styles.activityList}>
+              <View>
                 {logs.slice(0, 5).map((log, index) => (
-                  <View key={index} style={styles.activityItem}>
+                  <View key={index} className={`flex-row items-center gap-3 py-3 ${index !== logs.slice(0, 5).length - 1 ? 'border-b border-border-light dark:border-border-dark' : ''}`}>
                     <Ionicons
                       name={log.correct ? "checkmark-circle" : "close-circle"}
                       size={20}
                       color={log.correct ? "#10B981" : "#EF4444"}
                     />
-                    <View style={styles.activityContent}>
-                      <Text style={styles.activityQuestion} numberOfLines={1}>
+                    <View className="flex-1">
+                      <Text className="text-[13px] font-semibold text-text-light dark:text-text-dark" numberOfLines={1}>
                         {log.question}
                       </Text>
-                      <Text style={styles.activityMeta}>
+                      <Text className="text-[11px] text-textSecondary-light dark:text-textSecondary-dark">
                         {new Date(log.timestamp).toLocaleDateString()} •{" "}
                         {log.difficulty}
                       </Text>
@@ -209,7 +210,7 @@ const AnalyticsMobile = () => {
                 ))}
               </View>
             ) : (
-              <Text style={styles.emptyText}>No recent activity.</Text>
+              <Text className="text-sm italic text-textSecondary-light dark:text-textSecondary-dark text-center py-2">No recent activity.</Text>
             )}
           </View>
         </>
@@ -220,13 +221,13 @@ const AnalyticsMobile = () => {
 
 const StatCardMobile = ({ label, value, icon, colors }: any) => {
   return (
-    <LinearGradient colors={colors} style={styles.card}>
-      <View style={styles.iconContainer}>
+    <LinearGradient colors={colors} className="flex-1 p-4 rounded-3xl flex-col justify-between h-[120px] shadow-lg shadow-black/10">
+      <View className="mb-3">
         <Ionicons name={icon} size={24} color="#FFF" />
       </View>
       <View>
-        <Text style={styles.statValue}>{value}</Text>
-        <Text style={styles.statLabel}>{label}</Text>
+        <Text className="text-2xl font-bold text-white">{value}</Text>
+        <Text className="text-xs font-semibold text-white/90">{label}</Text>
       </View>
     </LinearGradient>
   );
@@ -235,192 +236,17 @@ const StatCardMobile = ({ label, value, icon, colors }: any) => {
 const DistributionBarMobile = ({ label, count, total, color }: any) => {
   const percentage = total > 0 ? (count / total) * 100 : 0;
   return (
-    <View style={styles.distributionRow}>
-      <Text style={styles.distLabel}>{label}</Text>
-      <View style={styles.progressBarContainer}>
+    <View className="flex-row items-center gap-3 mb-3">
+      <Text className="w-[50px] text-xs font-semibold text-textSecondary-light dark:text-textSecondary-dark">{label}</Text>
+      <View className="flex-1 h-2.5 bg-border-light dark:bg-border-dark rounded-full overflow-hidden">
         <View
-          style={[
-            styles.progressBar,
-            { width: `${percentage}%` as any, backgroundColor: color },
-          ]}
+          style={{ width: `${percentage}%` as any, backgroundColor: color }}
+          className="h-full rounded-full"
         />
       </View>
-      <Text style={styles.distCount}>{count}</Text>
+      <Text className="w-[30px] text-right text-xs font-bold text-text-light dark:text-text-dark">{count}</Text>
     </View>
   );
 };
 
 export default AnalyticsMobile;
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: "#F8FAFC",
-    flexGrow: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: "#1E293B",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#64748B",
-    marginBottom: 24,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorText: {
-    color: "#EF4444",
-    fontSize: 16,
-  },
-  statsGrid: {
-    flexDirection: "row",
-    gap: 16,
-    marginBottom: 16,
-  },
-  card: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 20,
-    flexDirection: "column",
-    justifyContent: "space-between",
-    height: 120,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  iconContainer: {
-    marginBottom: 12,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#FFF",
-  },
-  statLabel: {
-    fontSize: 12,
-    color: "rgba(255, 255, 255, 0.9)",
-    fontWeight: "600",
-  },
-  section: {
-    backgroundColor: "#FFF",
-    padding: 20,
-    borderRadius: 20,
-    marginTop: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1E293B",
-    marginBottom: 16,
-  },
-  distributionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    marginBottom: 12,
-  },
-  distLabel: {
-    width: 50,
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#475569",
-  },
-  progressBarContainer: {
-    flex: 1,
-    height: 10,
-    backgroundColor: "#F1F5F9",
-    borderRadius: 5,
-    overflow: "hidden",
-  },
-  progressBar: {
-    height: "100%",
-    borderRadius: 5,
-  },
-  distCount: {
-    width: 30,
-    textAlign: "right",
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-  focusList: {
-    gap: 8,
-  },
-  focusCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    padding: 12,
-    backgroundColor: "#FEF2F2",
-    borderRadius: 12,
-  },
-  focusTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#1E293B",
-  },
-  focusSubtitle: {
-    fontSize: 12,
-    color: "#EF4444",
-    fontWeight: "500",
-  },
-  emptyText: {
-    fontSize: 14,
-    color: "#94A3B8",
-    fontStyle: "italic",
-    textAlign: "center",
-    padding: 8,
-  },
-  emptyStateContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 32,
-    backgroundColor: "#FFF",
-    borderRadius: 20,
-    marginTop: 16,
-  },
-  emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1E293B",
-    marginTop: 12,
-    marginBottom: 4,
-  },
-  activityList: {
-    gap: 0,
-  },
-  activityItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityQuestion: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#1E293B",
-    marginBottom: 2,
-  },
-  activityMeta: {
-    fontSize: 11,
-    color: "#64748B",
-  },
-});

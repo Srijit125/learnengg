@@ -1,10 +1,7 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Platform } from "react-native";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 
 interface UserPreferences {
-    darkMode: boolean;
+    themeMode: "light" | "dark" | "system";
     notifications: boolean;
     emailUpdates: boolean;
     autoPlay: boolean;
@@ -19,7 +16,7 @@ interface SettingsState {
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
-    darkMode: false,
+    themeMode: "light",
     notifications: true,
     emailUpdates: false,
     autoPlay: true,
@@ -27,24 +24,15 @@ const DEFAULT_PREFERENCES: UserPreferences = {
     language: "English",
 };
 
-export const useSettingsStore = create<SettingsState>()(
-    persist(
-        (set) => ({
-            preferences: DEFAULT_PREFERENCES,
-            setPreference: (key, value) =>
-                set((state) => ({
-                    preferences: {
-                        ...state.preferences,
-                        [key]: value,
-                    },
-                })),
-            resetPreferences: () => set({ preferences: DEFAULT_PREFERENCES }),
-        }),
-        {
-            name: "user-settings",
-            storage: createJSONStorage(() =>
-                Platform.OS === 'web' ? localStorage : AsyncStorage
-            ),
-        }
-    )
-);
+export const useSettingsStore = create<SettingsState>((set) => ({
+    preferences: DEFAULT_PREFERENCES,
+    setPreference: (key, value) => {
+        set((state) => ({
+            preferences: {
+                ...state.preferences,
+                [key]: value,
+            },
+        }));
+    },
+    resetPreferences: () => set({ preferences: DEFAULT_PREFERENCES }),
+}));

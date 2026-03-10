@@ -1,32 +1,13 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 
 const Reports = () => {
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>Reports Page</Text>
-            <Text style={styles.subtext}>Mobile implementation pending</Text>
+        <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
+            <Text className="text-xl font-bold text-text-light dark:text-text-dark">Reports Page</Text>
+            <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark mt-2">Mobile implementation pending</Text>
         </View>
     )
 }
 
 export default Reports
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f8fafc'
-    },
-    text: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#1e293b'
-    },
-    subtext: {
-        fontSize: 16,
-        color: '#64748b',
-        marginTop: 8
-    }
-})

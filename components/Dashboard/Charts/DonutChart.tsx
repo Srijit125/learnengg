@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import { Text, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
 
 type DonutChartProps = {
@@ -36,16 +36,16 @@ const DonutChart = ({
   ];
 
   return (
-    <View style={styles.container}>
+    <View className="items-center justify-center">
       <PieChart
         data={data}
         donut
         radius={size / 2}
         innerRadius={size / 2 - strokeWidth}
         centerLabelComponent={() => (
-          <View style={styles.centerLabel}>
-            <Text style={styles.centerValue}>{displayValue}</Text>
-            <Text style={styles.centerText}>{centerLabel}</Text>
+          <View className="items-center justify-center">
+            <Text className="text-base font-bold text-text-light dark:text-text-dark">{displayValue}</Text>
+            <Text className="text-[10px] font-medium text-textSecondary-light dark:text-textSecondary-dark mt-0.5">{centerLabel}</Text>
           </View>
         )}
       />
@@ -54,25 +54,3 @@ const DonutChart = ({
 };
 
 export default DonutChart;
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  centerLabel: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  centerValue: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-  centerText: {
-    fontSize: 10,
-    fontWeight: "500",
-    color: "#64748b",
-    marginTop: 2,
-  },
-});

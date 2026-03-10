@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 type MenuItem = {
   id: string;
@@ -49,56 +49,56 @@ const AnalyticsSidebar = ({
   const renderMenuItem = (item: MenuItem, isActive: boolean) => (
     <TouchableOpacity
       key={item.id}
-      style={[styles.menuItem, isActive && styles.menuItemActive]}
+      className={`flex-row items-center py-3 px-3 rounded-lg gap-3 ${isActive ? 'bg-[#f0f4ff]' : ''}`}
       onPress={() => handleMenuItemPress(item.id)}
       activeOpacity={0.7}
     >
-      <View style={[styles.iconContainer, isActive && styles.iconContainerActive]}>
+      <View className={`w-9 h-9 rounded-lg justify-center items-center ${isActive ? 'bg-[#e0e7ff]' : 'bg-background-light dark:bg-background-dark'}`}>
         <MaterialCommunityIcons
           name={item.icon}
           size={20}
           color={isActive ? '#667eea' : '#64748b'}
         />
       </View>
-      <Text style={[styles.menuItemText, isActive && styles.menuItemTextActive]}>
+      <Text className={`flex-1 text-sm ${isActive ? 'font-semibold color-[#667eea]' : 'font-medium text-textSecondary-light dark:text-textSecondary-dark'}`}>
         {item.label}
       </Text>
       {item.badge !== undefined && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{item.badge}</Text>
+        <View className="bg-[#ef4444] rounded-full px-2 py-0.5 min-w-[20px] justify-center items-center">
+          <Text className="text-[11px] font-bold color-white">{item.badge}</Text>
         </View>
       )}
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <View className="w-[280px] h-full shadow-md shadow-[#000]/5 bg-card-light dark:bg-card-dark z-[4] elevation-4">
       <LinearGradient
         colors={['#ffffff', '#f8fafc']}
-        style={styles.gradient}
+        className="flex-1 border-r border-divider-light dark:border-divider-dark"
       >
         {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
+        <View className="pt-8 pb-6 px-5 items-center border-b border-border-light dark:border-border-dark">
+          <View className="mb-4">
             <LinearGradient
               colors={['#667eea', '#764ba2']}
-              style={styles.logoGradient}
+              className="w-14 h-14 rounded-2xl justify-center items-center shadow-md shadow-[#667eea]/30"
             >
               <MaterialCommunityIcons name="chart-box" size={24} color="#ffffff" />
             </LinearGradient>
           </View>
-          <Text style={styles.headerTitle}>Analytics</Text>
-          <Text style={styles.headerSubtitle}>Dashboard</Text>
+          <Text className="text-xl font-bold text-text-light dark:text-text-dark mb-0.5">Analytics</Text>
+          <Text className="text-[13px] font-medium text-textSecondary-light dark:text-textSecondary-dark">Dashboard</Text>
         </View>
 
         <ScrollView
-          style={styles.scrollView}
+          className="flex-1"
           showsVerticalScrollIndicator={false}
         >
           {/* Main Menu Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>MAIN MENU</Text>
-            <View style={styles.menuList}>
+          <View className="pt-6 px-4">
+            <Text className="text-[11px] font-bold text-textSecondary-light dark:text-textSecondary-dark tracking-[1px] mb-3 px-2 uppercase">MAIN MENU</Text>
+            <View className="gap-1">
               {mainMenuItems.map((item) =>
                 renderMenuItem(item, activeMenuItem === item.id)
               )}
@@ -106,9 +106,9 @@ const AnalyticsSidebar = ({
           </View>
 
           {/* Insights Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>INSIGHTS</Text>
-            <View style={styles.menuList}>
+          <View className="pt-6 px-4">
+            <Text className="text-[11px] font-bold text-textSecondary-light dark:text-textSecondary-dark tracking-[1px] mb-3 px-2 uppercase">INSIGHTS</Text>
+            <View className="gap-1">
               {insightsMenuItems.map((item) =>
                 renderMenuItem(item, activeMenuItem === item.id)
               )}
@@ -116,9 +116,9 @@ const AnalyticsSidebar = ({
           </View>
 
           {/* Settings Section */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>SETTINGS</Text>
-            <View style={styles.menuList}>
+          <View className="pt-6 px-4">
+            <Text className="text-[11px] font-bold text-textSecondary-light dark:text-textSecondary-dark tracking-[1px] mb-3 px-2 uppercase">SETTINGS</Text>
+            <View className="gap-1">
               {settingsMenuItems.map((item) =>
                 renderMenuItem(item, activeMenuItem === item.id)
               )}
@@ -127,17 +127,17 @@ const AnalyticsSidebar = ({
         </ScrollView>
 
         {/* User Profile Section */}
-        <View style={styles.footer}>
-          <View style={styles.divider} />
-          <View style={styles.userProfile}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>SW</Text>
+        <View className="pt-4 pb-5 px-4">
+          <View className="h-[1px] bg-[#e2e8f0] mb-4" />
+          <View className="flex-row items-center gap-3 px-2">
+            <View className="w-10 h-10 rounded-xl bg-[#667eea] justify-center items-center">
+              <Text className="text-sm font-bold color-white">SW</Text>
             </View>
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>Sam Wheeler</Text>
-              <Text style={styles.userEmail}>Student</Text>
+            <View className="flex-1">
+              <Text className="text-sm font-semibold text-text-light dark:text-text-dark mb-0.5">Sam Wheeler</Text>
+              <Text className="text-xs font-normal text-textSecondary-light dark:text-textSecondary-dark">Student</Text>
             </View>
-            <TouchableOpacity style={styles.moreButton}>
+            <TouchableOpacity className="w-8 h-8 rounded-lg justify-center items-center">
               <MaterialCommunityIcons
                 name="dots-vertical"
                 size={20}
@@ -152,168 +152,3 @@ const AnalyticsSidebar = ({
 };
 
 export default AnalyticsSidebar;
-
-const styles = StyleSheet.create({
-  container: {
-    width: 280,
-    height: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 0 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  gradient: {
-    flex: 1,
-    borderRightWidth: 1,
-    borderRightColor: '#e2e8f0',
-  },
-  header: {
-    paddingTop: 32,
-    paddingBottom: 24,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  logoContainer: {
-    marginBottom: 16,
-  },
-  logoGradient: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#667eea',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1e293b',
-    marginBottom: 2,
-  },
-  headerSubtitle: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#64748b',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  section: {
-    paddingTop: 24,
-    paddingHorizontal: 16,
-  },
-  sectionTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#94a3b8',
-    letterSpacing: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-  },
-  menuList: {
-    gap: 4,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    gap: 12,
-  },
-  menuItemActive: {
-    backgroundColor: '#f0f4ff',
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: '#f8fafc',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconContainerActive: {
-    backgroundColor: '#e0e7ff',
-  },
-  menuItemText: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#64748b',
-  },
-  menuItemTextActive: {
-    fontWeight: '600',
-    color: '#667eea',
-  },
-  badge: {
-    backgroundColor: '#ef4444',
-    borderRadius: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    minWidth: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#ffffff',
-  },
-  footer: {
-    paddingTop: 16,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#e2e8f0',
-    marginBottom: 16,
-  },
-  userProfile: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 8,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: '#667eea',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#ffffff',
-  },
-  userInfo: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: 2,
-  },
-  userEmail: {
-    fontSize: 12,
-    fontWeight: '400',
-    color: '#64748b',
-  },
-  moreButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

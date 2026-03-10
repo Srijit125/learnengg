@@ -1,11 +1,14 @@
 import { useAuthStore } from "@/store/auth.store";
-import { Stack } from "expo-router";
-import React, { useEffect } from "react";
 import { supabase } from "@/utils/supabase";
-import * as SplashScreen from "expo-splash-screen";
-import { useFonts } from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Session } from "@supabase/supabase-js";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useColorScheme } from "nativewind";
+import React, { useEffect } from "react";
+import { Platform } from "react-native";
+import "../global.css";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -13,6 +16,7 @@ SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
   const { isAuthenticated, user, isLoading } = useAuthStore();
   const [isReady, setIsReady] = React.useState(false);
+  const { colorScheme } = useColorScheme();
 
   useEffect(() => {
     // Sync session with auth store
@@ -22,6 +26,20 @@ const RootLayout = () => {
         useAuthStore.getState().setSession(session);
         setIsReady(true);
       });
+
+    // NativeWind v4 web dark mode requires the 'dark' class on the HTML tag
+    // since we set darkMode: "class" in tailwind.config.js
+    if (Platform.OS === 'web') {
+      const isDark = colorScheme === 'dark';
+      if (typeof window !== 'undefined') {
+        const root = window.document.documentElement;
+        if (isDark) {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
+      }
+    }
 
     const {
       data: { subscription },

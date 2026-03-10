@@ -5,7 +5,6 @@ import {
     LayoutAnimation,
     Platform,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     UIManager,
@@ -25,9 +24,9 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
     };
 
     return (
-        <TouchableOpacity style={styles.faqCard} onPress={toggleExpand} activeOpacity={0.7}>
-            <View style={styles.faqHeader}>
-                <Text style={styles.faqQuestion}>{question}</Text>
+        <TouchableOpacity className="bg-card-light dark:bg-card-dark rounded-2xl p-5 mb-3 border border-border-light dark:border-border-dark shadow-sm" onPress={toggleExpand} activeOpacity={0.7}>
+            <View className="flex-row justify-between items-center">
+                <Text className="text-base font-semibold text-text-light dark:text-text-dark flex-1 pr-4">{question}</Text>
                 <MaterialCommunityIcons
                     name={expanded ? "chevron-up" : "chevron-down"}
                     size={24}
@@ -35,7 +34,7 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
                 />
             </View>
             {expanded && (
-                <Text style={styles.faqAnswer}>{answer}</Text>
+                <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark mt-3 leading-[22px]">{answer}</Text>
             )}
         </TouchableOpacity>
     );
@@ -43,16 +42,16 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
 
 export default function HelpPage() {
     return (
-        <View style={styles.container}>
-            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} style={styles.gradientBackground}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>Help & Support</Text>
-                        <Text style={styles.subtitle}>Frequently asked questions and support contact</Text>
+        <View className="flex-1">
+            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+                <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 40 }}>
+                    <View className="mb-8 pt-3">
+                        <Text className="text-3xl font-extrabold text-text-light dark:text-text-dark tracking-tight">Help & Support</Text>
+                        <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark mt-1">Frequently asked questions and support contact</Text>
                     </View>
 
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Frequently Asked Questions</Text>
+                    <View className="mb-8">
+                        <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-4">Frequently Asked Questions</Text>
                         <FAQItem
                             question="How is my Accuracy calculated?"
                             answer="Accuracy is the percentage of questions you answered correctly across all your quiz attempts. It's calculated as (Correct Answers / Total Attempts) * 100."
@@ -71,144 +70,38 @@ export default function HelpPage() {
                         />
                     </View>
 
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Contact Support</Text>
-                        <View style={styles.contactCard}>
-                            <View style={styles.contactItem}>
-                                <View style={styles.contactIcon}>
+                    <View className="mb-8">
+                        <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-4">Contact Support</Text>
+                        <View className="bg-card-light dark:bg-card-dark rounded-[20px] p-2 border border-border-light dark:border-border-dark">
+                            <View className="flex-row items-center p-4 gap-4">
+                                <View className="w-12 h-12 rounded-xl bg-[#f5f3ff] justify-center items-center">
                                     <Ionicons name="mail-outline" size={24} color="#6366f1" />
                                 </View>
                                 <View>
-                                    <Text style={styles.contactLabel}>Email Us</Text>
-                                    <Text style={styles.contactValue}>support@learnengg.com</Text>
+                                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase tracking-wider">Email Us</Text>
+                                    <Text className="text-base font-semibold text-text-light dark:text-text-dark">support@learnengg.com</Text>
                                 </View>
                             </View>
-                            <View style={styles.divider} />
-                            <View style={styles.contactItem}>
-                                <View style={styles.contactIcon}>
+                            <View className="h-[1px] bg-background-light dark:bg-background-dark mx-4" />
+                            <View className="flex-row items-center p-4 gap-4">
+                                <View className="w-12 h-12 rounded-xl bg-[#f5f3ff] justify-center items-center">
                                     <Ionicons name="chatbubble-ellipses-outline" size={24} color="#6366f1" />
                                 </View>
                                 <View>
-                                    <Text style={styles.contactLabel}>Live Chat</Text>
-                                    <Text style={styles.contactValue}>Available 9 AM - 6 PM</Text>
+                                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase tracking-wider">Live Chat</Text>
+                                    <Text className="text-base font-semibold text-text-light dark:text-text-dark">Available 9 AM - 6 PM</Text>
                                 </View>
                             </View>
                         </View>
                     </View>
 
-                    <View style={styles.footer}>
-                        <Text style={styles.versionText}>App Version 1.2.0</Text>
-                        <Text style={styles.footerLink}>Terms of Service</Text>
-                        <Text style={styles.footerLink}>Privacy Policy</Text>
+                    <View className="items-center mt-5 gap-2">
+                        <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark mb-2">App Version 1.2.0</Text>
+                        <Text className="text-sm text-[#6366f1] font-semibold">Terms of Service</Text>
+                        <Text className="text-sm text-[#6366f1] font-semibold">Privacy Policy</Text>
                     </View>
                 </ScrollView>
             </LinearGradient>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1 },
-    gradientBackground: { flex: 1 },
-    scrollView: { flex: 1 },
-    scrollContent: { padding: 24, paddingBottom: 40 },
-    header: {
-        marginBottom: 32,
-        paddingTop: 12,
-    },
-    title: { fontSize: 32, fontWeight: "800", color: "#1e293b", letterSpacing: -0.5 },
-    subtitle: { fontSize: 16, color: "#64748b", marginTop: 4 },
-    section: {
-        marginBottom: 32,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: "700",
-        color: "#1e293b",
-        marginBottom: 16,
-    },
-    faqCard: {
-        backgroundColor: "white",
-        borderRadius: 16,
-        padding: 20,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: "#f1f5f9",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 2,
-    },
-    faqHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    faqQuestion: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#1e293b",
-        flex: 1,
-        paddingRight: 16,
-    },
-    faqAnswer: {
-        fontSize: 14,
-        color: "#64748b",
-        marginTop: 12,
-        lineHeight: 22,
-    },
-    contactCard: {
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 8,
-        borderWidth: 1,
-        borderColor: "#f1f5f9",
-    },
-    contactItem: {
-        flexDirection: "row",
-        alignItems: "center",
-        padding: 16,
-        gap: 16,
-    },
-    contactIcon: {
-        width: 48,
-        height: 48,
-        borderRadius: 12,
-        backgroundColor: "#f5f3ff",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    contactLabel: {
-        fontSize: 12,
-        color: "#94a3b8",
-        fontWeight: "600",
-        textTransform: "uppercase",
-        letterSpacing: 0.5,
-    },
-    contactValue: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#1e293b",
-    },
-    divider: {
-        height: 1,
-        backgroundColor: "#f1f5f9",
-        marginHorizontal: 16,
-    },
-    footer: {
-        alignItems: "center",
-        marginTop: 20,
-        gap: 8,
-    },
-    versionText: {
-        fontSize: 13,
-        color: "#94a3b8",
-        marginBottom: 8,
-    },
-    footerLink: {
-        fontSize: 14,
-        color: "#6366f1",
-        fontWeight: "600",
-    },
-});

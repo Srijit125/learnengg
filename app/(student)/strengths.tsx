@@ -1,14 +1,12 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 
 const strengths = () => {
     return (
-        <View>
-            <Text>strengths</Text>
+        <View className="flex-1 justify-center items-center">
+            <Text className="text-lg">strengths</Text>
         </View>
     )
 }
 
 export default strengths
-
-const styles = StyleSheet.create({})

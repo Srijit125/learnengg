@@ -3,7 +3,6 @@ import React from "react";
 import {
     Dimensions,
     Platform,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View,
@@ -23,20 +22,28 @@ const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
 }) => {
     if (!isVisible) return null;
 
+    const { width, height } = Dimensions.get("window");
+
     return (
-        <View style={styles.overlayView} pointerEvents="box-none">
-            <View style={styles.windowContainer}>
-                <View style={styles.header}>
-                    <View style={styles.titleContainer}>
+        <View className="absolute inset-0 justify-end items-end bg-transparent pb-[100px] pr-[30px] z-[999]" pointerEvents="box-none">
+            <View
+                className="bg-card-light dark:bg-card-dark rounded-[20px] overflow-hidden shadow-xl elevation-10 border border-border-light dark:border-border-dark"
+                style={{
+                    width: Platform.OS === "web" ? 400 : width * 0.9,
+                    height: Platform.OS === "web" ? 600 : height * 0.7,
+                }}
+            >
+                <View className="flex-row justify-between items-center p-4 border-b border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark">
+                    <View className="flex-row items-center gap-3">
                         <MaterialCommunityIcons name="robot" size={24} color="#6366f1" />
-                        <Text style={styles.headerTitle}>Learning Assistant</Text>
+                        <Text className="text-lg font-bold text-text-light dark:text-text-dark">Learning Assistant</Text>
                     </View>
-                    <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                    <TouchableOpacity onPress={onClose} className="p-1">
                         <MaterialCommunityIcons name="close" size={24} color="#64748b" />
                     </TouchableOpacity>
                 </View>
 
-                <View style={styles.webviewContainer}>
+                <View className="flex-1 bg-background-light dark:bg-background-dark">
                     {Platform.OS === 'web' ? (
                         <iframe
                             src={chatbotUrl}
@@ -46,7 +53,7 @@ const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
                     ) : (
                         <WebView
                             source={{ uri: chatbotUrl }}
-                            style={styles.webview}
+                            className="flex-1"
                             startInLoadingState={true}
                         />
                     )}
@@ -55,65 +62,5 @@ const ChatbotWindow: React.FC<ChatbotWindowProps> = ({
         </View>
     );
 };
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-    overlayView: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: "flex-end",
-        alignItems: "flex-end",
-        backgroundColor: "transparent",
-        paddingBottom: 100, // Positioned above the FAB
-        paddingRight: 30,
-        zIndex: 999,
-    },
-    windowContainer: {
-        width: Platform.OS === "web" ? 400 : width * 0.9,
-        height: Platform.OS === "web" ? 600 : height * 0.7,
-        backgroundColor: "white",
-        borderRadius: 20,
-        overflow: "hidden",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
-        elevation: 10,
-        borderWidth: 1,
-        borderColor: "#f1f5f9",
-    },
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: "#f1f5f9",
-        backgroundColor: "#ffffff",
-    },
-    titleContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 12,
-    },
-    headerTitle: {
-        fontSize: 18,
-        fontWeight: "700",
-        color: "#1e293b",
-    },
-    closeButton: {
-        padding: 4,
-    },
-    webviewContainer: {
-        flex: 1,
-        backgroundColor: "#f8fafc",
-    },
-    webview: {
-        flex: 1,
-    },
-});
 
 export default ChatbotWindow;

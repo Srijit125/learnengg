@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { Text, View } from 'react-native';
 import { BarChart, barDataItem } from 'react-native-gifted-charts';
 import ChartLegend from './ChartLegend';
 
@@ -32,24 +32,24 @@ const EnhancedBarChart = ({
     showGradient: true,
     topLabelComponent: showValues
       ? () => (
-          <Text style={styles.topLabel}>
-            {item.value}
-          </Text>
-        )
+        <Text className="text-xs font-semibold text-text-light dark:text-text-dark mb-1">
+          {item.value}
+        </Text>
+      )
       : undefined,
   }));
 
   const legendItems = showLegend
     ? data.map((item) => ({
-        label: item.label || '',
-        color: String(item.frontColor || color),
-      }))
+      label: item.label || '',
+      color: String(item.frontColor || color),
+    }))
     : [];
 
   return (
-    <View style={styles.container}>
-      {title && <Text style={styles.title}>{title}</Text>}
-      <View style={styles.chartWrapper}>
+    <View className="w-full">
+      {title && <Text className="text-base font-semibold text-text-light dark:text-text-dark mb-4">{title}</Text>}
+      <View className="items-center">
         <BarChart
           data={enhancedData}
           barWidth={barWidth}
@@ -62,8 +62,8 @@ const EnhancedBarChart = ({
           xAxisColor="#e2e8f0"
           hideRules
           noOfSections={4}
-          yAxisTextStyle={styles.yAxisText}
-          xAxisLabelTextStyle={styles.xAxisText}
+          yAxisTextStyle={{ fontSize: 11, color: '#64748b' }}
+          xAxisLabelTextStyle={{ fontSize: 12, color: '#64748b', fontWeight: '500' }}
           spacing={barWidth + 20}
         />
       </View>
@@ -75,33 +75,3 @@ const EnhancedBarChart = ({
 };
 
 export default EnhancedBarChart;
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: 16,
-  },
-  chartWrapper: {
-    alignItems: 'center',
-  },
-  topLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  yAxisText: {
-    fontSize: 11,
-    color: '#64748b',
-  },
-  xAxisText: {
-    fontSize: 12,
-    color: '#64748b',
-    fontWeight: '500',
-  },
-});

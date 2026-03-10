@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   Animated,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -85,54 +84,52 @@ const QuizIndex = () => {
 
   if (loadingCourses) {
     return (
-      <View style={styles.centered}>
+      <View className="flex-1 justify-center items-center p-5">
         <ActivityIndicator size="large" color="#4F46E5" />
-        <Text style={styles.loadingText}>Fetching available courses...</Text>
+        <Text className="mt-4 text-[#64748B] text-sm font-medium">Fetching available courses...</Text>
       </View>
     );
   }
 
   if (!selectedCourseId) {
     return (
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Select a Course</Text>
-        <Text style={styles.subtitle}>
+      <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: "#F8FAFC", flexGrow: 1 }}>
+        <Text className="text-2xl font-bold mb-2 text-[#1E293B]">Select a Course</Text>
+        <Text className="text-sm text-[#64748B] mb-6">
           Choose a course to start your adaptive quiz session
         </Text>
-        <View style={styles.courseGrid}>
+        <View className="gap-4">
           {courses.map((course) => (
             <TouchableOpacity
               key={course.course_id}
-              style={styles.courseCard}
+              className="bg-card-light dark:bg-card-dark p-5 rounded-2xl shadow-sm shadow-black/10 flex-col items-start border border-transparent"
               onPress={() => handleCourseSelect(course.course_id)}
             >
-              <View style={styles.courseIcon}>
+              <View className="w-14 h-14 rounded-xl bg-[#F0F4FF] justify-center items-center mb-3">
                 <Ionicons name="book-outline" size={32} color="#4F46E5" />
               </View>
-              <Text style={styles.courseName}>{course.course_name}</Text>
-              <Text style={styles.courseIdText}>{course.course_id}</Text>
+              <Text className="text-lg font-bold text-[#1E293B] mb-1">{course.course_name}</Text>
+              <Text className="text-xs text-[#94A3B8] font-semibold">{course.course_id}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <View style={styles.lengthCard}>
-          <Text style={styles.lengthTitle}>Quiz Depth</Text>
-          <Text style={styles.lengthSubtitle}>Choose question count</Text>
-          <View style={styles.lengthOptions}>
+        <View className="mt-6 bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-[#F1F5F9] items-center mb-5">
+          <Text className="text-base font-bold text-[#1E293B] mb-1">Quiz Depth</Text>
+          <Text className="text-xs text-[#64748B] mb-4">Choose question count</Text>
+          <View className="flex-row gap-2.5">
             {quizLengthOptions.map((length) => (
               <TouchableOpacity
                 key={length}
-                style={[
-                  styles.lengthOption,
-                  quizLength === length && styles.lengthOptionSelected,
-                ]}
+                className={`w-[50px] h-[50px] rounded-xl border-2 justify-center items-center ${quizLength === length
+                    ? "border-[#4F46E5] bg-[#F0F4FF]"
+                    : "border-[#F1F5F9] bg-card-light dark:bg-card-dark"
+                  }`}
                 onPress={() => setQuizLength(length)}
               >
                 <Text
-                  style={[
-                    styles.lengthOptionText,
-                    quizLength === length && styles.lengthOptionTextSelected,
-                  ]}
+                  className={`text-base font-semibold ${quizLength === length ? "text-[#4F46E5] font-bold" : "text-[#64748B]"
+                    }`}
                 >
                   {length}
                 </Text>
@@ -147,41 +144,41 @@ const QuizIndex = () => {
   if (isFinished) {
     const percentage = Math.round((score / maxQuestions) * 100);
     return (
-      <View style={styles.centered}>
-        <View style={styles.resultCard}>
-          <View style={styles.iconContainer}>
+      <View className="flex-1 justify-center items-center p-5 bg-[#F8FAFC]">
+        <View className="bg-card-light dark:bg-card-dark rounded-3xl p-6 w-full items-center shadow-md shadow-black/10">
+          <View className="w-[80px] h-[80px] rounded-[40px] bg-[#FFFBEB] justify-center items-center mb-4">
             <Ionicons name="trophy" size={48} color="#F59E0B" />
           </View>
-          <Text style={styles.title}>Completed!</Text>
-          <Text style={styles.subtitle}>Session analysis completed</Text>
+          <Text className="text-2xl font-bold mb-2 text-[#1E293B]">Completed!</Text>
+          <Text className="text-sm text-[#64748B] mb-6">Session analysis completed</Text>
 
-          <View style={styles.resultGrid}>
-            <View style={styles.resultItem}>
-              <Text style={styles.resultLabel}>Correct</Text>
-              <Text style={styles.resultValue}>{score}</Text>
+          <View className="flex-row justify-between w-full bg-[#F8FAFC] p-4 rounded-2xl mb-6">
+            <View className="items-center">
+              <Text className="text-[10px] text-[#64748B] font-semibold mb-0.5">Correct</Text>
+              <Text className="text-xl font-bold text-[#1E293B]">{score}</Text>
             </View>
-            <View style={styles.resultItem}>
-              <Text style={styles.resultLabel}>Total</Text>
-              <Text style={styles.resultValue}>{maxQuestions}</Text>
+            <View className="items-center">
+              <Text className="text-[10px] text-[#64748B] font-semibold mb-0.5">Total</Text>
+              <Text className="text-xl font-bold text-[#1E293B]">{maxQuestions}</Text>
             </View>
-            <View style={styles.resultItem}>
-              <Text style={styles.resultLabel}>Accuracy</Text>
-              <Text style={styles.resultValue}>{percentage}%</Text>
+            <View className="items-center">
+              <Text className="text-[10px] text-[#64748B] font-semibold mb-0.5">Accuracy</Text>
+              <Text className="text-xl font-bold text-[#1E293B]">{percentage}%</Text>
             </View>
           </View>
 
           <TouchableOpacity
-            style={styles.button}
+            className="bg-[#4F46E5] py-3.5 px-8 rounded-xl mb-3 w-full"
             onPress={() => selectCourse(selectedCourseId || "")}
           >
-            <Text style={styles.buttonText}>Restart Session</Text>
+            <Text className="text-white font-bold text-base text-center">Restart Session</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, styles.secondaryButton]}
+            className="bg-transparent border-2 border-[#E2E8F0] py-3.5 px-8 rounded-xl w-full"
             onPress={() => selectCourse("")}
           >
-            <Text style={styles.secondaryButtonText}>Exit to Courses</Text>
+            <Text className="text-[#64748B] font-bold text-base text-center">Exit to Courses</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -190,7 +187,7 @@ const QuizIndex = () => {
 
   if (isLoading && !currentMCQ) {
     return (
-      <View style={styles.centered}>
+      <View className="flex-1 justify-center items-center p-5 bg-[#F8FAFC]">
         <ActivityIndicator size="large" color="#4F46E5" />
       </View>
     );
@@ -198,47 +195,52 @@ const QuizIndex = () => {
 
   if (!currentMCQ) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.title}>No Question Available</Text>
+      <View className="flex-1 justify-center items-center p-5 bg-[#F8FAFC]">
+        <Text className="text-2xl font-bold mb-2 text-[#1E293B]">No Question Available</Text>
         <TouchableOpacity
-          style={styles.button}
+          className="bg-[#4F46E5] py-3.5 px-8 rounded-xl mb-3 w-full max-w-[300px]"
           onPress={() => fetchNextQuestion()}
         >
-          <Text style={styles.buttonText}>Retry</Text>
+          <Text className="text-white font-bold text-base text-center">Retry</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, styles.secondaryButton]}
+          className="bg-transparent border-2 border-[#E2E8F0] py-3.5 px-8 rounded-xl w-full max-w-[300px]"
           onPress={() => selectCourse("")}
         >
-          <Text style={styles.secondaryButtonText}>Back to Courses</Text>
+          <Text className="text-[#64748B] font-bold text-base text-center">Back to Courses</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
+  const badgeColor =
+    difficulty === "easy"
+      ? "bg-[#DCFCE7]"
+      : difficulty === "medium"
+        ? "bg-[#FEF9C3]"
+        : "bg-[#FEE2E2]";
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
+    <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: "#F8FAFC", flexGrow: 1 }}>
+      <View className="flex-row justify-between items-center mb-6 bg-card-light dark:bg-card-dark p-4 rounded-2xl shadow-sm shadow-black/10">
         <View>
-          <Text style={styles.label}>Difficulty</Text>
-          <View style={[styles.badge, styles[`badge_${difficulty}`]]}>
-            <Text style={styles.badgeText}>{difficulty.toUpperCase()}</Text>
+          <Text className="text-xs text-[#64748B] mb-1 font-semibold">Difficulty</Text>
+          <View className={`px-3 py-1 rounded-xl ${badgeColor}`}>
+            <Text className="text-xs font-bold text-[#1E293B]">{difficulty.toUpperCase()}</Text>
           </View>
         </View>
-        <View style={styles.statsRow}>
-          <View style={styles.stat}>
-            <Text style={styles.statLabel}>Score</Text>
-            <Text style={styles.statValue}>
+        <View className="flex-row">
+          <View className="items-end ml-5">
+            <Text className="text-[10px] text-[#64748B] font-semibold">Score</Text>
+            <Text className="text-base font-bold text-[#1E293B]">
               {score}/{totalQuestions}
             </Text>
           </View>
-          <View style={styles.stat}>
-            <Text style={styles.statLabel}>Streak</Text>
+          <View className="items-end ml-5">
+            <Text className="text-[10px] text-[#64748B] font-semibold">Streak</Text>
             <Text
-              style={[
-                styles.statValue,
-                { color: streak >= 0 ? "#10B981" : "#EF4444" },
-              ]}
+              className={`text-base font-bold ${streak >= 0 ? "text-[#10B981]" : "text-[#EF4444]"
+                }`}
             >
               {Math.abs(streak)} {streak >= 0 ? "🔥" : "❄️"}
             </Text>
@@ -246,38 +248,39 @@ const QuizIndex = () => {
         </View>
       </View>
 
-      <Animated.View style={[styles.card, { opacity: fadeAnim }]}>
-        <Text style={styles.question}>{currentMCQ.Question}</Text>
+      <Animated.View className="bg-card-light dark:bg-card-dark rounded-3xl p-6 shadow-md shadow-black/10" style={{ opacity: fadeAnim }}>
+        <Text className="text-xl font-bold text-[#1E293B] mb-6 leading-7">
+          {currentMCQ.Question}
+        </Text>
 
-        <View style={styles.optionsContainer}>
+        <View className="gap-3">
           {currentMCQ.Options.map((option, index) => {
             const isSelected = lastFeedback?.selectedIndex === index;
             const isCorrect = lastFeedback?.correctIndex === index;
             const showFeedback = lastFeedback !== null;
 
-            let optionStyle: any = styles.option;
+            let optionClass =
+              "p-4.5 rounded-2xl border-2 border-[#F1F5F9] flex-row justify-between items-center";
+            let textClass = "text-base text-textSecondary-light dark:text-textSecondary-dark font-medium flex-1";
+
             if (showFeedback) {
-              if (isCorrect)
-                optionStyle = [styles.option, styles.optionCorrect];
-              else if (isSelected)
-                optionStyle = [styles.option, styles.optionWrong];
+              if (isCorrect) {
+                optionClass = "p-4.5 rounded-2xl border-2 border-[#10B981] bg-[#10B981] flex-row justify-between items-center";
+                textClass = "text-base text-white font-medium flex-1";
+              } else if (isSelected) {
+                optionClass = "p-4.5 rounded-2xl border-2 border-[#EF4444] bg-[#EF4444] flex-row justify-between items-center";
+                textClass = "text-base text-white font-medium flex-1";
+              }
             }
 
             return (
               <TouchableOpacity
                 key={index}
-                style={optionStyle}
+                className={optionClass}
                 onPress={() => handleAnswer(index)}
                 disabled={showFeedback}
               >
-                <Text
-                  style={[
-                    styles.optionText,
-                    showFeedback &&
-                    (isCorrect || isSelected) &&
-                    styles.whiteText,
-                  ]}
-                >
+                <Text className={textClass}>
                   {option}
                 </Text>
                 {showFeedback && isCorrect && (
@@ -292,8 +295,11 @@ const QuizIndex = () => {
         </View>
 
         {lastFeedback && (
-          <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-            <Text style={styles.nextButtonText}>Next Question</Text>
+          <TouchableOpacity
+            className="mt-8 bg-[#4F46E5] p-4.5 rounded-2xl flex-row justify-center items-center gap-2"
+            onPress={handleNext}
+          >
+            <Text className="text-white text-base font-bold">Next Question</Text>
             <Ionicons name="arrow-forward" size={20} color="#FFF" />
           </TouchableOpacity>
         )}
@@ -303,294 +309,3 @@ const QuizIndex = () => {
 };
 
 export default QuizIndex;
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: "#F8FAFC",
-    flexGrow: 1,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  loadingText: {
-    marginTop: 16,
-    color: "#64748B",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-    backgroundColor: "#FFF",
-    padding: 16,
-    borderRadius: 16,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  label: {
-    fontSize: 12,
-    color: "#64748B",
-    marginBottom: 4,
-    fontWeight: "600",
-  },
-  badge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  badge_easy: { backgroundColor: "#DCFCE7" },
-  badge_medium: { backgroundColor: "#FEF9C3" },
-  badge_hard: { backgroundColor: "#FEE2E2" },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-  statsRow: {
-    flexDirection: "row",
-  },
-  stat: {
-    alignItems: "flex-end",
-    marginLeft: 20,
-  },
-  statLabel: {
-    fontSize: 10,
-    color: "#64748B",
-    fontWeight: "600",
-  },
-  statValue: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-  card: {
-    backgroundColor: "#FFF",
-    borderRadius: 24,
-    padding: 24,
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-  },
-  question: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1E293B",
-    marginBottom: 24,
-    lineHeight: 28,
-  },
-  optionsContainer: {
-    gap: 12,
-  },
-  option: {
-    padding: 18,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: "#F1F5F9",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  optionCorrect: {
-    backgroundColor: "#10B981",
-    borderColor: "#10B981",
-  },
-  optionWrong: {
-    backgroundColor: "#EF4444",
-    borderColor: "#EF4444",
-  },
-  optionText: {
-    fontSize: 16,
-    color: "#475569",
-    fontWeight: "500",
-    flex: 1,
-  },
-  whiteText: {
-    color: "#FFF",
-  },
-  nextButton: {
-    marginTop: 32,
-    backgroundColor: "#4F46E5",
-    padding: 18,
-    borderRadius: 16,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-  },
-  nextButtonText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#1E293B",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#64748B",
-    marginBottom: 24,
-  },
-  courseGrid: {
-    gap: 16,
-  },
-  courseCard: {
-    backgroundColor: "#FFF",
-    padding: 20,
-    borderRadius: 16,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  courseIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 12,
-    backgroundColor: "#F0F4FF",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  courseName: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#1E293B",
-    marginBottom: 4,
-  },
-  courseIdText: {
-    fontSize: 12,
-    color: "#94A3B8",
-    fontWeight: "600",
-  },
-  button: {
-    backgroundColor: "#4F46E5",
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  buttonText: {
-    color: "#FFF",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  secondaryButton: {
-    backgroundColor: "transparent",
-    borderWidth: 2,
-    borderColor: "#E2E8F0",
-  },
-  secondaryButtonText: {
-    color: "#64748B",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  lengthCard: {
-    marginTop: 24,
-    backgroundColor: "#FFF",
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#F1F5F9",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  lengthTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#1E293B",
-    marginBottom: 4,
-  },
-  lengthSubtitle: {
-    fontSize: 12,
-    color: "#64748B",
-    marginBottom: 16,
-  },
-  lengthOptions: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  lengthOption: {
-    width: 50,
-    height: 50,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#F1F5F9",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFF",
-  },
-  lengthOptionSelected: {
-    borderColor: "#4F46E5",
-    backgroundColor: "#F0F4FF",
-  },
-  lengthOptionText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#64748B",
-  },
-  lengthOptionTextSelected: {
-    color: "#4F46E5",
-    fontWeight: "700",
-  },
-  resultCard: {
-    backgroundColor: "#FFF",
-    borderRadius: 24,
-    padding: 24,
-    width: "100%",
-    alignItems: "center",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#FFFBEB",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  resultGrid: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    backgroundColor: "#F8FAFC",
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 24,
-  },
-  resultItem: {
-    alignItems: "center",
-  },
-  resultLabel: {
-    fontSize: 10,
-    color: "#64748B",
-    fontWeight: "600",
-    marginBottom: 2,
-  },
-  resultValue: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-});

@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
 import { getPercentageColor } from '@/utils/chartColors';
+import React from 'react';
+import { Text, View } from 'react-native';
 
 type ProgressBarItem = {
   label: string;
@@ -21,31 +21,29 @@ const HorizontalProgressBar = ({
   showPercentage = true,
 }: HorizontalProgressBarProps) => {
   return (
-    <View style={styles.container}>
+    <View className="w-full gap-4">
       {items.map((item, index) => {
         const maxValue = item.maxValue || 100;
         const percentage = (item.value / maxValue) * 100;
         const barColor = item.color || getPercentageColor(percentage);
 
         return (
-          <View key={index} style={styles.barContainer}>
-            <View style={styles.labelRow}>
-              <Text style={styles.label}>{item.label}</Text>
+          <View key={index} className="w-full">
+            <View className="flex-row justify-between items-center mb-2">
+              <Text className="text-sm font-semibold text-text-light dark:text-text-dark">{item.label}</Text>
               {showPercentage && (
-                <Text style={styles.value}>
+                <Text className="text-[13px] font-medium text-textSecondary-light dark:text-textSecondary-dark">
                   {item.value} {item.maxValue && `/ ${item.maxValue}`}
                 </Text>
               )}
             </View>
-            <View style={[styles.barBackground, { height }]}>
+            <View className="w-full bg-background-light dark:bg-background-dark rounded-lg overflow-hidden" style={{ height }}>
               <View
-                style={[
-                  styles.barFill,
-                  {
-                    width: `${Math.min(percentage, 100)}%`,
-                    backgroundColor: barColor,
-                  },
-                ]}
+                className="h-full rounded-lg"
+                style={{
+                  width: `${Math.min(percentage, 100)}%`,
+                  backgroundColor: barColor,
+                }}
               />
             </View>
           </View>
@@ -56,39 +54,3 @@ const HorizontalProgressBar = ({
 };
 
 export default HorizontalProgressBar;
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    gap: 16,
-  },
-  barContainer: {
-    width: '100%',
-  },
-  labelRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1e293b',
-  },
-  value: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#64748b',
-  },
-  barBackground: {
-    width: '100%',
-    backgroundColor: '#f1f5f9',
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  barFill: {
-    height: '100%',
-    borderRadius: 8,
-  },
-});

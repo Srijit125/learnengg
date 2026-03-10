@@ -1,10 +1,10 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useColorScheme } from "nativewind";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -39,6 +39,7 @@ const defaultAnalytics: analyticsInfo = {
 const AnalyticsDashboard = () => {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { colorScheme } = useColorScheme();
   const [analytics, setAnalytics] = useState<analyticsInfo | null>(null);
   const [logs, setLogs] = useState<logDataInfo[]>([]);
   const [weakConcepts, setWeakConcepts] = useState<WeakConcept[]>([]);
@@ -84,16 +85,16 @@ const AnalyticsDashboard = () => {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4F46E5" />
+      <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
+        <ActivityIndicator size="large" color="#6366F1" />
       </View>
     );
   }
 
   if (!analytics) {
     return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>Could not load analytics.</Text>
+      <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
+        <Text className="text-error text-lg">Could not load analytics.</Text>
       </View>
     );
   }
@@ -101,21 +102,25 @@ const AnalyticsDashboard = () => {
   const hasActivity = analytics.total_attempts > 0;
 
   return (
-    <View style={styles.wrapper}>
+    <View className="flex-1 bg-background-light dark:bg-background-dark">
       <ScrollView
-        contentContainerStyle={styles.container}
+        contentContainerStyle={{ padding: 32 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.headerRow}>
+        <View className="flex-row justify-between items-start mb-10 flex-wrap gap-4">
           <View>
-            <Text style={styles.title}>Performance Overview</Text>
-            <Text style={styles.subtitle}>Track your progress and mastery</Text>
+            <Text className="text-3xl font-extrabold text-text-light dark:text-text-dark mb-2">
+              Performance Overview
+            </Text>
+            <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark">
+              Track your progress and mastery
+            </Text>
           </View>
           <TouchableOpacity
-            style={styles.performanceButton}
+            className="flex-row items-center bg-primary px-4 py-2.5 rounded-xl gap-2 shadow-lg shadow-primary/20"
             onPress={() => router.push("/(student)/performance")}
           >
-            <Text style={styles.performanceButtonText}>
+            <Text className="text-white text-sm font-bold">
               View Detailed Insights
             </Text>
             <MaterialCommunityIcons
@@ -126,7 +131,7 @@ const AnalyticsDashboard = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.statsGrid}>
+        <View className="flex-row gap-6 mb-12 flex-wrap">
           <StatCard
             label="Total Questions"
             value={analytics.total_attempts}
@@ -153,52 +158,52 @@ const AnalyticsDashboard = () => {
           />
         </View>
 
-        <View style={styles.insightLinksRow}>
+        <View className="flex-row gap-4 mb-8 flex-wrap">
           <TouchableOpacity
-            style={[styles.insightLinkCard, { backgroundColor: '#f5f3ff' }]}
+            className="flex-1 min-w-[160px] p-5 rounded-3xl items-center justify-center gap-3 border border-border-light dark:border-border-dark bg-primary/10"
             onPress={() => router.push("/(student)/reports")}
           >
-            <View style={[styles.insightIconCircle, { backgroundColor: '#ddd6fe' }]}>
-              <MaterialCommunityIcons name="file-chart" size={20} color="#6d28d9" />
+            <View className="w-11 h-11 rounded-full items-center justify-center bg-primary/20">
+              <MaterialCommunityIcons name="file-chart" size={20} color="#6366F1" />
             </View>
-            <Text style={styles.insightLinkText}>My Reports</Text>
+            <Text className="text-sm font-bold text-text-light dark:text-text-dark">My Reports</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.insightLinkCard, { backgroundColor: '#fef2f2' }]}
+            className="flex-1 min-w-[160px] p-5 rounded-3xl items-center justify-center gap-3 border border-border-light dark:border-border-dark bg-error/10"
             onPress={() => router.push("/(student)/weaknesses")}
           >
-            <View style={[styles.insightIconCircle, { backgroundColor: '#fee2e2' }]}>
-              <MaterialCommunityIcons name="alert-decagram" size={20} color="#dc2626" />
+            <View className="w-11 h-11 rounded-full items-center justify-center bg-error/20">
+              <MaterialCommunityIcons name="alert-decagram" size={20} color="#EF4444" />
             </View>
-            <Text style={styles.insightLinkText}>Weaknesses</Text>
+            <Text className="text-sm font-bold text-text-light dark:text-text-dark">Weaknesses</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.insightLinkCard, { backgroundColor: '#f0fdf4' }]}
+            className="flex-1 min-w-[160px] p-5 rounded-3xl items-center justify-center gap-3 border border-border-light dark:border-border-dark bg-success/10"
             onPress={() => router.push("/(student)/strengths")}
           >
-            <View style={[styles.insightIconCircle, { backgroundColor: '#dcfce7' }]}>
-              <MaterialCommunityIcons name="shield-check" size={20} color="#16a34a" />
+            <View className="w-11 h-11 rounded-full items-center justify-center bg-success/20">
+              <MaterialCommunityIcons name="shield-check" size={20} color="#10B981" />
             </View>
-            <Text style={styles.insightLinkText}>Strengths</Text>
+            <Text className="text-sm font-bold text-text-light dark:text-text-dark">Strengths</Text>
           </TouchableOpacity>
         </View>
 
         {!hasActivity ? (
-          <View style={styles.emptyStateContainer}>
-            <Ionicons name="bar-chart-outline" size={64} color="#CBD5E1" />
-            <Text style={styles.emptyStateTitle}>No activity yet</Text>
-            <Text style={styles.emptyStateSubtitle}>
+          <View className="items-center justify-center p-12 bg-card-light dark:bg-card-dark rounded-3xl border border-border-light dark:border-border-dark">
+            <Ionicons name="bar-chart-outline" size={64} className="opacity-40 text-textSecondary-light dark:text-textSecondary-dark" />
+            <Text className="text-xl font-bold text-text-light dark:text-text-dark mt-4 mb-2">No activity yet</Text>
+            <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark text-center">
               Start taking quizzes to see your analytics here!
             </Text>
           </View>
         ) : (
           <>
-            <View style={styles.rowContainer}>
-              <View style={[styles.section, styles.flexHalf]}>
-                <Text style={styles.sectionTitle}>Difficulty Breakdown</Text>
-                <View style={styles.distributionContainer}>
+            <View className="flex-row gap-6 mb-6 flex-wrap">
+              <View className="flex-1 min-w-[300px] bg-card-light dark:bg-card-dark p-8 rounded-3xl border border-border-light dark:border-border-dark">
+                <Text className="text-xl font-bold text-text-light dark:text-text-dark mb-6">Difficulty Breakdown</Text>
+                <View className="gap-5">
                   <DistributionBar
                     label="Easy"
                     count={analytics.difficulty_distribution?.easy || 0}
@@ -220,10 +225,10 @@ const AnalyticsDashboard = () => {
                 </View>
               </View>
 
-              <View style={[styles.section, styles.flexHalf]}>
-                <Text style={styles.sectionTitle}>Focus Areas</Text>
+              <View className="flex-1 min-w-[300px] bg-card-light dark:bg-card-dark p-8 rounded-3xl border border-border-light dark:border-border-dark">
+                <Text className="text-xl font-bold text-text-light dark:text-text-dark mb-6">Focus Areas</Text>
                 {weakConcepts.length > 0 ? (
-                  <View style={styles.focusList}>
+                  <View className="gap-3">
                     {weakConcepts.map((concept, index) => (
                       <FocusAreaCard
                         key={index}
@@ -233,23 +238,23 @@ const AnalyticsDashboard = () => {
                     ))}
                   </View>
                 ) : (
-                  <Text style={styles.emptyText}>
+                  <Text className="text-sm italic text-textSecondary-light dark:text-textSecondary-dark">
                     Great job! No weak areas detected yet.
                   </Text>
                 )}
               </View>
             </View>
 
-            <View style={[styles.section, styles.marginTop]}>
-              <Text style={styles.sectionTitle}>Recent Activity</Text>
+            <View className="bg-card-light dark:bg-card-dark p-8 rounded-3xl border border-border-light dark:border-border-dark">
+              <Text className="text-xl font-bold text-text-light dark:text-text-dark mb-6">Recent Activity</Text>
               {logs.length > 0 ? (
-                <View style={styles.activityList}>
+                <View>
                   {logs.slice(0, 5).map((log, index) => (
-                    <ActivityItem key={index} log={log} />
+                    <ActivityItem key={index} log={log} isLast={index === 4 || index === logs.length - 1} />
                   ))}
                 </View>
               ) : (
-                <Text style={styles.emptyText}>No recent activity.</Text>
+                <Text className="text-sm italic text-textSecondary-light dark:text-textSecondary-dark">No recent activity.</Text>
               )}
             </View>
           </>
@@ -261,21 +266,21 @@ const AnalyticsDashboard = () => {
 
 const StatCard = ({ label, value, icon, color }: any) => {
   const colorMap: any = {
-    blue: { bg: "#EFF6FF", text: "#3B82F6" },
-    green: { bg: "#ECFDF5", text: "#10B981" },
-    teal: { bg: "#F0FDFA", text: "#14B8A6" },
-    red: { bg: "#FEF2F2", text: "#EF4444" },
+    blue: { bg: "bg-info/10", text: "text-info" },
+    green: { bg: "bg-success/10", text: "text-success" },
+    teal: { bg: "bg-primary/10", text: "text-primary" },
+    red: { bg: "bg-error/10", text: "text-error" },
   };
   const theme = colorMap[color] || colorMap.blue;
 
   return (
-    <View style={styles.card}>
-      <View style={[styles.iconContainer, { backgroundColor: theme.bg }]}>
-        <Ionicons name={icon} size={24} color={theme.text} />
+    <View className="flex-1 min-w-[200px] bg-card-light dark:bg-card-dark p-6 rounded-3xl border border-border-light dark:border-border-dark flex-row items-center gap-4 shadow-sm">
+      <View className={`w-12 h-12 rounded-xl justify-center items-center ${theme.bg}`}>
+        <Ionicons name={icon} size={24} className={theme.text} />
       </View>
       <View>
-        <Text style={styles.statValue}>{value}</Text>
-        <Text style={styles.statLabel}>{label}</Text>
+        <Text className="text-2xl font-bold text-text-light dark:text-text-dark">{value}</Text>
+        <Text className="text-sm font-medium text-textSecondary-light dark:text-textSecondary-dark">{label}</Text>
       </View>
     </View>
   );
@@ -284,17 +289,15 @@ const StatCard = ({ label, value, icon, color }: any) => {
 const DistributionBar = ({ label, count, total, color }: any) => {
   const percentage = total > 0 ? (count / total) * 100 : 0;
   return (
-    <View style={styles.distributionRow}>
-      <Text style={styles.distLabel}>{label}</Text>
-      <View style={styles.progressBarContainer}>
+    <View className="flex-row items-center gap-4">
+      <Text className="w-[60px] text-sm font-semibold text-textSecondary-light dark:text-textSecondary-dark">{label}</Text>
+      <View className="flex-1 h-3 bg-border-light dark:bg-border-dark rounded-full overflow-hidden">
         <View
-          style={[
-            styles.progressBar,
-            { width: `${percentage}%` as any, backgroundColor: color },
-          ]}
+          style={{ width: `${percentage}%` as any, backgroundColor: color }}
+          className="h-full rounded-full"
         />
       </View>
-      <Text style={styles.distCount}>{count}</Text>
+      <Text className="w-10 text-right text-sm font-bold text-text-light dark:text-text-dark">{count}</Text>
     </View>
   );
 };
@@ -305,313 +308,43 @@ const FocusAreaCard = ({
 }: {
   chapter: string;
   count: number;
-}) => (
-  <View style={styles.focusCard}>
-    <View style={styles.focusIcon}>
-      <Ionicons name="alert-circle" size={24} color="#F87171" />
+}) => {
+  return (
+    <View className="flex-row items-center gap-3 p-3 rounded-xl bg-error/10">
+      <View className="w-8 h-8 rounded-lg justify-center items-center bg-background-light dark:bg-background-dark">
+        <Ionicons name="alert-circle" size={24} color="#EF4444" />
+      </View>
+      <View>
+        <Text className="text-sm font-bold text-error">{chapter}</Text>
+        <Text className="text-xs text-error">{count} Incorrect Answers</Text>
+      </View>
     </View>
-    <View>
-      <Text style={styles.focusTitle}>{chapter}</Text>
-      <Text style={styles.focusSubtitle}>{count} Incorrect Answers</Text>
-    </View>
-  </View>
-);
+  );
+};
 
-const ActivityItem = ({ log }: { log: logDataInfo }) => (
-  <View style={styles.activityItem}>
-    <View
-      style={[
-        styles.activityIcon,
-        { backgroundColor: log.correct ? "#ECFDF5" : "#FEF2F2" },
-      ]}
-    >
-      <Ionicons
-        name={log.correct ? "checkmark" : "close"}
-        size={16}
-        color={log.correct ? "#10B981" : "#EF4444"}
-      />
+const ActivityItem = ({ log, isLast }: { log: logDataInfo; isLast: boolean }) => {
+  return (
+    <View className={`flex-row gap-4 py-3 ${!isLast ? 'border-b border-border-light dark:border-border-dark' : ''}`}>
+      <View
+        className={`w-6 h-6 rounded-full justify-center items-center ${log.correct ? 'bg-success/10' : 'bg-error/10'}`}
+      >
+        <Ionicons
+          name={log.correct ? "checkmark" : "close"}
+          size={16}
+          color={log.correct ? "#10B981" : "#EF4444"}
+        />
+      </View>
+      <View className="flex-1">
+        <Text className="text-sm font-medium text-text-light dark:text-text-dark" numberOfLines={1}>
+          {log.question}
+        </Text>
+        <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark">
+          {new Date(log.timestamp).toLocaleDateString()} •{" "}
+          <Text className="capitalize">{log.difficulty}</Text>
+        </Text>
+      </View>
     </View>
-    <View style={styles.activityContent}>
-      <Text style={styles.activityQuestion} numberOfLines={1}>
-        {log.question}
-      </Text>
-      <Text style={styles.activityMeta}>
-        {new Date(log.timestamp).toLocaleDateString()} •{" "}
-        <Text style={{ textTransform: "capitalize" }}>{log.difficulty}</Text>
-      </Text>
-    </View>
-  </View>
-);
+  );
+};
 
 export default AnalyticsDashboard;
-
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: "#F8FAFC",
-    // alignItems: "center",
-  },
-  container: {
-    width: "100%",
-    // maxWidth: 1000,
-    padding: 32,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: "#1E293B",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#64748B",
-    marginBottom: 40,
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 40,
-  },
-  performanceButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#6366F1",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    gap: 8,
-    shadowColor: "#6366F1",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  performanceButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "700",
-  },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorText: {
-    color: "#EF4444",
-    fontSize: 16,
-  },
-  statsGrid: {
-    flexDirection: "row",
-    gap: 24,
-    marginBottom: 48,
-    flexWrap: "wrap",
-  },
-  card: {
-    flex: 1,
-    minWidth: 200,
-    backgroundColor: "#FFF",
-    padding: 24,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#F1F5F9",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#0F172A",
-  },
-  statLabel: {
-    fontSize: 14,
-    color: "#64748B",
-    fontWeight: "500",
-  },
-  section: {
-    backgroundColor: "#FFF",
-    padding: 32,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#F1F5F9",
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1E293B",
-    marginBottom: 24,
-  },
-  distributionContainer: {
-    gap: 20,
-  },
-  distributionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-  },
-  distLabel: {
-    width: 60,
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#475569",
-  },
-  progressBarContainer: {
-    flex: 1,
-    height: 12,
-    backgroundColor: "#F1F5F9",
-    borderRadius: 6,
-    overflow: "hidden",
-  },
-  progressBar: {
-    height: "100%",
-    borderRadius: 6,
-  },
-  distCount: {
-    width: 40,
-    textAlign: "right",
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-  rowContainer: {
-    flexDirection: "row",
-    gap: 24,
-    flexWrap: "wrap",
-  },
-  flexHalf: {
-    flex: 1,
-    minWidth: 300,
-  },
-  marginTop: {
-    marginTop: 24,
-  },
-  focusList: {
-    gap: 12,
-  },
-  focusCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    padding: 12,
-    backgroundColor: "#FEF2F2",
-    borderRadius: 12,
-  },
-  focusIcon: {
-    width: 32,
-    height: 32,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  focusTitle: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#991B1B",
-  },
-  focusSubtitle: {
-    fontSize: 12,
-    color: "#B91C1C",
-  },
-  emptyText: {
-    color: "#64748B",
-    fontSize: 14,
-    fontStyle: "italic",
-  },
-  emptyStateContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 48,
-    backgroundColor: "#FFF",
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#F1F5F9",
-  },
-  emptyStateTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#1E293B",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptyStateSubtitle: {
-    fontSize: 16,
-    color: "#64748B",
-    textAlign: "center",
-  },
-  activityList: {
-    gap: 0,
-  },
-  activityItem: {
-    flexDirection: "row",
-    gap: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
-  },
-  activityIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityQuestion: {
-    fontSize: 14,
-    color: "#1E293B",
-    fontWeight: "500",
-    marginBottom: 4,
-  },
-  activityMeta: {
-    fontSize: 12,
-    color: "#64748B",
-  },
-  insightLinksRow: {
-    flexDirection: "row",
-    gap: 16,
-    marginBottom: 32,
-    flexWrap: "wrap",
-  },
-  insightLinkCard: {
-    flex: 1,
-    minWidth: 160,
-    padding: 20,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-    borderWidth: 1,
-    borderColor: "#F1F5F9",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-  },
-  insightIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  insightLinkText: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-});

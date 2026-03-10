@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View
@@ -33,24 +32,24 @@ export default function ActivityPage() {
     };
 
     return (
-        <View style={styles.container}>
-            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} style={styles.gradientBackground}>
-                <ScrollView style={styles.scrollView}>
-                    <View style={styles.header}>
+        <View className="flex-1">
+            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+                <ScrollView className="flex-1">
+                    <View className="p-6 pt-10 flex-row justify-between items-center bg-transparent">
                         <View>
-                            <Text style={styles.title}>System Activity</Text>
-                            <Text style={styles.subtitle}>Real-time audit of study patterns and student interactions across the platform</Text>
+                            <Text className="text-[32px] font-bold text-text-light dark:text-text-dark tracking-tight">System Activity</Text>
+                            <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark mt-1">Real-time audit of study patterns and student interactions across the platform</Text>
                         </View>
-                        <TouchableOpacity onPress={fetchLogs} style={styles.refreshBtn}>
+                        <TouchableOpacity onPress={fetchLogs} className="p-2.5 rounded-[20px] bg-card-light dark:bg-card-dark shadow-sm shadow-[#000]/10 border border-divider-light dark:border-divider-dark">
                             <Ionicons name="refresh" size={20} color="#64748b" />
                         </TouchableOpacity>
                     </View>
 
-                    <View style={styles.mainContent}>
+                    <View className="px-6 pb-6">
                         {loading ? (
-                            <View style={styles.loadingContainer}>
+                            <View className="p-15 items-center bg-card-light dark:bg-card-dark rounded-2xl border border-border-light dark:border-border-dark">
                                 <ActivityIndicator size="large" color="#667eea" />
-                                <Text style={styles.loadingText}>Fetching activity logs...</Text>
+                                <Text className="mt-4 text-[15px] text-textSecondary-light dark:text-textSecondary-dark font-medium">Fetching activity logs...</Text>
                             </View>
                         ) : (
                             <ActivityFeed
@@ -70,61 +69,3 @@ export default function ActivityPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    gradientBackground: {
-        flex: 1
-    },
-    scrollView: {
-        flex: 1
-    },
-    header: {
-        padding: 24,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: 40,
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: "700",
-        color: "#1e293b",
-        letterSpacing: -0.5
-    },
-    subtitle: {
-        fontSize: 16,
-        color: "#64748b",
-        marginTop: 4
-    },
-    refreshBtn: {
-        padding: 10,
-        borderRadius: 20,
-        backgroundColor: 'white',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-    },
-    mainContent: {
-        padding: 24,
-        paddingTop: 0
-    },
-    loadingContainer: {
-        padding: 60,
-        alignItems: 'center',
-        backgroundColor: 'white',
-        borderRadius: 16,
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-    },
-    loadingText: {
-        marginTop: 16,
-        fontSize: 15,
-        color: "#64748b",
-        fontWeight: "500"
-    },
-});

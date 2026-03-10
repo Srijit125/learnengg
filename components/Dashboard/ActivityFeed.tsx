@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 type ActivityItem = {
   id: string;
@@ -46,33 +46,31 @@ const ActivityFeed = ({ activities, maxItems = 10 }: ActivityFeedProps) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View className="flex-1 bg-card-light dark:bg-card-dark rounded-2xl p-5 m-2.5 shadow-md shadow-[#000]/10 border border-border-light dark:border-border-dark min-h-[400px] max-h-[500px] elevation-4">
+      <View className="flex-row items-center gap-3 mb-5 pb-3 border-b-2 border-b-[#f1f5f9]">
         <MaterialCommunityIcons name="history" size={24} color="#1e293b" />
-        <Text style={styles.headerTitle}>Recent Activity</Text>
+        <Text className="text-lg font-bold text-text-light dark:text-text-dark">Recent Activity</Text>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {displayActivities.length === 0 ? (
-          <View style={styles.emptyState}>
+          <View className="justify-center items-center py-15">
             <MaterialCommunityIcons
               name="clipboard-text-outline"
               size={48}
               color="#cbd5e1"
             />
-            <Text style={styles.emptyText}>No recent activity</Text>
+            <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark mt-3 font-medium">No recent activity</Text>
           </View>
         ) : (
           displayActivities.map((activity, index) => (
-            <View key={activity.id || index} style={styles.activityItem}>
+            <View key={activity.id || index} className="flex-row items-start gap-3 py-3 border-b border-b-[#f1f5f9]">
               <View
-                style={[
-                  styles.statusIndicator,
-                  {
-                    backgroundColor: activity.correct === true ? '#10b981' :
-                      activity.correct === false ? '#ef4444' : '#64748b',
-                  },
-                ]}
+                className="w-8 h-8 rounded-full justify-center items-center mt-0.5"
+                style={{
+                  backgroundColor: activity.correct === true ? '#10b981' :
+                    activity.correct === false ? '#ef4444' : '#64748b',
+                }}
               >
                 <MaterialCommunityIcons
                   name={activity.correct === true ? 'check' :
@@ -82,27 +80,25 @@ const ActivityFeed = ({ activities, maxItems = 10 }: ActivityFeedProps) => {
                 />
               </View>
 
-              <View style={styles.activityContent}>
-                <View style={styles.activityHeader}>
-                  <Text style={styles.activityTitle}>
+              <View className="flex-1">
+                <View className="flex-row justify-between items-center mb-1">
+                  <Text className="text-[15px] font-semibold text-text-light dark:text-text-dark flex-1">
                     {activity.topic || 'Activity'}
                   </Text>
                   {/* {activity.difficulty && (
                     <View
-                      style={[
-                        styles.difficultyBadge,
-                        {
-                          backgroundColor: getDifficultyColor(activity.difficulty),
-                        },
-                      ]}
+                      className="px-2.5 py-1 rounded-3xl"
+                      style={{
+                        backgroundColor: getDifficultyColor(activity.difficulty),
+                      }}
                     >
-                      <Text style={styles.difficultyText}>
+                      <Text className="text-[11px] font-bold color-white uppercase">
                         {activity.difficulty}
                       </Text>
                     </View>
                   )} */}
                 </View>
-                <Text style={styles.activityTime}>
+                <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark font-normal">
                   {formatTimestamp(activity.timestamp)}
                 </Text>
               </View>
@@ -115,97 +111,3 @@ const ActivityFeed = ({ activities, maxItems = 10 }: ActivityFeedProps) => {
 };
 
 export default ActivityFeed;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 20,
-    margin: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
-    minHeight: 400,
-    maxHeight: 500,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 20,
-    paddingBottom: 12,
-    borderBottomWidth: 2,
-    borderBottomColor: '#f1f5f9',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1e293b',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  statusIndicator: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  activityTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#1e293b',
-    flex: 1,
-  },
-  difficultyBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  difficultyText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#ffffff',
-    textTransform: 'uppercase',
-  },
-  activityTime: {
-    fontSize: 13,
-    color: '#64748b',
-    fontWeight: '400',
-  },
-  emptyState: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#94a3b8',
-    marginTop: 12,
-    fontWeight: '500',
-  },
-});

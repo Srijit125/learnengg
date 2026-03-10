@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { Text, View } from 'react-native';
 
 type StatCardProps = {
   title: string;
@@ -35,35 +35,35 @@ const StatCard = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 min-w-[220px] max-w-[280px] h-[160px] m-2.5 rounded-2xl shadow-md">
       <LinearGradient
         colors={gradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.gradient}
+        className="flex-1 rounded-2xl p-5 justify-between"
       >
-        <View style={styles.header}>
-          <View style={styles.iconContainer}>
+        <View className="flex-row items-center gap-3">
+          <View className="w-12 h-12 rounded-xl bg-white/20 justify-center items-center">
             <MaterialCommunityIcons name={icon} size={28} color="#ffffff" />
           </View>
-          <Text style={styles.title}>{title}</Text>
+          <Text className="flex-1 text-sm font-semibold text-white opacity-95">{title}</Text>
         </View>
 
-        <View style={styles.valueContainer}>
-          <Text style={styles.value}>
+        <View className="my-2">
+          <Text className="text-4xl font-bold text-white tracking-tighter">
             {value}
-            {suffix && <Text style={styles.suffix}>{suffix}</Text>}
+            {suffix && <Text className="text-2xl font-semibold opacity-90">{suffix}</Text>}
           </Text>
         </View>
 
         {trendValue && (
-          <View style={styles.trendContainer}>
+          <View className="flex-row items-center gap-1.5 bg-white/90 px-2.5 py-1 rounded-xl self-start">
             <MaterialCommunityIcons
               name={getTrendIcon()}
               size={16}
               color={getTrendColor()}
             />
-            <Text style={[styles.trendText, { color: getTrendColor() }]}>
+            <Text className="text-[13px] font-semibold" style={{ color: getTrendColor() }}>
               {trendValue}
             </Text>
           </View>
@@ -74,73 +74,3 @@ const StatCard = ({
 };
 
 export default StatCard;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minWidth: 220,
-    maxWidth: 280,
-    height: 160,
-    margin: 10,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  gradient: {
-    flex: 1,
-    borderRadius: 16,
-    padding: 20,
-    justifyContent: 'space-between',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#ffffff',
-    opacity: 0.95,
-  },
-  valueContainer: {
-    marginVertical: 8,
-  },
-  value: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: '#ffffff',
-    letterSpacing: -1,
-  },
-  suffix: {
-    fontSize: 24,
-    fontWeight: '600',
-    opacity: 0.9,
-  },
-  trendContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-  },
-  trendText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-});

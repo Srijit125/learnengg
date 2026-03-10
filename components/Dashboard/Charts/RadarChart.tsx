@@ -1,11 +1,11 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { Text, View } from "react-native";
 import Svg, {
-  Polygon,
-  Line,
-  Text as SvgText,
   Circle,
   G,
+  Line,
+  Polygon,
+  Text as SvgText,
 } from "react-native-svg";
 
 type RadarData = {
@@ -49,16 +49,16 @@ const RadarChart = ({ data, size = 300, title }: RadarChartProps) => {
 
   const todayPoints = data.every((d) => d.today !== undefined)
     ? data
-        .map((d, i) => {
-          const coords = getCoordinates(d.today || 0, i * angleStep);
-          return `${coords.x},${coords.y}`;
-        })
-        .join(" ")
+      .map((d, i) => {
+        const coords = getCoordinates(d.today || 0, i * angleStep);
+        return `${coords.x},${coords.y}`;
+      })
+      .join(" ")
     : null;
 
   return (
-    <View style={styles.container}>
-      {title && <Text style={styles.title}>{title}</Text>}
+    <View className="bg-card-light dark:bg-card-dark rounded-2xl p-5 items-center shadow-md shadow-[#000]/5 elevation-3 border border-transparent">
+      {title && <Text className="text-base font-bold text-text-light dark:text-text-dark mb-4 self-start">{title}</Text>}
       <Svg height={size} width={size}>
         <G>
           {/* Background Grid */}
@@ -143,25 +143,17 @@ const RadarChart = ({ data, size = 300, title }: RadarChartProps) => {
         </G>
       </Svg>
 
-      <View style={styles.legend}>
-        <View style={styles.legendItem}>
-          <View style={[styles.line, { backgroundColor: "#667eea" }]} />
-          <Text style={styles.legendText}>Overall</Text>
+      <View className="flex-row gap-4 mt-2.5">
+        <View className="flex-row items-center gap-1.5">
+          <View className="w-5 h-1 rounded-sm bg-[#667eea]" />
+          <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">Overall</Text>
         </View>
         {todayPoints && (
-          <View style={styles.legendItem}>
+          <View className="flex-row items-center gap-1.5">
             <View
-              style={[
-                styles.line,
-                {
-                  backgroundColor: "#ef4444",
-                  borderStyle: "dashed",
-                  borderWidth: 1,
-                  borderColor: "#ef4444",
-                },
-              ]}
+              className="w-5 h-1 rounded-sm border-dashed border border-[#ef4444] bg-[#ef4444]"
             />
-            <Text style={styles.legendText}>Today</Text>
+            <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">Today</Text>
           </View>
         )}
       </View>
@@ -170,44 +162,3 @@ const RadarChart = ({ data, size = 300, title }: RadarChartProps) => {
 };
 
 export default RadarChart;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#1e293b",
-    marginBottom: 16,
-    alignSelf: "flex-start",
-  },
-  legend: {
-    flexDirection: "row",
-    gap: 16,
-    marginTop: 10,
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  line: {
-    width: 20,
-    height: 3,
-    borderRadius: 2,
-  },
-  legendText: {
-    fontSize: 12,
-    color: "#64748b",
-    fontWeight: "500",
-  },
-});

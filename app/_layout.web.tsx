@@ -1,19 +1,34 @@
 import { useAuthStore } from "@/store/auth.store";
-import { Stack } from "expo-router";
-import React, { useEffect } from "react";
-import * as SplashScreen from "expo-splash-screen";
-import { useFonts } from "expo-font";
+import { useSettingsStore } from "@/store/settings.store";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useColorScheme } from "nativewind";
+import React, { useEffect } from "react";
+import { Platform } from "react-native";
 
 import { supabase } from "@/utils/supabase";
 import { Session } from "@supabase/supabase-js";
+import "../global.css";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
   const { isAuthenticated, user, isLoading } = useAuthStore();
+  const { preferences } = useSettingsStore();
   const [isReady, setIsReady] = React.useState(false);
+  const { colorScheme, setColorScheme } = useColorScheme();
+
+  useEffect(() => {
+    // Sync Tailwind internal state with our Zustand settings store
+    if (preferences.themeMode === 'system') {
+      setColorScheme('system');
+    } else {
+      setColorScheme(preferences.themeMode);
+    }
+  }, [preferences.themeMode, setColorScheme]);
 
   useEffect(() => {
     // Sync session with auth store
@@ -23,6 +38,20 @@ const RootLayout = () => {
         useAuthStore.getState().setSession(session);
         setIsReady(true);
       });
+
+    // NativeWind v4 web dark mode requires the 'dark' class on the HTML tag
+    // since we set darkMode: "class" in tailwind.config.js
+    if (Platform.OS === 'web') {
+      const isDark = colorScheme === 'dark';
+      if (typeof window !== 'undefined') {
+        const root = window.document.documentElement;
+        if (isDark) {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
+      }
+    }
 
     const {
       data: { subscription },

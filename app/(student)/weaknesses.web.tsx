@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
-    StyleSheet,
     Text,
     TouchableOpacity,
     View,
@@ -31,7 +30,6 @@ export default function StudentWeaknessesPage() {
             const logs = await getUserLogsData(user.id);
             setTotalAttempts(logs.length);
 
-            // Group by Chapter
             const counts: Record<string, { correct: number, total: number }> = {};
             logs.forEach((log: any) => {
                 const chapter = log.reference?.Chapter || "General Concepts";
@@ -40,7 +38,6 @@ export default function StudentWeaknessesPage() {
                 if (log.correct) counts[chapter].correct++;
             });
 
-            // Convert to array and sort (lowest accuracy first)
             const aggregated = Object.entries(counts)
                 .map(([name, stat]) => ({
                     name,
@@ -48,7 +45,7 @@ export default function StudentWeaknessesPage() {
                     attempts: stat.total,
                     correct: stat.correct
                 }))
-                .filter(item => item.accuracy < 70) // Threshold for weakness
+                .filter(item => item.accuracy < 70)
                 .sort((a, b) => a.accuracy - b.accuracy);
 
             setWeaknesses(aggregated);
@@ -60,58 +57,58 @@ export default function StudentWeaknessesPage() {
     };
 
     return (
-        <View style={styles.container}>
-            <LinearGradient colors={["#f8fafc", "#fef2f2"]} style={styles.gradientBackground}>
-                <ScrollView style={styles.scrollView}>
-                    <View style={styles.header}>
+        <View className="flex-1">
+            <LinearGradient colors={["#f8fafc", "#fef2f2"]} className="flex-1">
+                <ScrollView className="flex-1">
+                    <View className="p-6 flex-row justify-between items-center">
                         <View>
-                            <Text style={styles.title}>Your Weaknesses</Text>
-                            <Text style={styles.subtitle}>Chapters where you need more practice</Text>
+                            <Text className="text-3xl font-extrabold text-text-light dark:text-text-dark tracking-tight">Your Weaknesses</Text>
+                            <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark mt-1">Chapters where you need more practice</Text>
                         </View>
-                        <TouchableOpacity onPress={fetchData} style={styles.refreshBtn}>
+                        <TouchableOpacity onPress={fetchData} className="p-2.5 rounded-full bg-card-light dark:bg-card-dark border border-[#fee2e2] shadow-sm">
                             <Ionicons name="refresh" size={20} color="#dc2626" />
                         </TouchableOpacity>
                     </View>
 
                     {loading ? (
-                        <View style={styles.loadingContainer}>
+                        <View className="p-20 items-center">
                             <ActivityIndicator size="large" color="#ef4444" />
-                            <Text style={styles.loadingText}>Analyzing your results...</Text>
+                            <Text className="mt-4 text-[15px] color-[#ef4444] font-medium">Analyzing your results...</Text>
                         </View>
                     ) : (
-                        <View style={styles.mainContent}>
-                            <View style={styles.summaryRow}>
-                                <View style={styles.summaryCard}>
-                                    <Text style={styles.summaryLabel}>Total Attempts</Text>
-                                    <Text style={styles.summaryValue}>{totalAttempts}</Text>
+                        <View className="px-6 pb-6 gap-6">
+                            <View className="flex-row gap-4 mb-2">
+                                <View className="flex-1 bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-[#fee2e2] shadow-sm">
+                                    <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase">Total Attempts</Text>
+                                    <Text className="text-2xl font-bold color-[#ef4444] mt-1">{totalAttempts}</Text>
                                 </View>
-                                <View style={styles.summaryCard}>
-                                    <Text style={styles.summaryLabel}>Weak Areas</Text>
-                                    <Text style={styles.summaryValue}>{weaknesses.length}</Text>
+                                <View className="flex-1 bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-[#fee2e2] shadow-sm">
+                                    <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase">Weak Areas</Text>
+                                    <Text className="text-2xl font-bold color-[#ef4444] mt-1">{weaknesses.length}</Text>
                                 </View>
                             </View>
 
                             {weaknesses.length > 0 ? (
-                                <View style={styles.section}>
-                                    <Text style={styles.sectionTitle}>Priority Focus Areas</Text>
-                                    <View style={styles.listContainer}>
+                                <View className="gap-4">
+                                    <Text className="text-lg font-bold text-text-light dark:text-text-dark">Priority Focus Areas</Text>
+                                    <View className="gap-3">
                                         {weaknesses.map((item, index) => (
-                                            <View key={index} style={styles.weaknessCard}>
-                                                <View style={styles.rankBadge}>
-                                                    <Text style={styles.rankText}>#{index + 1}</Text>
+                                            <View key={index} className="bg-card-light dark:bg-card-dark p-4 rounded-2xl flex-row items-center border border-border-light dark:border-border-dark shadow-sm shadow-[#ef4444]/5">
+                                                <View className="w-10 h-10 rounded-full bg-[#fee2e2] justify-center items-center mr-4">
+                                                    <Text className="color-[#dc2626] font-extrabold text-sm">#{index + 1}</Text>
                                                 </View>
-                                                <View style={styles.weaknessInfo}>
-                                                    <Text style={styles.weaknessName}>{item.name}</Text>
-                                                    <Text style={styles.weaknessMeta}>{item.attempts} attempts • {item.correct} correct</Text>
+                                                <View className="flex-1">
+                                                    <Text className="text-base font-bold text-text-light dark:text-text-dark">{item.name}</Text>
+                                                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mt-0.5">{item.attempts} attempts • {item.correct} correct</Text>
 
-                                                    <View style={styles.progressRow}>
-                                                        <View style={styles.progressBarBg}>
-                                                            <View style={[styles.progressBarFill, { width: `${item.accuracy}%` }]} />
+                                                    <View className="flex-row items-center mt-2 gap-2.5">
+                                                        <View className="flex-1 h-1.5 bg-background-light dark:bg-background-dark rounded-full overflow-hidden">
+                                                            <View className="h-full bg-[#ef4444] rounded-full" style={{ width: `${item.accuracy}%` }} />
                                                         </View>
-                                                        <Text style={styles.accuracyText}>{Math.round(item.accuracy)}%</Text>
+                                                        <Text className="text-sm font-bold color-[#ef4444] w-10">{Math.round(item.accuracy)}%</Text>
                                                     </View>
                                                 </View>
-                                                <View style={styles.iconContainer}>
+                                                <View className="ml-4">
                                                     <MaterialCommunityIcons name="alert-circle" size={28} color="#ef4444" />
                                                 </View>
                                             </View>
@@ -119,10 +116,10 @@ export default function StudentWeaknessesPage() {
                                     </View>
                                 </View>
                             ) : (
-                                <View style={styles.emptyState}>
+                                <View className="items-center justify-center p-12 bg-card-light dark:bg-card-dark rounded-3xl border border-border-light dark:border-border-dark">
                                     <MaterialCommunityIcons name="check-circle" size={64} color="#10b981" />
-                                    <Text style={styles.emptyTitle}>Looking Good!</Text>
-                                    <Text style={styles.emptySubtitle}>You don't have any major weak areas yet. Keep it up!</Text>
+                                    <Text className="text-xl font-bold text-text-light dark:text-text-dark mt-4">Looking Good!</Text>
+                                    <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark text-center mt-2">You don't have any major weak areas yet. Keep it up!</Text>
                                 </View>
                             )}
                         </View>
@@ -132,88 +129,3 @@ export default function StudentWeaknessesPage() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1 },
-    gradientBackground: { flex: 1 },
-    scrollView: { flex: 1 },
-    header: {
-        padding: 24,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    title: { fontSize: 32, fontWeight: "800", color: "#1e293b", letterSpacing: -0.5 },
-    subtitle: { fontSize: 16, color: "#64748b", marginTop: 4 },
-    refreshBtn: {
-        padding: 10,
-        borderRadius: 20,
-        backgroundColor: 'white',
-        borderWidth: 1,
-        borderColor: '#fee2e2',
-        elevation: 2,
-    },
-    mainContent: { padding: 24, paddingTop: 0, gap: 24 },
-    summaryRow: { flexDirection: 'row', gap: 16, marginBottom: 8 },
-    summaryCard: {
-        flex: 1,
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: '#fee2e2',
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-    },
-    summaryLabel: { fontSize: 13, color: '#64748b', fontWeight: '600', textTransform: 'uppercase' },
-    summaryValue: { fontSize: 24, fontWeight: '700', color: '#ef4444', marginTop: 4 },
-    section: { gap: 16 },
-    sectionTitle: { fontSize: 18, fontWeight: '700', color: '#1e293b' },
-    listContainer: { gap: 12 },
-    weaknessCard: {
-        backgroundColor: 'white',
-        padding: 16,
-        borderRadius: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-        shadowColor: '#ef4444',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 12,
-    },
-    rankBadge: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#fee2e2',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 16,
-    },
-    rankText: { color: '#dc2626', fontWeight: '800', fontSize: 14 },
-    weaknessInfo: { flex: 1 },
-    weaknessName: { fontSize: 16, fontWeight: '700', color: '#1e293b' },
-    weaknessMeta: { fontSize: 12, color: '#64748b', marginTop: 2 },
-    progressRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 10 },
-    progressBarBg: { flex: 1, height: 6, backgroundColor: '#f1f5f9', borderRadius: 3, overflow: 'hidden' },
-    progressBarFill: { height: '100%', backgroundColor: '#ef4444', borderRadius: 3 },
-    accuracyText: { fontSize: 14, fontWeight: '700', color: '#ef4444', width: 40 },
-    iconContainer: { marginLeft: 16 },
-    loadingContainer: { padding: 80, alignItems: 'center' },
-    loadingText: { marginTop: 16, fontSize: 15, color: "#ef4444", fontWeight: "500" },
-    emptyState: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 48,
-        backgroundColor: 'white',
-        borderRadius: 24,
-        borderWidth: 1,
-        borderColor: '#f1f5f9',
-    },
-    emptyTitle: { fontSize: 20, fontWeight: '700', color: '#1e293b', marginTop: 16 },
-    emptySubtitle: { fontSize: 14, color: '#64748b', textAlign: 'center', marginTop: 8 },
-});
