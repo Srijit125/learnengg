@@ -1,6 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
+import { useColorScheme } from "nativewind";
 import {
     LayoutAnimation,
     Platform,
@@ -30,7 +31,7 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
                 <MaterialCommunityIcons
                     name={expanded ? "chevron-up" : "chevron-down"}
                     size={24}
-                    color="#6366f1"
+                    className="text-primary"
                 />
             </View>
             {expanded && (
@@ -41,9 +42,11 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
 };
 
 export default function HelpPage() {
+    const { colorScheme } = useColorScheme();
+    const isDark = colorScheme === 'dark';
     return (
-        <View className="flex-1">
-            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+        <View className="flex-1 bg-background-light dark:bg-background-dark">
+            <View className="flex-1">
                 <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 40 }}>
                     <View className="mb-8 pt-3">
                         <Text className="text-3xl font-extrabold text-text-light dark:text-text-dark tracking-tight">Help & Support</Text>
@@ -74,8 +77,8 @@ export default function HelpPage() {
                         <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-4">Contact Support</Text>
                         <View className="bg-card-light dark:bg-card-dark rounded-[20px] p-2 border border-border-light dark:border-border-dark">
                             <View className="flex-row items-center p-4 gap-4">
-                                <View className="w-12 h-12 rounded-xl bg-[#f5f3ff] justify-center items-center">
-                                    <Ionicons name="mail-outline" size={24} color="#6366f1" />
+                                <View className="w-12 h-12 rounded-xl bg-primary/10 justify-center items-center">
+                                    <Ionicons name="mail-outline" size={24} color={isDark ? "#818cf8" : "#6366f1"} />
                                 </View>
                                 <View>
                                     <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase tracking-wider">Email Us</Text>
@@ -84,8 +87,8 @@ export default function HelpPage() {
                             </View>
                             <View className="h-[1px] bg-background-light dark:bg-background-dark mx-4" />
                             <View className="flex-row items-center p-4 gap-4">
-                                <View className="w-12 h-12 rounded-xl bg-[#f5f3ff] justify-center items-center">
-                                    <Ionicons name="chatbubble-ellipses-outline" size={24} color="#6366f1" />
+                                <View className="w-12 h-12 rounded-xl bg-primary/10 justify-center items-center">
+                                    <Ionicons name="chatbubble-ellipses-outline" size={24} color={isDark ? "#818cf8" : "#6366f1"} />
                                 </View>
                                 <View>
                                     <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold uppercase tracking-wider">Live Chat</Text>
@@ -97,11 +100,11 @@ export default function HelpPage() {
 
                     <View className="items-center mt-5 gap-2">
                         <Text className="text-[13px] text-textSecondary-light dark:text-textSecondary-dark mb-2">App Version 1.2.0</Text>
-                        <Text className="text-sm text-[#6366f1] font-semibold">Terms of Service</Text>
-                        <Text className="text-sm text-[#6366f1] font-semibold">Privacy Policy</Text>
+                        <Text className="text-sm text-primary dark:text-primary-light font-semibold">Terms of Service</Text>
+                        <Text className="text-sm text-primary dark:text-primary-light font-semibold">Privacy Policy</Text>
                     </View>
                 </ScrollView>
-            </LinearGradient>
+            </View>
         </View>
     );
 }

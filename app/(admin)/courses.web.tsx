@@ -8,6 +8,7 @@ import {
 } from "@/services/xml.service";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useColorScheme } from "nativewind";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -30,6 +31,8 @@ export default function CourseManagementPage() {
   const [xmlContent, setXmlContent] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [validating, setValidating] = useState(false);
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   useEffect(() => {
     loadCourses();
@@ -107,15 +110,15 @@ export default function CourseManagementPage() {
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#667eea" />
+      <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
+        <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#667eea"} />
       </View>
     );
   }
 
   return (
     <View className="flex-1">
-      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+      <LinearGradient colors={isDark ? ["#0f172a", "#1e293b"] : ["#f8fafc", "#f1f5f9"]} className="flex-1">
         <View className="px-6 pt-8 pb-5 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark">
           <Text className="text-2xl font-bold text-text-light dark:text-text-dark mb-1">Course Management</Text>
           <Text className="text-sm font-medium text-textSecondary-light dark:text-textSecondary-dark">
@@ -133,18 +136,18 @@ export default function CourseManagementPage() {
                 return (
                   <TouchableOpacity
                     key={course.course_id}
-                    className={`flex-row items-center p-3 rounded-lg gap-3 mb-1 ${isActive ? "bg-[#f0f4ff]" : ""}`}
+                    className={`flex-row items-center p-3 rounded-lg gap-3 mb-1 ${isActive ? "bg-primary/10 dark:bg-primary/20" : ""}`}
                     onPress={() => setSelectedCourseId(course.course_id)}
                   >
                     <MaterialCommunityIcons
                       name="book-open-outline"
                       size={20}
                       color={
-                        isActive ? "#667eea" : "#64748b"
+                        isActive ? (isDark ? "#818cf8" : "#667eea") : (isDark ? "#94a3b8" : "#64748b")
                       }
                     />
                     <Text
-                      className={`text-sm flex-1 ${isActive ? "color-[#667eea] font-semibold" : "text-textSecondary-light dark:text-textSecondary-dark font-medium"}`}
+                      className={`text-sm flex-1 ${isActive ? "text-primary dark:text-primary-light font-semibold" : "text-textSecondary-light dark:text-textSecondary-dark font-medium"}`}
                     >
                       {course.course_name || course.course_id}
                     </Text>
@@ -157,39 +160,39 @@ export default function CourseManagementPage() {
           {/* Main Area */}
           <View className="flex-1">
             {fetchingData ? (
-              <View className="flex-1 justify-center items-center">
-                <ActivityIndicator size="large" color="#667eea" />
+              <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
+                <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#667eea"} />
               </View>
             ) : selectedCourseId ? (
               <View className="flex-1">
                 {/* Tabs */}
                 <View className="flex-row px-6 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark">
                   <TouchableOpacity
-                    className={`flex-row items-center py-3.5 px-4 gap-2 border-b-2 ${activeTab === "summary" ? "border-[#667eea]" : "border-transparent"}`}
+                    className={`flex-row items-center py-3.5 px-4 gap-2 border-b-2 ${activeTab === "summary" ? "border-primary" : "border-transparent"}`}
                     onPress={() => setActiveTab("summary")}
                   >
                     <MaterialCommunityIcons
                       name="text-box-outline"
                       size={18}
-                      color={activeTab === "summary" ? "#667eea" : "#64748b"}
+                      color={activeTab === "summary" ? (isDark ? "#818cf8" : "#667eea") : (isDark ? "#94a3b8" : "#64748b")}
                     />
                     <Text
-                      className={`text-sm font-semibold ${activeTab === "summary" ? "color-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"}`}
+                      className={`text-sm font-semibold ${activeTab === "summary" ? "text-primary dark:text-primary-light" : "text-textSecondary-light dark:text-textSecondary-dark"}`}
                     >
                       Summary
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    className={`flex-row items-center py-3.5 px-4 gap-2 border-b-2 ${activeTab === "xml" ? "border-[#667eea]" : "border-transparent"}`}
+                    className={`flex-row items-center py-3.5 px-4 gap-2 border-b-2 ${activeTab === "xml" ? "border-primary" : "border-transparent"}`}
                     onPress={() => setActiveTab("xml")}
                   >
                     <MaterialCommunityIcons
                       name="xml"
                       size={18}
-                      color={activeTab === "xml" ? "#667eea" : "#64748b"}
+                      color={activeTab === "xml" ? (isDark ? "#818cf8" : "#667eea") : (isDark ? "#94a3b8" : "#64748b")}
                     />
                     <Text
-                      className={`text-sm font-semibold ${activeTab === "xml" ? "color-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"}`}
+                      className={`text-sm font-semibold ${activeTab === "xml" ? "text-primary dark:text-primary-light" : "text-textSecondary-light dark:text-textSecondary-dark"}`}
                     >
                       XML Editor
                     </Text>
@@ -218,19 +221,19 @@ export default function CourseManagementPage() {
                         <View className="flex-row gap-8 flex-wrap">
                           <View className="flex-[1_1_25%] min-w-[120px]">
                             <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Units</Text>
-                            <Text className="text-2xl font-bold color-[#667eea]">
+                            <Text className="text-2xl font-bold text-primary dark:text-primary-light">
                               {summary?.units || 0}
                             </Text>
                           </View>
                           <View className="flex-[1_1_25%] min-w-[120px]">
                             <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Chapters</Text>
-                            <Text className="text-2xl font-bold color-[#667eea]">
+                            <Text className="text-2xl font-bold text-primary dark:text-primary-light">
                               {summary?.chapters || 0}
                             </Text>
                           </View>
                           <View className="flex-[1_1_25%] min-w-[120px]">
                             <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Glossary</Text>
-                            <Text className="text-2xl font-bold color-[#667eea]">
+                            <Text className="text-2xl font-bold text-primary dark:text-primary-light">
                               {summary?.glossary_terms || 0}
                             </Text>
                           </View>
@@ -238,31 +241,31 @@ export default function CourseManagementPage() {
                             <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">
                               Solved Problems
                             </Text>
-                            <Text className="text-2xl font-bold color-[#667eea]">
+                            <Text className="text-2xl font-bold text-primary dark:text-primary-light">
                               {summary?.solved_problems || 0}
                             </Text>
                           </View>
                           <View className="flex-[1_1_25%] min-w-[120px]">
                             <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Topics</Text>
-                            <Text className="text-2xl font-bold color-[#667eea]">
+                            <Text className="text-2xl font-bold text-primary dark:text-primary-light">
                               {summary?.topics || 0}
                             </Text>
                           </View>
                           <View className="flex-[1_1_25%] min-w-[120px]">
                             <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Question Bank</Text>
-                            <Text className="text-2xl font-bold color-[#667eea]">
+                            <Text className="text-2xl font-bold text-primary dark:text-primary-light">
                               {summary?.questions || 0}
                             </Text>
                           </View>
                           <View className="flex-[1_1_25%] min-w-[120px]">
                             <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Images</Text>
-                            <Text className="text-2xl font-bold color-[#667eea]">
+                            <Text className="text-2xl font-bold text-primary dark:text-primary-light">
                               {summary?.images || 0}
                             </Text>
                           </View>
                           <View className="flex-[1_1_25%] min-w-[120px]">
                             <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1">Videos</Text>
-                            <Text className="text-2xl font-bold color-[#667eea]">
+                            <Text className="text-2xl font-bold text-primary dark:text-primary-light">
                               {summary?.videos || 0}
                             </Text>
                           </View>
@@ -284,7 +287,7 @@ export default function CourseManagementPage() {
                               <MaterialCommunityIcons
                                 name="check-decagram-outline"
                                 size={18}
-                                color="#64748b"
+                                color={isDark ? "#94a3b8" : "#64748b"}
                               />
                             )}
                             <Text className="text-textSecondary-light dark:text-textSecondary-dark text-[13px] font-semibold">
@@ -292,7 +295,7 @@ export default function CourseManagementPage() {
                             </Text>
                           </TouchableOpacity>
                           <TouchableOpacity
-                            className="flex-row items-center py-2 px-4 rounded-lg gap-2 bg-[#667eea]"
+                            className="flex-row items-center py-2 px-4 rounded-lg gap-2 bg-primary"
                             onPress={handleSaveXML}
                             disabled={saving}
                           >
@@ -324,7 +327,7 @@ export default function CourseManagementPage() {
                 <MaterialCommunityIcons
                   name="book-search"
                   size={48}
-                  color="#cbd5e1"
+                  color={isDark ? "#475569" : "#cbd5e1"}
                 />
                 <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark font-medium">Select a course to manage</Text>
               </View>

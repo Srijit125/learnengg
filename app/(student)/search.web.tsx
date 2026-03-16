@@ -10,6 +10,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
+import { useColorScheme } from "nativewind";
 import {
   ActivityIndicator,
   ScrollView,
@@ -24,6 +25,8 @@ type SearchMode = "current" | "all";
 const StudentSearch = () => {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [searchMode, setSearchMode] = useState<SearchMode>("current");
@@ -129,8 +132,8 @@ const StudentSearch = () => {
     return (
       <View key={index} className="bg-card-light dark:bg-card-dark rounded-2xl p-5 mb-4 border border-border-light dark:border-border-dark shadow-sm">
         <View className="flex-row items-center gap-3 mb-3">
-          <View className="bg-[#f0f4ff] px-2 py-1 rounded-md">
-            <Text className="text-[10px] font-bold text-[#667eea] uppercase">{courseName}</Text>
+          <View className="bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-md">
+            <Text className="text-[10px] font-bold text-primary dark:text-primary-light uppercase">{courseName}</Text>
           </View>
           <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">{chapterName}</Text>
         </View>
@@ -142,16 +145,16 @@ const StudentSearch = () => {
 
         {chId && (
           <TouchableOpacity
-            className="flex-row items-center self-start bg-[#f5f7ff] px-3 py-1.5 rounded-lg gap-1"
+            className="flex-row items-center self-start bg-primary/10 dark:bg-primary/20 px-3 py-1.5 rounded-lg gap-1"
             onPress={() =>
               router.push(`/(student)/course/${courseId}?chapterId=${chId}`)
             }
           >
-            <Text className="text-[13px] font-semibold text-[#667eea]">Read Full Notes</Text>
+            <Text className="text-[13px] font-semibold text-primary dark:text-primary-light">Read Full Notes</Text>
             <MaterialCommunityIcons
               name="chevron-right"
               size={16}
-              color="#667eea"
+              color={isDark ? "#818cf8" : "#667eea"}
             />
           </TouchableOpacity>
         )}
@@ -161,15 +164,15 @@ const StudentSearch = () => {
 
   if (loadingCourses) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#667eea" />
+      <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
+        <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#667eea"} />
       </View>
     );
   }
 
   return (
-    <View className="flex-1">
-      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+    <View className="flex-1 bg-background-light dark:bg-background-dark">
+      <View className="flex-1">
         <View className="px-6 pt-8 pb-5 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark">
           <Text className="text-2xl font-bold text-text-light dark:text-text-dark mb-1">Semantic Search</Text>
           <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">
@@ -183,7 +186,7 @@ const StudentSearch = () => {
               <MaterialCommunityIcons
                 name="magnify"
                 size={20}
-                color="#94a3b8"
+                color={isDark ? "#94a3b8" : "#64748b"}
                 className="mr-2"
               />
               <TextInput
@@ -195,7 +198,7 @@ const StudentSearch = () => {
               />
             </View>
             <TouchableOpacity
-              className="bg-[#667eea] px-6 rounded-xl justify-center items-center h-12"
+              className="bg-primary px-6 rounded-xl justify-center items-center h-12"
               onPress={handleSearch}
               disabled={loading}
             >
@@ -214,7 +217,7 @@ const StudentSearch = () => {
               onPress={() => setSearchMode("current")}
             >
               <Text
-                className={`text-sm font-semibold ${searchMode === "current" ? "text-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"
+                className={`text-sm font-semibold ${searchMode === "current" ? "text-primary dark:text-primary-light" : "text-textSecondary-light dark:text-textSecondary-dark"
                   }`}
               >
                 By Course
@@ -226,7 +229,7 @@ const StudentSearch = () => {
               onPress={() => setSearchMode("all")}
             >
               <Text
-                className={`text-sm font-semibold ${searchMode === "all" ? "text-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"
+                className={`text-sm font-semibold ${searchMode === "all" ? "text-primary dark:text-primary-light" : "text-textSecondary-light dark:text-textSecondary-dark"
                   }`}
               >
                 All Courses
@@ -246,8 +249,8 @@ const StudentSearch = () => {
                   <TouchableOpacity
                     key={course.course_id}
                     className={`px-4 py-2 bg-card-light dark:bg-card-dark rounded-full border ${selectedCourseId === course.course_id
-                        ? "bg-[#667eea] border-[#667eea]"
-                        : "border-divider-light dark:border-divider-dark"
+                        ? "bg-primary border-primary"
+                        : "border-border-light dark:border-border-dark"
                       }`}
                     onPress={() => setSelectedCourseId(course.course_id)}
                   >
@@ -281,7 +284,7 @@ const StudentSearch = () => {
                 <MaterialCommunityIcons
                   name="text-search"
                   size={48}
-                  color="#cbd5e1"
+                  color={isDark ? "#475569" : "#cbd5e1"}
                 />
                 <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark text-center">
                   No results found for "{query}"
@@ -292,7 +295,7 @@ const StudentSearch = () => {
                 <MaterialCommunityIcons
                   name="school-outline"
                   size={64}
-                  color="#e2e8f0"
+                  color={isDark ? "#334155" : "#e2e8f0"}
                 />
                 <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark text-center px-10 leading-6">
                   Search for topics, concepts, or snippets from your notes.
@@ -301,7 +304,7 @@ const StudentSearch = () => {
             )}
           </ScrollView>
         </View>
-      </LinearGradient>
+      </View>
     </View>
   );
 };

@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
+import { useColorScheme } from "nativewind";
 import {
   ActivityIndicator,
   Animated,
@@ -31,6 +32,8 @@ const QuizIndex = () => {
     resetQuiz,
   } = useQuizStore();
 
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const { user } = useAuthStore();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
@@ -84,51 +87,51 @@ const QuizIndex = () => {
 
   if (loadingCourses) {
     return (
-      <View className="flex-1 justify-center items-center p-5">
-        <ActivityIndicator size="large" color="#4F46E5" />
-        <Text className="mt-4 text-[#64748B] text-sm font-medium">Fetching available courses...</Text>
+      <View className="flex-1 justify-center items-center p-5 bg-background-light dark:bg-background-dark">
+        <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#4F46E5"} />
+        <Text className="mt-4 text-textSecondary-light dark:text-textSecondary-dark text-sm font-medium">Fetching available courses...</Text>
       </View>
     );
   }
 
   if (!selectedCourseId) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: "#F8FAFC", flexGrow: 1 }}>
-        <Text className="text-2xl font-bold mb-2 text-[#1E293B]">Select a Course</Text>
-        <Text className="text-sm text-[#64748B] mb-6">
+      <ScrollView contentContainerStyle={{ padding: 20, flexGrow: 1 }} className="bg-background-light dark:bg-background-dark">
+        <Text className="text-2xl font-bold mb-2 text-text-light dark:text-text-dark">Select a Course</Text>
+        <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark mb-6">
           Choose a course to start your adaptive quiz session
         </Text>
         <View className="gap-4">
           {courses.map((course) => (
             <TouchableOpacity
               key={course.course_id}
-              className="bg-card-light dark:bg-card-dark p-5 rounded-2xl shadow-sm shadow-black/10 flex-col items-start border border-transparent"
+              className="bg-card-light dark:bg-card-dark p-5 rounded-2xl shadow-sm flex-col items-start border border-border-light dark:border-border-dark"
               onPress={() => handleCourseSelect(course.course_id)}
             >
-              <View className="w-14 h-14 rounded-xl bg-[#F0F4FF] justify-center items-center mb-3">
-                <Ionicons name="book-outline" size={32} color="#4F46E5" />
+              <View className="w-14 h-14 rounded-xl bg-primary/10 dark:bg-primary/20 justify-center items-center mb-3">
+                <Ionicons name="book-outline" size={32} color={isDark ? "#818cf8" : "#4F46E5"} />
               </View>
-              <Text className="text-lg font-bold text-[#1E293B] mb-1">{course.course_name}</Text>
-              <Text className="text-xs text-[#94A3B8] font-semibold">{course.course_id}</Text>
+              <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-1">{course.course_name}</Text>
+              <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold">{course.course_id}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <View className="mt-6 bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-[#F1F5F9] items-center mb-5">
-          <Text className="text-base font-bold text-[#1E293B] mb-1">Quiz Depth</Text>
-          <Text className="text-xs text-[#64748B] mb-4">Choose question count</Text>
+        <View className="mt-6 bg-card-light dark:bg-card-dark p-5 rounded-2xl border border-border-light dark:border-border-dark items-center mb-5">
+          <Text className="text-base font-bold text-text-light dark:text-text-dark mb-1">Quiz Depth</Text>
+          <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-4">Choose question count</Text>
           <View className="flex-row gap-2.5">
             {quizLengthOptions.map((length) => (
               <TouchableOpacity
                 key={length}
                 className={`w-[50px] h-[50px] rounded-xl border-2 justify-center items-center ${quizLength === length
-                    ? "border-[#4F46E5] bg-[#F0F4FF]"
-                    : "border-[#F1F5F9] bg-card-light dark:bg-card-dark"
+                    ? "border-primary bg-primary/10"
+                    : "border-border-light dark:border-border-dark bg-card-light dark:bg-card-dark"
                   }`}
                 onPress={() => setQuizLength(length)}
               >
                 <Text
-                  className={`text-base font-semibold ${quizLength === length ? "text-[#4F46E5] font-bold" : "text-[#64748B]"
+                  className={`text-base font-semibold ${quizLength === length ? "text-primary dark:text-primary-light font-bold" : "text-textSecondary-light dark:text-textSecondary-dark"
                     }`}
                 >
                   {length}
@@ -144,41 +147,41 @@ const QuizIndex = () => {
   if (isFinished) {
     const percentage = Math.round((score / maxQuestions) * 100);
     return (
-      <View className="flex-1 justify-center items-center p-5 bg-[#F8FAFC]">
-        <View className="bg-card-light dark:bg-card-dark rounded-3xl p-6 w-full items-center shadow-md shadow-black/10">
-          <View className="w-[80px] h-[80px] rounded-[40px] bg-[#FFFBEB] justify-center items-center mb-4">
-            <Ionicons name="trophy" size={48} color="#F59E0B" />
+      <View className="flex-1 justify-center items-center p-5 bg-background-light dark:bg-background-dark">
+        <View className="bg-card-light dark:bg-card-dark rounded-3xl p-6 w-full items-center shadow-md border border-border-light dark:border-border-dark">
+          <View className="w-[80px] h-[80px] rounded-[40px] bg-warning/10 dark:bg-warning/20 justify-center items-center mb-4">
+            <Ionicons name="trophy" size={48} color={isDark ? "#fbbf24" : "#F59E0B"} />
           </View>
-          <Text className="text-2xl font-bold mb-2 text-[#1E293B]">Completed!</Text>
-          <Text className="text-sm text-[#64748B] mb-6">Session analysis completed</Text>
+          <Text className="text-2xl font-bold mb-2 text-text-light dark:text-text-dark">Completed!</Text>
+          <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark mb-6">Session analysis completed</Text>
 
-          <View className="flex-row justify-between w-full bg-[#F8FAFC] p-4 rounded-2xl mb-6">
+          <View className="flex-row justify-between w-full bg-background-light dark:bg-background-dark p-4 rounded-2xl mb-6 border border-border-light dark:border-border-dark">
             <View className="items-center">
-              <Text className="text-[10px] text-[#64748B] font-semibold mb-0.5">Correct</Text>
-              <Text className="text-xl font-bold text-[#1E293B]">{score}</Text>
+              <Text className="text-[10px] text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-0.5">Correct</Text>
+              <Text className="text-xl font-bold text-text-light dark:text-text-dark">{score}</Text>
             </View>
             <View className="items-center">
-              <Text className="text-[10px] text-[#64748B] font-semibold mb-0.5">Total</Text>
-              <Text className="text-xl font-bold text-[#1E293B]">{maxQuestions}</Text>
+              <Text className="text-[10px] text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-0.5">Total</Text>
+              <Text className="text-xl font-bold text-text-light dark:text-text-dark">{maxQuestions}</Text>
             </View>
             <View className="items-center">
-              <Text className="text-[10px] text-[#64748B] font-semibold mb-0.5">Accuracy</Text>
-              <Text className="text-xl font-bold text-[#1E293B]">{percentage}%</Text>
+              <Text className="text-[10px] text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-0.5">Accuracy</Text>
+              <Text className="text-xl font-bold text-text-light dark:text-text-dark">{percentage}%</Text>
             </View>
           </View>
 
           <TouchableOpacity
-            className="bg-[#4F46E5] py-3.5 px-8 rounded-xl mb-3 w-full"
+            className="bg-primary py-3.5 px-8 rounded-xl mb-3 w-full"
             onPress={() => selectCourse(selectedCourseId || "")}
           >
             <Text className="text-white font-bold text-base text-center">Restart Session</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="bg-transparent border-2 border-[#E2E8F0] py-3.5 px-8 rounded-xl w-full"
+            className="bg-transparent border-2 border-border-light dark:border-border-dark py-3.5 px-8 rounded-xl w-full"
             onPress={() => selectCourse("")}
           >
-            <Text className="text-[#64748B] font-bold text-base text-center">Exit to Courses</Text>
+            <Text className="text-textSecondary-light dark:text-textSecondary-dark font-bold text-base text-center">Exit to Courses</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -187,27 +190,27 @@ const QuizIndex = () => {
 
   if (isLoading && !currentMCQ) {
     return (
-      <View className="flex-1 justify-center items-center p-5 bg-[#F8FAFC]">
-        <ActivityIndicator size="large" color="#4F46E5" />
+      <View className="flex-1 justify-center items-center p-5 bg-background-light dark:bg-background-dark">
+        <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#4F46E5"} />
       </View>
     );
   }
 
   if (!currentMCQ) {
     return (
-      <View className="flex-1 justify-center items-center p-5 bg-[#F8FAFC]">
-        <Text className="text-2xl font-bold mb-2 text-[#1E293B]">No Question Available</Text>
+      <View className="flex-1 justify-center items-center p-5 bg-background-light dark:bg-background-dark">
+        <Text className="text-2xl font-bold mb-2 text-text-light dark:text-text-dark">No Question Available</Text>
         <TouchableOpacity
-          className="bg-[#4F46E5] py-3.5 px-8 rounded-xl mb-3 w-full max-w-[300px]"
+          className="bg-primary py-3.5 px-8 rounded-xl mb-3 w-full max-w-[300px]"
           onPress={() => fetchNextQuestion()}
         >
           <Text className="text-white font-bold text-base text-center">Retry</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="bg-transparent border-2 border-[#E2E8F0] py-3.5 px-8 rounded-xl w-full max-w-[300px]"
+          className="bg-transparent border-2 border-border-light dark:border-border-dark py-3.5 px-8 rounded-xl w-full max-w-[300px]"
           onPress={() => selectCourse("")}
         >
-          <Text className="text-[#64748B] font-bold text-base text-center">Back to Courses</Text>
+          <Text className="text-textSecondary-light dark:text-textSecondary-dark font-bold text-base text-center">Back to Courses</Text>
         </TouchableOpacity>
       </View>
     );
@@ -215,31 +218,31 @@ const QuizIndex = () => {
 
   const badgeColor =
     difficulty === "easy"
-      ? "bg-[#DCFCE7]"
+      ? "bg-success/20"
       : difficulty === "medium"
-        ? "bg-[#FEF9C3]"
-        : "bg-[#FEE2E2]";
+        ? "bg-warning/20"
+        : "bg-error/20";
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 20, backgroundColor: "#F8FAFC", flexGrow: 1 }}>
-      <View className="flex-row justify-between items-center mb-6 bg-card-light dark:bg-card-dark p-4 rounded-2xl shadow-sm shadow-black/10">
+    <ScrollView contentContainerStyle={{ padding: 20, flexGrow: 1 }} className="bg-background-light dark:bg-background-dark">
+      <View className="flex-row justify-between items-center mb-6 bg-card-light dark:bg-card-dark p-4 rounded-2xl shadow-sm border border-border-light dark:border-border-dark">
         <View>
-          <Text className="text-xs text-[#64748B] mb-1 font-semibold">Difficulty</Text>
+          <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark mb-1 font-semibold">Difficulty</Text>
           <View className={`px-3 py-1 rounded-xl ${badgeColor}`}>
-            <Text className="text-xs font-bold text-[#1E293B]">{difficulty.toUpperCase()}</Text>
+            <Text className="text-xs font-bold text-text-light dark:text-text-dark">{difficulty.toUpperCase()}</Text>
           </View>
         </View>
         <View className="flex-row">
           <View className="items-end ml-5">
-            <Text className="text-[10px] text-[#64748B] font-semibold">Score</Text>
-            <Text className="text-base font-bold text-[#1E293B]">
+            <Text className="text-[10px] text-textSecondary-light dark:text-textSecondary-dark font-semibold">Score</Text>
+            <Text className="text-base font-bold text-text-light dark:text-text-dark">
               {score}/{totalQuestions}
             </Text>
           </View>
           <View className="items-end ml-5">
-            <Text className="text-[10px] text-[#64748B] font-semibold">Streak</Text>
+            <Text className="text-[10px] text-textSecondary-light dark:text-textSecondary-dark font-semibold">Streak</Text>
             <Text
-              className={`text-base font-bold ${streak >= 0 ? "text-[#10B981]" : "text-[#EF4444]"
+              className={`text-base font-bold ${streak >= 0 ? "text-success" : "text-error"
                 }`}
             >
               {Math.abs(streak)} {streak >= 0 ? "🔥" : "❄️"}
@@ -248,8 +251,8 @@ const QuizIndex = () => {
         </View>
       </View>
 
-      <Animated.View className="bg-card-light dark:bg-card-dark rounded-3xl p-6 shadow-md shadow-black/10" style={{ opacity: fadeAnim }}>
-        <Text className="text-xl font-bold text-[#1E293B] mb-6 leading-7">
+      <Animated.View className="bg-card-light dark:bg-card-dark rounded-3xl p-6 shadow-md border border-border-light dark:border-border-dark" style={{ opacity: fadeAnim }}>
+        <Text className="text-xl font-bold text-text-light dark:text-text-dark mb-6 leading-7">
           {currentMCQ.Question}
         </Text>
 
@@ -260,15 +263,15 @@ const QuizIndex = () => {
             const showFeedback = lastFeedback !== null;
 
             let optionClass =
-              "p-4.5 rounded-2xl border-2 border-[#F1F5F9] flex-row justify-between items-center";
+              "p-4.5 rounded-2xl border-2 border-border-light dark:border-border-dark flex-row justify-between items-center";
             let textClass = "text-base text-textSecondary-light dark:text-textSecondary-dark font-medium flex-1";
 
             if (showFeedback) {
               if (isCorrect) {
-                optionClass = "p-4.5 rounded-2xl border-2 border-[#10B981] bg-[#10B981] flex-row justify-between items-center";
+                optionClass = "p-4.5 rounded-2xl border-2 border-success bg-success flex-row justify-between items-center";
                 textClass = "text-base text-white font-medium flex-1";
               } else if (isSelected) {
-                optionClass = "p-4.5 rounded-2xl border-2 border-[#EF4444] bg-[#EF4444] flex-row justify-between items-center";
+                optionClass = "p-4.5 rounded-2xl border-2 border-error bg-error flex-row justify-between items-center";
                 textClass = "text-base text-white font-medium flex-1";
               }
             }
@@ -296,7 +299,7 @@ const QuizIndex = () => {
 
         {lastFeedback && (
           <TouchableOpacity
-            className="mt-8 bg-[#4F46E5] p-4.5 rounded-2xl flex-row justify-center items-center gap-2"
+            className="mt-8 bg-primary p-4.5 rounded-2xl flex-row justify-center items-center gap-2"
             onPress={handleNext}
           >
             <Text className="text-white text-base font-bold">Next Question</Text>

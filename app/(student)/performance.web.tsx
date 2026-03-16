@@ -15,6 +15,7 @@ import {
 import { useAuthStore } from "@/store/auth.store";
 import { logDataInfo } from "@/types/analyticsType";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useColorScheme } from "nativewind";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -31,6 +32,8 @@ const PerformancePage = () => {
   const [logs, setLogs] = useState<logDataInfo[]>([]);
   const [hierarchicalStats, setHierarchicalStats] = useState<any[]>([]);
   const [cpi, setCpi] = useState<number | null>(null);
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   useEffect(() => {
     if (user?.id) {
@@ -87,15 +90,15 @@ const PerformancePage = () => {
     return dayLabels.map((label, index) => ({
       value: counts[index],
       label: label,
-      frontColor: index === mondayIndex ? "#667eea" : "#e2e8f0",
-      gradientColor: index === mondayIndex ? "#764ba2" : "#f1f5f9",
+      frontColor: index === mondayIndex ? (isDark ? "#818cf8" : "#667eea") : (isDark ? "#1e293b" : "#e2e8f0"),
+      gradientColor: index === mondayIndex ? (isDark ? "#6366f1" : "#764ba2") : (isDark ? "#0f172a" : "#f1f5f9"),
     }));
   }, [logs]);
 
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
-        <ActivityIndicator size="large" color="#667eea" />
+        <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#667eea"} />
         <Text className="mt-4 text-textSecondary-light dark:text-textSecondary-dark text-sm font-medium">
           Fetching your performance metrics...
         </Text>
@@ -162,6 +165,7 @@ const PerformancePage = () => {
               strokeWidth={10}
               centerLabel="Avg. Acc."
               centerValue={`${accuracy}%`}
+              color={isDark ? "#818cf8" : "#667eea"}
             />
           </View>
         </View>
@@ -198,11 +202,11 @@ const PerformancePage = () => {
       </View>
 
       <View className="mt-8">
-        <View className="flex-row bg-[#fffbeb] rounded-2xl p-5 items-center gap-4 border border-[#fef3c7]">
+        <View className="flex-row bg-warning/10 dark:bg-warning/20 rounded-2xl p-5 items-center gap-4 border border-warning/20">
           <MaterialCommunityIcons
             name="lightbulb-on-outline"
             size={24}
-            color="#f59e0b"
+            color={isDark ? "#fbbf24" : "#f59e0b"}
           />
           <View className="flex-1">
             {/* Added for structural parity although commented out originally */}

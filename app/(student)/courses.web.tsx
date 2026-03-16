@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
+import { useColorScheme } from "nativewind";
 import {
   ActivityIndicator,
   ScrollView,
@@ -16,6 +17,8 @@ const StudentCoursesPage = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
 
   useEffect(() => {
     loadCourses();
@@ -42,8 +45,8 @@ const StudentCoursesPage = () => {
   }
 
   return (
-    <View className="flex-1">
-      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+    <View className="flex-1 bg-background-light dark:bg-background-dark">
+      <View className="flex-1">
         <View className="px-6 pt-8 pb-5 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark">
           <Text className="text-2xl font-bold text-text-light dark:text-text-dark mb-1">Explore Courses</Text>
           <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">
@@ -63,17 +66,17 @@ const StudentCoursesPage = () => {
                 activeOpacity={0.8}
               >
                 <View className="flex-row justify-between items-center mb-4">
-                  <View className="w-12 h-12 rounded-xl bg-[#f0f4ff] justify-center items-center">
+                  <View className="w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 justify-center items-center">
                     <MaterialCommunityIcons
                       name="book-open-variant"
                       size={24}
-                      color="#667eea"
+                      color={isDark ? "#818cf8" : "#667eea"}
                     />
                   </View>
                   <MaterialCommunityIcons
                     name="chevron-right"
                     size={24}
-                    color="#cbd5e1"
+                    color={isDark ? "#64748b" : "#cbd5e1"}
                   />
                 </View>
 
@@ -87,7 +90,7 @@ const StudentCoursesPage = () => {
                     <MaterialCommunityIcons
                       name="layers-outline"
                       size={14}
-                      color="#64748b"
+                      color={isDark ? "#94a3b8" : "#64748b"}
                     />
                     <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">
                       {course.units || 0} Units
@@ -97,7 +100,7 @@ const StudentCoursesPage = () => {
                     <MaterialCommunityIcons
                       name="book-outline"
                       size={14}
-                      color="#64748b"
+                      color={isDark ? "#94a3b8" : "#64748b"}
                     />
                     <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">
                       {course.chapters || 0} Chapters
@@ -108,7 +111,7 @@ const StudentCoursesPage = () => {
             ))}
           </View>
         </ScrollView>
-      </LinearGradient>
+      </View>
     </View>
   );
 };

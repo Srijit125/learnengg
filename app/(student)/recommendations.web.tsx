@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
+import { useColorScheme } from "nativewind";
 import {
   ActivityIndicator,
   ScrollView,
@@ -27,6 +28,8 @@ type TabType = "overview" | "weak_topics" | "personalized_plan";
 const StudentRecommendationsPage = () => {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [recommendationData, setRecommendationData] =
@@ -124,24 +127,24 @@ const StudentRecommendationsPage = () => {
     if (!topics) return null;
     if (Array.isArray(topics)) {
       return topics.map((topic, index) => (
-        <View key={index} className="flex-row items-center gap-1.5 bg-[#f0fdf4] px-3 py-2 rounded-xl border border-[#bbf7d0]">
+        <View key={index} className="flex-row items-center gap-1.5 bg-success/10 dark:bg-success/20 px-3 py-2 rounded-xl border border-success/20">
           <MaterialCommunityIcons
             name="check-circle-outline"
             size={14}
-            color="#15803d"
+            color={isDark ? "#34d399" : "#15803d"}
           />
-          <Text className="text-[13px] font-semibold text-[#15803d]">{topic}</Text>
+          <Text className="text-[13px] font-semibold text-success-dark dark:text-success-light">{topic}</Text>
         </View>
       ));
     }
     return Object.entries(topics).map(([key, value]) => (
-      <View key={key} className="flex-row items-center gap-1.5 bg-[#f0fdf4] px-3 py-2 rounded-xl border border-[#bbf7d0]">
+      <View key={key} className="flex-row items-center gap-1.5 bg-success/10 dark:bg-success/20 px-3 py-2 rounded-xl border border-success/20">
         <MaterialCommunityIcons
           name="check-circle-outline"
           size={14}
-          color="#15803d"
+          color={isDark ? "#34d399" : "#15803d"}
         />
-        <Text className="text-[13px] font-semibold text-[#15803d]">{value}</Text>
+        <Text className="text-[13px] font-semibold text-success-dark dark:text-success-light">{value}</Text>
       </View>
     ));
   };
@@ -156,14 +159,14 @@ const StudentRecommendationsPage = () => {
             {recommendationData.weak_topics?.map((topic, index) => (
               <View
                 key={index}
-                className="flex-row items-center gap-1.5 bg-[#fffbeb] px-3 py-2 rounded-xl border border-[#fde68a]"
+                className="flex-row items-center gap-1.5 bg-warning/10 dark:bg-warning/20 px-3 py-2 rounded-xl border border-warning/20"
               >
                 <MaterialCommunityIcons
                   name="alert-circle-outline"
                   size={14}
-                  color="#b45309"
+                  color={isDark ? "#fbbf24" : "#b45309"}
                 />
-                <Text className="text-[13px] font-semibold text-[#b45309]">
+                <Text className="text-[13px] font-semibold text-warning-dark dark:text-warning-light">
                   {topic}
                 </Text>
               </View>
@@ -189,13 +192,13 @@ const StudentRecommendationsPage = () => {
               return (
                 <View key={index} className="flex-row gap-4">
                   <View className="items-center w-8">
-                    <View className="w-8 h-8 rounded-full justify-center items-center bg-[#667eea] z-10 shadow-sm shadow-[#667eea]">
+                    <View className="w-8 h-8 rounded-full justify-center items-center bg-primary z-10 shadow-sm shadow-primary/30">
                       <Text className="text-white text-sm font-bold">{index + 1}</Text>
                     </View>
                     {!isLast && <View className="w-[3px] flex-1 bg-[#e2e8f0] my-1" />}
                   </View>
                   <TouchableOpacity
-                    className={`flex-1 flex-row items-center justify-between bg-card-light dark:bg-card-dark rounded-xl p-4 mb-5 border ${chId ? "border-[#e0e7ff] shadow-sm" : "border-divider-light dark:border-divider-dark"
+                    className={`flex-1 flex-row items-center justify-between bg-card-light dark:bg-card-dark rounded-xl p-4 mb-5 border ${chId ? "border-primary/20 shadow-sm" : "border-divider-light dark:border-divider-dark"
                       }`}
                     onPress={() => {
                       if (chId) {
@@ -209,13 +212,13 @@ const StudentRecommendationsPage = () => {
                     <View className="flex-1">
                       <Text className="text-[15px] font-semibold text-text-light dark:text-text-dark mb-1">{topic}</Text>
                       {chId && (
-                        <View className="flex-row items-center bg-[#e0e7ff] px-2 py-1 rounded-md self-start gap-1">
+                        <View className="flex-row items-center bg-primary/10 dark:bg-primary/20 px-2 py-1 rounded-md self-start gap-1">
                           <MaterialCommunityIcons
                             name="book-open-variant"
                             size={12}
-                            color="#6366f1"
+                            color={isDark ? "#818cf8" : "#6366f1"}
                           />
-                          <Text className="text-[10px] font-bold text-[#6366f1] uppercase">
+                          <Text className="text-[10px] font-bold text-primary dark:text-primary-light uppercase">
                             Course Note
                           </Text>
                         </View>
@@ -225,7 +228,7 @@ const StudentRecommendationsPage = () => {
                       <MaterialCommunityIcons
                         name="chevron-right"
                         size={20}
-                        color="#cbd5e1"
+                        color={isDark ? "#94a3b8" : "#cbd5e1"}
                       />
                     )}
                   </TouchableOpacity>
@@ -256,7 +259,7 @@ const StudentRecommendationsPage = () => {
 
   const renderWeakTopicsDeepDive = () => {
     if (loadingTabData)
-      return <ActivityIndicator style={{ marginTop: 40 }} color="#667eea" />;
+      return <ActivityIndicator style={{ marginTop: 40 }} color={isDark ? "#818cf8" : "#667eea"} />;
     if (!weakTopicsExtra)
       return (
         <View className="items-center py-10 gap-3">
@@ -268,7 +271,7 @@ const StudentRecommendationsPage = () => {
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         {Object.entries(weakTopicsExtra).map(([topicName, snippets]: any) => (
           <View key={topicName} className="bg-card-light dark:bg-card-dark rounded-2xl p-6 mb-6 border border-divider-light dark:border-divider-dark shadow-sm">
-            <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-5 pb-2 border-b-2 border-[#667eea] self-start">{topicName}</Text>
+            <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-5 pb-2 border-b-2 border-primary self-start">{topicName}</Text>
             {snippets.map((snippet: any, index: number) => {
               const chId = findChapterId(snippet.chapter);
               return (
@@ -278,33 +281,33 @@ const StudentRecommendationsPage = () => {
                       <MaterialCommunityIcons
                         name="book-open-page-variant"
                         size={16}
-                        color="#6366f1"
+                        color={isDark ? "#818cf8" : "#6366f1"}
                       />
-                      <Text className="text-xs font-bold text-[#6366f1] tracking-wider uppercase">
+                      <Text className="text-xs font-bold text-primary dark:text-primary-light tracking-wider uppercase">
                         {snippet.chapter}
                       </Text>
                     </View>
                     {chId && (
                       <TouchableOpacity
-                        className="flex-row items-center bg-[#eff6ff] px-2.5 py-1.5 rounded-lg gap-1"
+                        className="flex-row items-center bg-primary/10 dark:bg-primary/20 px-2.5 py-1.5 rounded-lg gap-1"
                         onPress={() =>
                           router.push(
                             `/(student)/course/${selectedCourseId}?chapterId=${chId}`,
                           )
                         }
                       >
-                        <Text className="text-xs font-semibold text-[#6366f1]">
+                        <Text className="text-xs font-semibold text-primary dark:text-primary-light">
                           Read Notes
                         </Text>
                         <MaterialCommunityIcons
                           name="chevron-right"
                           size={14}
-                          color="#6366f1"
+                          color={isDark ? "#818cf8" : "#6366f1"}
                         />
                       </TouchableOpacity>
                     )}
                   </View>
-                  <Text className="text-[15px] font-bold text-[#334155] mb-2">{snippet.section}</Text>
+                  <Text className="text-[15px] font-bold text-text-light dark:text-text-dark mb-2">{snippet.section}</Text>
                   <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark leading-relaxed">{snippet.text}</Text>
                 </View>
               );
@@ -317,7 +320,7 @@ const StudentRecommendationsPage = () => {
 
   const renderPersonalizedPlan = () => {
     if (loadingTabData)
-      return <ActivityIndicator style={{ marginTop: 40 }} color="#667eea" />;
+      return <ActivityIndicator style={{ marginTop: 40 }} color={isDark ? "#818cf8" : "#667eea"} />;
     if (!personalizedPlan)
       return (
         <View className="items-center py-10 gap-3">
@@ -332,7 +335,7 @@ const StudentRecommendationsPage = () => {
     if (!planItems) {
       return (
         <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-          <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 border border-divider-light dark:border-divider-dark border-l-6 border-l-[#10b981] shadow-sm">
+          <View className="bg-card-light dark:bg-card-dark rounded-2xl p-6 border border-divider-light dark:border-divider-dark border-l-6 border-l-success shadow-sm">
             <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-4">Your Personalized Roadmap</Text>
             {typeof personalizedPlan === "string" ? (
               <Text className="text-[15px] text-textSecondary-light dark:text-textSecondary-dark leading-relaxed">{personalizedPlan}</Text>
@@ -353,14 +356,14 @@ const StudentRecommendationsPage = () => {
           <MaterialCommunityIcons
             name="calendar-check"
             size={24}
-            color="#10b981"
+            color={isDark ? "#34d399" : "#10b981"}
           />
           <Text className="text-xl font-bold text-text-light dark:text-text-dark">Targeted Study Plan</Text>
         </View>
 
         {planItems.map((item: any, idx: number) => (
           <View key={idx} className="bg-card-light dark:bg-card-dark rounded-2xl p-5 mb-5 border border-divider-light dark:border-divider-dark overflow-hidden relative shadow-sm">
-            <View className="absolute top-0 right-0 bg-[#10b981] px-3 py-1.5 rounded-bl-xl z-20">
+            <View className="absolute top-0 right-0 bg-success dark:bg-success-dark px-3 py-1.5 rounded-bl-xl z-20">
               <Text className="text-white text-xs font-bold uppercase">Day {item.day}</Text>
             </View>
 
@@ -390,16 +393,16 @@ const StudentRecommendationsPage = () => {
                         <MaterialCommunityIcons
                           name="book-open-variant"
                           size={16}
-                          color="#6366f1"
+                          color={isDark ? "#818cf8" : "#6366f1"}
                         />
-                        <Text className="flex-1 text-[13px] text-[#6366f1] font-medium" numberOfLines={1}>
+                        <Text className="flex-1 text-[13px] text-primary dark:text-primary-light font-medium" numberOfLines={1}>
                           {res}
                         </Text>
                         {chId && (
                           <MaterialCommunityIcons
                             name="chevron-right"
                             size={14}
-                            color="#cbd5e1"
+                            color={isDark ? "#94a3b8" : "#cbd5e1"}
                           />
                         )}
                       </TouchableOpacity>
@@ -432,13 +435,13 @@ const StudentRecommendationsPage = () => {
           </View>
         ))}
 
-        <View className="flex-row items-center bg-[#fffbeb] p-4 rounded-xl border border-[#fef3c7] gap-3 mt-2 mb-6">
+        <View className="flex-row items-center bg-warning/10 dark:bg-warning/20 p-4 rounded-xl border border-warning/20 gap-3 mt-2 mb-6">
           <MaterialCommunityIcons
             name="lightbulb-on"
             size={20}
-            color="#f59e0b"
+            color={isDark ? "#fbbf24" : "#f59e0b"}
           />
-          <Text className="flex-1 text-[13px] text-[#92400e] leading-relaxed font-medium">
+          <Text className="flex-1 text-[13px] text-warning-dark dark:text-warning-light leading-relaxed font-medium">
             Tip: Attempt an adaptive quiz after completing this 3-day plan!
           </Text>
         </View>
@@ -448,15 +451,15 @@ const StudentRecommendationsPage = () => {
 
   if (loadingCourses) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#667eea" />
+      <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
+        <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#667eea"} />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 min-h-full">
-      <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1 min-h-[100vh]">
+    <View className="flex-1 bg-background-light dark:bg-background-dark">
+      <View className="flex-1">
         <View className="px-6 pt-8 pb-3 bg-card-light dark:bg-card-dark border-b border-border-light dark:border-border-dark min-w-full">
           <Text className="text-2xl font-bold text-text-light dark:text-text-dark mb-1">AI Recommendations</Text>
           <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-medium">
@@ -465,7 +468,7 @@ const StudentRecommendationsPage = () => {
         </View>
 
         <View className="flex-1 px-6 pt-3 pb-0">
-          <Text className="text-lg font-semibold text-[#334155] mb-2">Select a Course</Text>
+          <Text className="text-lg font-semibold text-text-light dark:text-text-dark mb-2">Select a Course</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -473,11 +476,11 @@ const StudentRecommendationsPage = () => {
             contentContainerStyle={{ gap: 12, paddingBottom: 0 }}
           >
             {courses.map((course) => (
-              <TouchableOpacity
+                <TouchableOpacity
                 key={course.course_id}
-                className={`px-4 py-2 bg-card-light dark:bg-card-dark rounded-full border mr-2.5 h-10 justify-center ${selectedCourseId === course.course_id
-                    ? "bg-[#667eea] border-[#667eea]"
-                    : "border-divider-light dark:border-divider-dark"
+                className={`px-4 py-2 bg-card-light dark:bg-card-dark rounded-full border mr-2.5 h-10 justify-center items-center ${selectedCourseId === course.course_id
+                    ? "bg-primary border-primary"
+                    : "border-border-light dark:border-border-dark"
                   }`}
                 onPress={() => handleCourseSelect(course.course_id)}
               >
@@ -503,7 +506,7 @@ const StudentRecommendationsPage = () => {
                 onPress={() => handleTabChange("overview")}
               >
                 <Text
-                  className={`text-sm font-semibold ${activeTab === "overview" ? "text-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"
+                  className={`text-sm font-semibold ${activeTab === "overview" ? "text-primary dark:text-primary-light" : "text-textSecondary-light dark:text-textSecondary-dark"
                     }`}
                 >
                   Overview
@@ -515,7 +518,7 @@ const StudentRecommendationsPage = () => {
                 onPress={() => handleTabChange("weak_topics")}
               >
                 <Text
-                  className={`text-sm font-semibold ${activeTab === "weak_topics" ? "text-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"
+                  className={`text-sm font-semibold ${activeTab === "weak_topics" ? "text-primary dark:text-primary-light" : "text-textSecondary-light dark:text-textSecondary-dark"
                     }`}
                 >
                   Weak Topics
@@ -527,7 +530,7 @@ const StudentRecommendationsPage = () => {
                 onPress={() => handleTabChange("personalized_plan")}
               >
                 <Text
-                  className={`text-sm font-semibold ${activeTab === "personalized_plan" ? "text-[#667eea]" : "text-textSecondary-light dark:text-textSecondary-dark"
+                  className={`text-sm font-semibold ${activeTab === "personalized_plan" ? "text-primary dark:text-primary-light" : "text-textSecondary-light dark:text-textSecondary-dark"
                     }`}
                 >
                   Suggested Plan
@@ -538,7 +541,7 @@ const StudentRecommendationsPage = () => {
 
           {loadingRecommendations ? (
             <View className="items-center py-10">
-              <ActivityIndicator size="large" color="#667eea" />
+              <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#667eea"} />
               <Text className="mt-3 text-textSecondary-light dark:text-textSecondary-dark">Analyzing your progress...</Text>
             </View>
           ) : !selectedCourseId ? (
@@ -571,7 +574,7 @@ const StudentRecommendationsPage = () => {
             </View>
           )}
         </View>
-      </LinearGradient>
+      </View>
     </View>
   );
 };

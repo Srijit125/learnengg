@@ -4,7 +4,8 @@ import { getHierarchicalStats, getNoteStudyAnalysis, getUserActivityLogs, getUse
 import { useAuthStore } from "@/store/auth.store";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
+import { useColorScheme } from "nativewind";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -22,6 +23,8 @@ const ProgressPage = () => {
   const [studyActivity, setStudyActivity] = useState<any[]>([]);
   const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
   const [expandedUnits, setExpandedUnits] = useState<string[]>([]);
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   useEffect(() => {
     if (user?.id) {
@@ -64,7 +67,7 @@ const ProgressPage = () => {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-background-light dark:bg-background-dark">
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#6366f1"} />
         <Text className="mt-4 text-textSecondary-light dark:text-textSecondary-dark text-base font-medium">Analyzing your journey...</Text>
       </View>
     );
@@ -108,7 +111,7 @@ const ProgressPage = () => {
             size={160}
             strokeWidth={15}
             label="Notes Studied"
-            color="#6366f1"
+            color={isDark ? "#818cf8" : "#6366f1"}
           />
           <View className="flex-1">
             <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-semibold">You have completed</Text>
@@ -123,7 +126,7 @@ const ProgressPage = () => {
             size={160}
             strokeWidth={15}
             label="Quiz Accuracy"
-            color="#10b981"
+            color={isDark ? "#34d399" : "#10b981"}
           />
           <View className="flex-1">
             <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark font-semibold">Your average accuracy</Text>
@@ -152,17 +155,17 @@ const ProgressPage = () => {
                             : "chevron-right"
                         }
                         size={24}
-                        color="#64748b"
+                        color={isDark ? "#94a3b8" : "#64748b"}
                       />
                       <Text className="text-base font-bold text-text-light dark:text-text-dark">{course.courseName}</Text>
                     </View>
                     <View className="flex-row items-center gap-3">
-                      <Text className="text-[15px] font-extrabold text-[#6366f1]">
+                      <Text className="text-[15px] font-extrabold text-primary dark:text-primary-light">
                         {course.progress}%
                       </Text>
-                      <View className="w-[60px] h-1.5 bg-[#e2e8f0] rounded overflow-hidden">
+                      <View className="w-[60px] h-1.5 bg-border-light dark:bg-border-dark rounded overflow-hidden">
                         <View
-                          className="h-full bg-[#6366f1]"
+                          className="h-full bg-primary"
                           style={{ width: `${course.progress}%` }}
                         />
                       </View>
@@ -185,15 +188,15 @@ const ProgressPage = () => {
                                     : "plus"
                                 }
                                 size={18}
-                                color="#94a3b8"
+                                color={isDark ? "#64748b" : "#94a3b8"}
                               />
                               <Text className="text-sm font-semibold text-textSecondary-light dark:text-textSecondary-dark">
                                 {unit.unitTitle}
                               </Text>
                             </View>
-                            <Text className="text-[13px] font-bold text-[#6366f1]">
-                              {unit.progress}%
-                            </Text>
+                            <Text className="text-[13px] font-bold text-primary dark:text-primary-light">
+                                {unit.progress}%
+                              </Text>
                           </TouchableOpacity>
 
                           {expandedUnits.includes(unit.unitId) && (
@@ -207,9 +210,9 @@ const ProgressPage = () => {
                                     {chapter.chapterTitle}
                                   </Text>
                                   <View className="flex-row items-center gap-2 w-[100px] justify-end">
-                                    <View className="flex-1 h-1 bg-background-light dark:bg-background-dark rounded overflow-hidden">
+                                    <View className="flex-1 h-1 bg-border-light dark:bg-border-dark rounded overflow-hidden">
                                       <View
-                                        className="h-full bg-[#10b981]"
+                                        className="h-full bg-success"
                                         style={{ width: `${chapter.progress}%` }}
                                       />
                                     </View>
@@ -281,8 +284,8 @@ const ProgressPage = () => {
                         style={{
                           backgroundColor:
                             activity.event_type === "course_completed"
-                              ? "#fef3c7"
-                              : "#f0f4ff",
+                              ? (isDark ? "#451a03" : "#fef3c7")
+                              : (isDark ? "#1e1b4b" : "#f0f4ff"),
                         }}
                       >
                         <MaterialCommunityIcons
@@ -290,8 +293,8 @@ const ProgressPage = () => {
                           size={20}
                           color={
                             activity.event_type === "course_completed"
-                              ? "#f59e0b"
-                              : "#6366f1"
+                              ? (isDark ? "#f59e0b" : "#d97706")
+                              : (isDark ? "#818cf8" : "#6366f1")
                           }
                         />
                       </View>

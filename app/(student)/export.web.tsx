@@ -4,6 +4,7 @@ import { downloadCSV } from "@/utils/csvExport";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
+import { useColorScheme } from "nativewind";
 import {
     ActivityIndicator,
     ScrollView,
@@ -15,6 +16,8 @@ import {
 export default function ExportDataPage() {
     const { user } = useAuthStore();
     const [exporting, setExporting] = useState(false);
+    const { colorScheme } = useColorScheme();
+    const isDark = colorScheme === 'dark';
 
     const handleExport = async (type: "full" | "summary") => {
         if (!user?.id) return;
@@ -75,22 +78,22 @@ export default function ExportDataPage() {
                 <Text className="text-lg font-bold text-text-light dark:text-text-dark mb-1">{title}</Text>
                 <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark leading-5">{description}</Text>
             </View>
-            <MaterialCommunityIcons name="chevron-right" size={24} color="#cbd5e1" />
+            <MaterialCommunityIcons name="chevron-right" size={24} color={isDark ? "#94a3b8" : "#cbd5e1"} />
         </TouchableOpacity>
     );
 
     return (
-        <View className="flex-1">
-            <LinearGradient colors={["#f8fafc", "#f1f5f9"]} className="flex-1">
+        <View className="flex-1 bg-background-light dark:bg-background-dark">
+            <View className="flex-1">
                 <ScrollView className="flex-1" contentContainerStyle={{ padding: 24, paddingBottom: 40 }}>
                     <View className="mb-8 pt-3">
                         <Text className="text-3xl font-extrabold text-text-light dark:text-text-dark tracking-tight">Export My Data</Text>
                         <Text className="text-base text-textSecondary-light dark:text-textSecondary-dark mt-1">Download your learning history and performance metrics</Text>
                     </View>
 
-                    <View className="flex-row bg-[#e0f2fe] p-4 rounded-2xl mb-8 items-center gap-3 border border-[#bae6fd]">
-                        <MaterialCommunityIcons name="information-outline" size={20} color="#0369a1" />
-                        <Text className="flex-1 text-sm text-[#0369a1] leading-5">
+                    <View className="flex-row bg-primary/10 dark:bg-primary/20 p-4 rounded-2xl mb-8 items-center gap-3 border border-primary/20">
+                        <MaterialCommunityIcons name="information-outline" size={20} color={isDark ? "#818cf8" : "#0369a1"} />
+                        <Text className="flex-1 text-sm text-primary dark:text-primary-light leading-5">
                             Your data will be exported in CSV format, which can be opened in Excel, Google Sheets, or any text editor.
                         </Text>
                     </View>
@@ -114,12 +117,12 @@ export default function ExportDataPage() {
 
                     {exporting && (
                         <View className="mt-10 items-center">
-                            <ActivityIndicator size="large" color="#6366f1" />
-                            <Text className="mt-3 text-sm text-[#6366f1] font-semibold">Preparing your data...</Text>
+                            <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#6366f1"} />
+                            <Text className="mt-3 text-sm text-primary dark:text-primary-light font-semibold">Preparing your data...</Text>
                         </View>
                     )}
                 </ScrollView>
-            </LinearGradient>
+            </View>
         </View>
     );
 }

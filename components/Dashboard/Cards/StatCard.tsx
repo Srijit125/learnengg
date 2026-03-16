@@ -37,14 +37,14 @@ const StatCard = ({
   return (
     <View className="flex-1 min-w-[220px] max-w-[280px] h-[160px] m-2.5 rounded-2xl shadow-md">
       <LinearGradient
-        colors={gradientColors}
+        colors={gradientColors as any}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         className="flex-1 rounded-2xl p-5 justify-between"
       >
         <View className="flex-row items-center gap-3">
           <View className="w-12 h-12 rounded-xl bg-white/20 justify-center items-center">
-            <MaterialCommunityIcons name={icon} size={28} color="#ffffff" />
+            <MaterialCommunityIcons name={icon as any} size={28} color="#ffffff" />
           </View>
           <Text className="flex-1 text-sm font-semibold text-white opacity-95">{title}</Text>
         </View>
@@ -59,7 +59,7 @@ const StatCard = ({
         {trendValue && (
           <View className="flex-row items-center gap-1.5 bg-white/90 px-2.5 py-1 rounded-xl self-start">
             <MaterialCommunityIcons
-              name={getTrendIcon()}
+              name={getTrendIcon() as any}
               size={16}
               color={getTrendColor()}
             />
