@@ -9,6 +9,7 @@ import {
 interface QuizState {
   selectedCourseId: string | null;
   currentMCQ: MCQ | null;
+  usedQuestionIds: string[];
   streak: number;
   difficulty: Difficulty;
   isLoading: boolean;
@@ -32,6 +33,7 @@ interface QuizState {
 export const useQuizStore = create<QuizState>((set, get) => ({
   selectedCourseId: null,
   currentMCQ: null,
+  usedQuestionIds: [],
   streak: 0,
   difficulty: "easy",
   isLoading: false,
@@ -44,6 +46,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   selectCourse: (courseId: string, maxQuestions: number = 25) => {
     set({
       selectedCourseId: courseId,
+      usedQuestionIds: [],
       streak: 0,
       difficulty: "easy",
       score: 0,
@@ -56,18 +59,30 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   },
 
   fetchNextQuestion: async () => {
-    const { selectedCourseId, isFinished, difficulty } = get();
+    const { selectedCourseId, isFinished, difficulty, usedQuestionIds } = get();
     if (!selectedCourseId || isFinished) return;
 
     set({ isLoading: true });
     try {
-      const data = await fetchMCQ(selectedCourseId, difficulty);
-      set({
-        currentMCQ: data.question,
+      const data = await fetchMCQ(
+        selectedCourseId,
+        difficulty,
+        usedQuestionIds,
+      );
+      const newQuestion = data.question;
+
+      // Extract ID from machine learning object (it comes as ID or mcqId)
+      const questionId = newQuestion.ID || newQuestion.mcqId;
+
+      set((state) => ({
+        currentMCQ: newQuestion,
+        usedQuestionIds: questionId
+          ? [...state.usedQuestionIds, questionId]
+          : state.usedQuestionIds,
         difficulty: data.difficulty.toLowerCase() as any,
         isLoading: false,
         lastFeedback: null,
-      });
+      }));
     } catch (error) {
       console.error("Error fetching MCQ:", error);
       set({ isLoading: false });
@@ -134,6 +149,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     set({
       selectedCourseId: null,
       currentMCQ: null,
+      usedQuestionIds: [],
       streak: 0,
       difficulty: "easy",
       isLoading: false,

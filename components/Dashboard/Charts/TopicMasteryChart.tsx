@@ -78,7 +78,7 @@ const TopicMasteryChart = ({
         </View>
         <View className="flex-row items-center gap-2">
           <View className="w-2.5 h-2.5 rounded-full bg-[#4caf50]" />
-          <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">Strong Topics</Text>
+          <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-medium">Better Understood</Text>
         </View>
       </View>
     </View>

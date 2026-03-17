@@ -8,9 +8,17 @@ export type SubmittedAnswerType = {
   course_id: string;
 };
 
-export const fetchMCQ = async (course_id: string, difficulty?: string) => {
+export const fetchMCQ = async (
+  course_id: string,
+  difficulty?: string,
+  exclude_ids: string[] = [],
+) => {
   const response = await api.get(`/adaptive-quiz/next`, {
-    params: { course_id, difficulty },
+    params: {
+      course_id,
+      difficulty,
+      exclude_ids: exclude_ids.join(","),
+    },
   });
   return response.data; // Gets { question, difficulty }
 };
