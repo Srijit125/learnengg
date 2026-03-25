@@ -209,7 +209,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             <View className="flex-1">
               <Text className="text-sm font-semibold text-text-light dark:text-text-dark mb-0.5">{user?.full_name || "User"}</Text>
               <Text className="text-xs font-normal text-textSecondary-light dark:text-textSecondary-dark">
-                {user?.role === "admin" ? "Administrator" : "Student"}
+                {user?.role === "admin" ? "Administrator" : user?.role === "contentTeam" ? "Content Team" : "Student"}
               </Text>
             </View>
             <TouchableOpacity

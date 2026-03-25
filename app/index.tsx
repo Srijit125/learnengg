@@ -78,6 +78,7 @@ const LoginScreen = () => {
   return (
     <LinearGradient
       colors={["#f8fafc", "#e2e8f0", "#cbd5e1"]}
+      style={{ flex: 1 }}
       className="flex-1"
     >
       <KeyboardAvoidingView

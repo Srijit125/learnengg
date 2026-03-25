@@ -104,6 +104,19 @@ const RootLayout = () => {
     );
   }
 
+  if (user?.role === "contentTeam") {
+    return (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="(contentTeam)"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    );
+  }
+
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen

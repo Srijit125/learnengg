@@ -22,8 +22,9 @@ const RootLayout = () => {
     // Sync session with auth store
     supabase.auth
       .getSession()
-      .then(({ data: { session } }: { data: { session: Session | null } }) => {
-        useAuthStore.getState().setSession(session);
+      .then(async ({ data: { session } }: { data: { session: Session | null } }) => {
+        console.log("Initial session fetched:", !!session);
+        await useAuthStore.getState().setSession(session);
         setIsReady(true);
       });
 
@@ -62,6 +63,8 @@ const RootLayout = () => {
     }
   }, [loaded, error]);
 
+  console.log("RootLayout state:", { loaded, error, isReady, isLoading, isAuthenticated, role: user?.role });
+
   if ((!loaded && !error) || !isReady || isLoading) {
     return null;
   }
@@ -84,6 +87,19 @@ const RootLayout = () => {
       <Stack>
         <Stack.Screen
           name="(admin)"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    );
+  }
+
+  if (user?.role === "contentTeam") {
+    return (
+      <Stack>
+        <Stack.Screen
+          name="(contentTeam)"
           options={{
             headerShown: false,
           }}

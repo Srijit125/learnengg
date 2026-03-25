@@ -1,5 +1,5 @@
 -- Create custom types
-CREATE TYPE user_role AS ENUM ('student', 'staff', 'admin');
+CREATE TYPE user_role AS ENUM ('student', 'staff', 'admin', 'contentTeam');
 CREATE TYPE mcq_difficulty AS ENUM ('Easy', 'Medium', 'Hard');
 
 -- Profiles table

@@ -156,7 +156,7 @@ const LoginScreen = () => {
           )}
           <View className="bg-[#fee2e2] p-3 rounded-lg mb-4">
             <Text className="text-[#1c5bb9] text-sm text-center">Admin: admin@learnengg.com Password: fountain</Text>
-            <Text className="text-[#1c5bb9] text-sm text-center">Student: srijit125@gmail.com Password: fountain</Text>
+            <Text className="text-[#1c5bb9] text-sm text-center">Student: student@gmail.com Password: fountain</Text>
           </View>
 
           {isSignUp && (
