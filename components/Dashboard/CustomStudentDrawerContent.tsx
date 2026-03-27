@@ -32,12 +32,12 @@ const CustomStudentDrawerContent = (props: DrawerContentComponentProps) => {
 
   const mainMenuItems: MenuItem[] = [
     { id: "overview", label: "Dashboard", icon: "view-dashboard-outline", route: "index" },
-    { id: "courses", label: "Courses", icon: "book-open-variant", route: "courses" },
+    // { id: "courses", label: "Courses", icon: "book-open-variant", route: "courses" },
     { id: "recommendations", label: "Recommendations", icon: "lightbulb-on-outline", route: "recommendations" },
     { id: "quiz", label: "Quiz", icon: "clipboard-text-outline", route: "quiz" },
-    { id: "performance", label: "Performance", icon: "chart-line", route: "performance" },
-    { id: "progress", label: "Progress", icon: "trending-up", route: "progress" },
-    { id: "search", label: "Search", icon: "magnify", route: "search" },
+    // { id: "performance", label: "Performance", icon: "chart-line", route: "performance" },
+    // { id: "progress", label: "Progress", icon: "trending-up", route: "progress" },
+    // { id: "search", label: "Search", icon: "magnify", route: "search" },
   ];
 
   const insightsMenuItems: MenuItem[] = [

@@ -1,11 +1,12 @@
-import { api } from "./api";
 import { MCQ } from "../models/MCQ";
+import { api } from "./api";
 
 export type SubmittedAnswerType = {
   user_id: string;
   question: MCQ;
   selected_index: number;
   course_id: string;
+  quiz_id: string;
 };
 
 export const fetchMCQ = async (

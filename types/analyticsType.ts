@@ -1,3 +1,5 @@
+import { MCQ } from "../models/MCQ";
+
 export interface analyticsInfo {
   total_attempts: number;
   correct: number;
@@ -30,6 +32,9 @@ export interface logDataInfo {
     question: string;
     timestamp: string;
     user_answer: number;
+    quiz_id?: string;
+    course_id?: string;
+    question_data?: MCQ;
     reference: {
         Unit: string;
         Chapter: string;

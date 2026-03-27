@@ -1,6 +1,7 @@
 import React from "react";
 import { Text, View } from "react-native";
 import Svg, { Circle, G, Path, Text as SvgText } from "react-native-svg";
+import CPITooltip from "../CPITooltip";
 
 type CPIGaugeProps = {
   value: number;
@@ -42,7 +43,14 @@ const CPIGauge = ({
 
   return (
     <View className="bg-card-light dark:bg-card-dark rounded-2xl p-5 items-center shadow-md shadow-[#000]/5 elevation-3">
-      {title && <Text className="text-sm font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-2.5">{title}</Text>}
+      {title && (
+        <View className="flex-row items-center justify-center">
+          <Text className="text-sm font-bold text-textSecondary-light dark:text-textSecondary-dark uppercase tracking-[1px] mb-2.5">{title}</Text>
+          <View className="mb-2.5">
+            <CPITooltip iconSize={16} iconColor="#94a3b8" />
+          </View>
+        </View>
+      )}
       <View className="-mt-5">
         <Svg height={size} width={size}>
           <G>

@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { MCQ } from "../models/MCQ";
-import { Difficulty, calculateNextDifficulty } from "../utils/adaptiveEngine";
 import {
-  fetchMCQ,
   submitAnswer as apiSubmitAnswer,
+  fetchMCQ,
 } from "../services/quiz.service";
+import { Difficulty, calculateNextDifficulty } from "../utils/adaptiveEngine";
 
 interface QuizState {
   selectedCourseId: string | null;
@@ -22,11 +22,19 @@ interface QuizState {
     correctIndex: number;
     selectedIndex: number;
   } | null;
+  quizId: string | null;
+  highestStreak: number;
+  results: {
+    question: MCQ;
+    selectedIndex: number;
+    isCorrect: boolean;
+    timeTaken: number;
+  }[];
 
   // Actions
   selectCourse: (courseId: string, maxQuestions?: number) => void;
   fetchNextQuestion: () => Promise<void>;
-  submitAnswer: (userId: string, selectedIndex: number) => Promise<void>;
+  submitAnswer: (userId: string, selectedIndex: number, timeTaken: number) => Promise<void>;
   resetQuiz: () => void;
 }
 
@@ -42,6 +50,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   maxQuestions: 25,
   isFinished: false,
   lastFeedback: null,
+  quizId: null,
+  highestStreak: 0,
+  results: [],
 
   selectCourse: (courseId: string, maxQuestions: number = 25) => {
     set({
@@ -55,6 +66,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       isFinished: false,
       lastFeedback: null,
       currentMCQ: null,
+      quizId: Math.random().toString(36).substring(2, 11),
+      highestStreak: 0,
+      results: [],
     });
   },
 
@@ -89,7 +103,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     }
   },
 
-  submitAnswer: async (userId: string, selectedIndex: number) => {
+  submitAnswer: async (userId: string, selectedIndex: number, timeTaken: number) => {
     const {
       currentMCQ,
       streak,
@@ -98,6 +112,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       totalQuestions,
       maxQuestions,
       selectedCourseId,
+      highestStreak,
     } = get();
     if (!currentMCQ || !selectedCourseId) return;
 
@@ -119,6 +134,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     const newTotalQuestions = totalQuestions + 1;
     const isFinished = newTotalQuestions >= maxQuestions;
 
+    const newHighestStreak = Math.max(highestStreak, newStreak > 0 ? newStreak : 0);
+
     set({
       lastFeedback: {
         isCorrect,
@@ -126,10 +143,20 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         selectedIndex,
       },
       streak: shouldResetStreak ? 0 : newStreak,
+      highestStreak: newHighestStreak,
       difficulty: nextDifficulty,
       score: isCorrect ? score + 1 : score,
       totalQuestions: newTotalQuestions,
       isFinished,
+      results: [
+        ...get().results,
+        {
+          question: currentMCQ,
+          selectedIndex: selectedIndex,
+          isCorrect,
+          timeTaken,
+        },
+      ],
     });
 
     // Log answer to server
@@ -139,6 +166,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         question: currentMCQ,
         selected_index: selectedIndex,
         course_id: selectedCourseId,
+        quiz_id: get().quizId || "",
       });
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -158,6 +186,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       maxQuestions: 25,
       isFinished: false,
       lastFeedback: null,
+      quizId: null,
+      highestStreak: 0,
+      results: [],
     });
   },
 }));

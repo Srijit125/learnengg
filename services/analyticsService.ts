@@ -1,4 +1,5 @@
 import { logDataInfo } from "@/types/analyticsType";
+import { supabase } from "@/utils/supabase";
 import { api } from "./api";
 
 export async function getUserLogs(userId: string) {
@@ -68,6 +69,16 @@ export async function getUserCPI(userId: string) {
   }
 }
 
+export async function getUserCoreMetrics(userId: string) {
+  try {
+    const response = await api.get(`/mastery/${userId}/metrics`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user core metrics:", error);
+    return null;
+  }
+}
+
 export async function getNoteStudyAnalysis(userId: string) {
   try {
     const response = await api.get(`/notes/${userId}/analysis`);
@@ -123,7 +134,28 @@ export async function getSystemOverview() {
 export async function getAllStudentsStats() {
   try {
     const response = await api.get("/analytics/system/students");
-    return response.data;
+    const students = response.data;
+
+    // Fetch names from Supabase profiles
+    const userIds = students.map((s: any) => s.user_id).filter(Boolean);
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", userIds);
+      console.log("Profiles:", profiles);
+      if (profiles) {
+        const nameMap: Record<string, string> = {};
+        profiles.forEach((p: any) => {
+          nameMap[p.id] = p.full_name;
+        });
+        students.forEach((s: any) => {
+          s.username = nameMap[s.user_id] || s.username || "N/A";
+        });
+      }
+    }
+
+    return students;
   } catch (error) {
     console.error("Error fetching all students stats:", error);
     return [];

@@ -1,9 +1,8 @@
 import { getUserLogsData } from "@/services/analyticsService";
 import { useAuthStore } from "@/store/auth.store";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
 import { useColorScheme } from "nativewind";
+import React, { useEffect, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
@@ -123,6 +122,7 @@ export default function StudentStrengthsPage() {
                                     <MaterialCommunityIcons name="lightning-bolt" size={64} color={isDark ? "#fbbf24" : "#f59e0b"} />
                                     <Text className="text-xl font-bold text-text-light dark:text-text-dark mt-4">Keep Pushing!</Text>
                                     <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark text-center mt-2">Start mastering chapters and they will appear here as your strengths.</Text>
+                                    <Text className="text-sm text-textSecondary-light dark:text-textSecondary-dark text-center mt-2">Topics with more than 80% accuracy will be shown here.</Text>
                                 </View>
                             )}
                         </View>

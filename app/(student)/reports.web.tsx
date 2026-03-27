@@ -1,4 +1,5 @@
 import DonutChart from "@/components/Dashboard/Charts/DonutChart";
+import CPITooltip from "@/components/Dashboard/CPITooltip";
 import { getUserCPI, getUserLogsData } from "@/services/analyticsService";
 import { useAuthStore } from "@/store/auth.store";
 import { downloadCSV } from "@/utils/csvExport";
@@ -194,7 +195,10 @@ export default function StudentReportsPage() {
                                     <View className="w-10 h-10 rounded-xl justify-center items-center mb-3 bg-warning/10 dark:bg-warning/20">
                                         <MaterialCommunityIcons name="gauge" size={24} color={isDark ? "#fbbf24" : "#ea580c"} />
                                     </View>
-                                    <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold mb-1">Current CPI</Text>
+                                    <View className="flex-row items-center mb-1">
+                                        <Text className="text-xs text-textSecondary-light dark:text-textSecondary-dark font-semibold">Current CPI</Text>
+                                        <CPITooltip iconSize={14} iconColor="#94a3b8" />
+                                    </View>
                                     <Text className="text-base font-bold text-text-light dark:text-text-dark leading-tight">{cpi?.toFixed(1) || "0.0"}</Text>
                                 </View>
                             </View>
